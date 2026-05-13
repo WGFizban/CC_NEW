@@ -1,0 +1,50 @@
+name: cc_new
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_svg: ^2.0.10+1
+  shared_preferences: ^2.3.3
+  flutter_colorpicker: ^1.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.10
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icons/
+    - assets/images/city.jpg
+    - assets/images/road.jpg
+    - assets/images/meadow.jpg
+    - assets/images/cloister.jpg
+    - assets/images/bgc.jpg
+    - assets/images/fairy.png
+    - assets/images/sheeps.jpg
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icons/app_icon.png"
+  adaptive_icon_background: "#c8a96a"
+  adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"
+
+flutter_native_splash:
+  color: "#f4ecd8"
+  image: assets/icons/splash_meeple.png
+  android: true
+  ios: false
+  web: false
+  android_gravity: center
