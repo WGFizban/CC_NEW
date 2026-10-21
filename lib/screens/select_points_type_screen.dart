@@ -8,7 +8,14 @@ import '../theme/app_colors.dart';
 class SelectPointsTypeScreen extends StatelessWidget {
   final Player player;
 
-  const SelectPointsTypeScreen({super.key, required this.player});
+  /// Typy dostępne przy włączonych dodatkach.
+  final List<ScoringType> types;
+
+  const SelectPointsTypeScreen({
+    super.key,
+    required this.player,
+    required this.types,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +32,19 @@ class SelectPointsTypeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             const Text(
               'Wybierz rodzaj punktacji:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Expanded(
               child: GridView.count(
                 crossAxisCount: 3,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
                 children: [
-                  for (final type in ScoringType.values)
+                  for (final type in types)
                     _TypeButton(
                       type: type,
                       onTap: () => Navigator.pop(context, type),
@@ -64,6 +71,7 @@ class _TypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imagePath = type.imagePath;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -80,18 +88,28 @@ class _TypeButton extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(type.iconPath, fit: BoxFit.cover),
+                  child: imagePath != null
+                      ? Image.asset(
+                          imagePath,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        )
+                      : Container(
+                          width: double.infinity,
+                          color: kBrandColor.withValues(alpha: 0.35),
+                          child: Icon(type.icon, size: 40),
+                        ),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.only(bottom: 8, left: 4, right: 4),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   type.displayName,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

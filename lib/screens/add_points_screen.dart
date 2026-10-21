@@ -1,71 +1,156 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
+import '../models/circus.dart';
+import '../models/expansion.dart';
+import '../models/goods.dart';
 import '../models/player.dart';
+import '../models/score_event.dart';
 import '../models/scoring.dart';
+import '../models/sheep.dart';
+import '../models/standings.dart';
+import '../widgets/counter_stepper.dart';
+import '../widgets/goods_widgets.dart';
+import '../widgets/number_keypad.dart';
+import '../widgets/player_picker.dart';
 
 enum _Field { tiles, banners }
 
-/// Ekran liczenia punktów. Zwraca liczbę punktów przez `Navigator.pop`
+/// Ekran liczenia punktów za miasto, drogę, klasztor, pola, wróżkę, zamek,
+/// surowce i dyrektora cyrku. Zwraca [ScoreEvent] przez `Navigator.pop`
 /// (albo `null`, gdy użytkownik wyjdzie bez zatwierdzenia).
 class AddPointsScreen extends StatefulWidget {
   final Player player;
+  final List<Player> players;
   final ScoringType type;
+  final Set<Expansion> expansions;
 
-  const AddPointsScreen({super.key, required this.player, required this.type});
+  const AddPointsScreen({
+    super.key,
+    required this.player,
+    required this.players,
+    required this.type,
+    required this.expansions,
+  });
 
   @override
   State<AddPointsScreen> createState() => _AddPointsScreenState();
 }
 
 class _AddPointsScreenState extends State<AddPointsScreen> {
-  static const _keys = [
-    ['1', '2', '3'],
-    ['4', '5', '6'],
-    ['7', '8', '9'],
-    ['C', '0', '<'],
-  ];
-
   int _tiles = 0;
   int _banners = 0;
+  int _bridges = 0;
+  int _castles = 0;
+  int _vineyards = 0;
   bool _completed = true;
 
   /// Katedra (miasto), karczma (droga) lub świnka (pola).
   bool _bonus = false;
+  bool _ringmaster = false;
+  int _circusTiles = 0;
   _Field _active = _Field.tiles;
 
+  final Map<Goods, int> _goods = {for (final g in Goods.values) g: 0};
+  late Player _goodsRecipient = widget.player;
+
+  ScoringType get _type => widget.type;
+
+  bool _has(Expansion e) => widget.expansions.contains(e);
+
+  bool get _isFeature =>
+      _type == ScoringType.city ||
+      _type == ScoringType.road ||
+      _type == ScoringType.cloister ||
+      _type == ScoringType.meadow;
+
+  bool get _showGoods =>
+      _type == ScoringType.goods ||
+      (_type == ScoringType.city &&
+          _completed &&
+          _has(Expansion.tradersBuilders));
+
+  bool get _showRingmaster => _isFeature && _has(Expansion.circus);
+
+  bool get _ringmasterActive =>
+      _type == ScoringType.ringmaster || (_showRingmaster && _ringmaster);
+
+  bool get _usesKeypad => switch (_type) {
+    ScoringType.goods || ScoringType.ringmaster => false,
+    ScoringType.cloister => !_completed,
+    _ => true,
+  };
+
+  /// Niedokończony klasztor to najwyżej 8 płytek (razem z nim samym);
+  /// komplet 9 płytek to już klasztor ukończony.
+  int get _tilesMax => _type == ScoringType.cloister ? 8 : 999;
+
+  Map<Goods, int> get _goodsToAdd => _showGoods
+      ? {
+          for (final e in _goods.entries)
+            if (e.value > 0) e.key: e.value,
+        }
+      : const {};
+
   int get _points => calculatePoints(
-    widget.type,
+    _type,
     tiles: _tiles,
     banners: _banners,
+    bridges: _type == ScoringType.road && _has(Expansion.bridgesCastlesBazaars)
+        ? _bridges
+        : 0,
+    castles: _type == ScoringType.meadow && _has(Expansion.bridgesCastlesBazaars)
+        ? _castles
+        : 0,
+    vineyards: _type == ScoringType.cloister && _has(Expansion.hillsSheep)
+        ? _vineyards
+        : 0,
     completed: _completed,
     bonus: _bonus,
+    circusTiles: _ringmasterActive ? _circusTiles : 0,
   );
 
-  void _onKeyTap(String key) {
-    int update(int value) => switch (key) {
-      'C' => 0,
-      '<' => value ~/ 10,
-      _ => math.min(value * 10 + int.parse(key), 999),
-    };
+  void _onKey(String key) {
     setState(() {
-      if (_active == _Field.banners) {
-        _banners = update(_banners);
+      if (_active == _Field.banners && _type == ScoringType.city) {
+        _banners = applyKey(_banners, key);
       } else {
-        _tiles = update(_tiles);
+        _tiles = applyKey(_tiles, key, max: _tilesMax);
       }
     });
+  }
+
+  String _label(int points, Map<Goods, int> goods) {
+    final parts = <String>[];
+    if (points != 0) parts.add('+$points');
+    for (final e in goods.entries) {
+      parts.add('${e.key.displayName} ×${e.value}');
+    }
+    return '${widget.player.name}: ${_type.displayName} ${parts.join(', ')}';
+  }
+
+  void _confirm() {
+    final points = _points;
+    final goods = _goodsToAdd;
+    final changes = <ScoreChange>[];
+    if (goods.isNotEmpty && _goodsRecipient != widget.player) {
+      // Surowce dostaje gracz, który domknął miasto, a punkty – punktujący.
+      if (points != 0) changes.add(ScoreChange(widget.player, points));
+      changes.add(ScoreChange(_goodsRecipient, 0, goods: goods));
+    } else {
+      changes.add(ScoreChange(widget.player, points, goods: goods));
+    }
+    Navigator.pop(context, ScoreEvent(_label(points, goods), changes));
   }
 
   @override
   Widget build(BuildContext context) {
     final color = widget.player.color;
     final points = _points;
+    final canConfirm = points > 0 || _goodsToAdd.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.player.name} — ${widget.type.displayName}'),
+        title: Text('${widget.player.name} — ${_type.displayName}'),
         backgroundColor: color.withValues(alpha: 0.2),
       ),
       body: Container(
@@ -75,21 +160,24 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           child: Column(
             children: [
               ..._buildInputs(),
-              const SizedBox(height: 20),
-              Text(
-                'Wynik: $points pkt',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              if (_showGoods) ..._buildGoods(),
+              if (_showRingmaster) ..._buildRingmaster(),
+              const SizedBox(height: 12),
+              if (_type != ScoringType.goods)
+                Text(
+                  'Wynik: $points pkt',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              _buildKeyboard(),
+              if (_usesKeypad) ...[
+                const SizedBox(height: 16),
+                NumberKeypad(onKey: _onKey),
+              ],
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: points > 0
-                    ? () => Navigator.pop(context, points)
-                    : null,
+                onPressed: canConfirm ? _confirm : null,
                 child: const Text('Zatwierdź'),
               ),
             ],
@@ -99,8 +187,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     );
   }
 
+  // ------------------------------------------------------------ sekcje
+
   List<Widget> _buildInputs() {
-    switch (widget.type) {
+    switch (_type) {
       case ScoringType.city:
         return [
           _valueBoxes([
@@ -114,6 +204,12 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       case ScoringType.road:
         return [
           _valueBoxes([_valueBox('Płytki', _tiles, _Field.tiles)]),
+          if (_has(Expansion.bridgesCastlesBazaars))
+            _stepperRow(
+              'Płytki z mostem (tylko te, których nie wliczyłeś wyżej)',
+              _bridges,
+              (v) => _bridges = v,
+            ),
           _check('Karczma', _bonus, (v) => _bonus = v),
           // Bez karczmy ukończona i nieukończona droga liczą się tak samo.
           if (_bonus)
@@ -127,34 +223,157 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             !_completed,
             (v) => _completed = !v,
           ),
-          if (_completed)
+          if (_completed) ...[
             const Text(
               'Ukończony klasztor = 9 pkt',
               style: TextStyle(fontSize: 20),
-            )
-          else
+            ),
+            if (_has(Expansion.hillsSheep))
+              _stepperRow(
+                'Winnice wokół klasztoru (po $kVineyardPoints pkt)',
+                _vineyards,
+                (v) => _vineyards = v,
+                max: kMaxVineyards,
+              ),
+          ] else
             _valueBoxes([_valueBox('Płytki', _tiles, _Field.tiles)]),
         ];
 
       case ScoringType.meadow:
         return [
           _valueBoxes([_valueBox('Ukończone miasta', _tiles, _Field.tiles)]),
+          if (_has(Expansion.bridgesCastlesBazaars))
+            _stepperRow(
+              'Zamki przy polu (po 4 pkt, ze świnką po 5)',
+              _castles,
+              (v) => _castles = v,
+              max: 12,
+            ),
           _check('Świnka', _bonus, (v) => _bonus = v),
         ];
 
       case ScoringType.fairy:
-      case ScoringType.sheep:
         return [
           _valueBoxes([_valueBox('Punkty', _tiles, _Field.tiles)]),
         ];
+
+      case ScoringType.castle:
+        return [
+          _valueBoxes([
+            _valueBox('Punkty ukończonej budowli', _tiles, _Field.tiles),
+          ]),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              'Zamek punktuje raz – przy pierwszej ukończonej budowli '
+              'sąsiadującej z zamkiem (dwie płytki zamku oraz po dwie '
+              'płytki z lewej i z prawej). Wpisz tyle punktów, ile dostała '
+              'ta budowla; potem zdejmij ludka z zamku. Zamek na końcu gry '
+              'nie daje punktów.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ];
+
+      case ScoringType.ringmaster:
+        return [
+          _ringmasterTiles(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              'Dyrektor punktuje zawsze, także gdy nie masz większości '
+              'w budowli, oraz na koniec gry na polu lub w nieukończonej '
+              'budowli.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ];
+
+      case ScoringType.goods:
+      case ScoringType.sheep:
+      case ScoringType.bazaar:
+      case ScoringType.circus:
+      case ScoringType.pyramid:
+        // Te typy mają osobne ekrany lub (surowce) tylko sekcję surowców.
+        return const [];
     }
   }
+
+  List<Widget> _buildGoods() {
+    final isCity = _type == ScoringType.city;
+    return [
+      const SizedBox(height: 8),
+      Text(
+        isCity
+            ? 'Surowce w mieście (za ukończone miasto)'
+            : 'Surowce do dopisania',
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      GoodsCounters(
+        values: _goods,
+        maxFor: (g) => goodsRemaining(g, widget.players),
+        onChanged: (g, v) => setState(() => _goods[g] = v),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        isCity
+            ? 'Surowce dostaje gracz, który domknął miasto – '
+                  'nawet bez ludka w mieście:'
+            : 'Surowce dla:',
+      ),
+      const SizedBox(height: 4),
+      PlayerPicker(
+        players: widget.players,
+        selected: _goodsRecipient,
+        onSelected: (p) => setState(() => _goodsRecipient = p),
+      ),
+    ];
+  }
+
+  List<Widget> _buildRingmaster() {
+    return [
+      _check('Dyrektor cyrku', _ringmaster, (v) => _ringmaster = v),
+      if (_ringmaster) _ringmasterTiles(),
+    ];
+  }
+
+  Widget _ringmasterTiles() {
+    return _stepperRow(
+      'Płytki cyrku i akrobatów pod i wokół dyrektora (po 2 pkt)',
+      _circusTiles,
+      (v) => _circusTiles = v,
+      max: kMaxRingmasterTiles,
+    );
+  }
+
+  // ----------------------------------------------------------- widgety
 
   Widget _check(String title, bool value, ValueChanged<bool> onChanged) {
     return CheckboxListTile(
       title: Text(title),
       value: value,
       onChanged: (v) => setState(() => onChanged(v ?? false)),
+    );
+  }
+
+  Widget _stepperRow(
+    String label,
+    int value,
+    ValueChanged<int> onChanged, {
+    int max = 99,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: [
+          Expanded(child: Text(label)),
+          CounterStepper(
+            value: value,
+            max: max,
+            onChanged: (v) => setState(() => onChanged(v)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -179,7 +398,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       onTap: () => setState(() => _active = field),
       child: Column(
         children: [
-          Text(label),
+          Text(label, textAlign: TextAlign.center),
           const SizedBox(height: 8),
           Container(
             width: 100,
@@ -197,34 +416,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildKeyboard() {
-    return Column(
-      children: [
-        for (final row in _keys)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              for (final key in row)
-                Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: ElevatedButton(
-                    onPressed: () => _onKeyTap(key),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 16,
-                        horizontal: 20,
-                      ),
-                      textStyle: const TextStyle(fontSize: 18),
-                    ),
-                    child: Text(key),
-                  ),
-                ),
-            ],
-          ),
-      ],
     );
   }
 }
