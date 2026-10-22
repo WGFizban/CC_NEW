@@ -4,18 +4,20 @@ import '../models/goods.dart';
 import '../models/player.dart';
 import '../models/standings.dart';
 import 'counter_stepper.dart';
+import 'game_icon.dart';
 
 extension GoodsStyle on Goods {
-  IconData get icon => switch (this) {
-    Goods.wine => Icons.wine_bar,
-    Goods.grain => Icons.grass,
-    Goods.cloth => Icons.checkroom,
+  /// Ikona z jednolitego zestawu gry.
+  String get iconAsset => switch (this) {
+    Goods.wine => 'assets/icons/game/wine.svg',
+    Goods.grain => 'assets/icons/game/grain.svg',
+    Goods.cloth => 'assets/icons/game/cloth.svg',
   };
 
   Color get color => switch (this) {
-    Goods.wine => const Color(0xFF8E24AA),
-    Goods.grain => const Color(0xFFF9A825),
-    Goods.cloth => const Color(0xFF1E88E5),
+    Goods.wine => const Color(0xFF7B3FA0),
+    Goods.grain => const Color(0xFFD99A1E),
+    Goods.cloth => const Color(0xFFD6456B),
   };
 }
 
@@ -43,7 +45,7 @@ class GoodsCounters extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: Row(
               children: [
-                Icon(g.icon, color: g.color),
+                GameIcon(g.iconAsset, size: 36),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -122,58 +124,12 @@ class _GoodsBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(goods.icon, size: 16, color: goods.color),
+          GameIcon(goods.iconAsset, size: 20),
           const SizedBox(width: 4),
           Text(
             leading ? '$count · +$kGoodsBonus' : '$count',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Tabela prowadzących w każdym surowcu (z remisami), liczona na bieżąco.
-class GoodsLeaderboard extends StatelessWidget {
-  final List<Player> players;
-
-  const GoodsLeaderboard({super.key, required this.players});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final g in Goods.values) _row(g),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _row(Goods g) {
-    final leaders = goodsLeaders(g, players);
-    final String text;
-    if (leaders.isEmpty) {
-      text = '${g.displayName}: nikt jeszcze nie zbiera';
-    } else {
-      final names = leaders.map((p) => p.name).join(', ');
-      final tie = leaders.length > 1 ? ' (remis – każdy +$kGoodsBonus)' : '';
-      text =
-          '${g.displayName}: ${leaders.first.goodsOf(g)} szt. – $names$tie';
-    }
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          Icon(g.icon, size: 18, color: g.color),
-          const SizedBox(width: 8),
-          Expanded(child: Text(text)),
         ],
       ),
     );

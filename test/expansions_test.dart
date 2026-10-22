@@ -1,15 +1,18 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cc_new/models/circus.dart';
 import 'package:cc_new/models/expansion.dart';
+import 'package:cc_new/models/fairy.dart';
 import 'package:cc_new/models/goods.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/score_event.dart';
 import 'package:cc_new/models/scoring.dart';
 import 'package:cc_new/models/sheep.dart';
 import 'package:cc_new/models/standings.dart';
+import 'package:cc_new/services/settings_storage.dart';
 
 Player _player(String name, {int points = 0, Map<Goods, int>? goods}) =>
     Player(name: name, color: const Color(0xFF000000), points: points, goods: goods);
@@ -293,15 +296,146 @@ void main() {
     });
   });
 
+  group('wróżka (Księżniczka i smok)', () {
+    test('samo kliknięcie wróżki daje 1 pkt', () {
+      expect(kFairyTurnPoints, 1);
+      expect(calculatePoints(ScoringType.fairy), 1);
+      expect(calculatePoints(ScoringType.fairy, tiles: 9), 1);
+    });
+
+    test('ukończone miasto z wróżką: +3 pkt do zwykłej punktacji', () {
+      expect(
+        calculatePoints(ScoringType.city, tiles: 4, banners: 1),
+        10,
+      );
+      expect(
+        calculatePoints(
+          ScoringType.city,
+          tiles: 4,
+          banners: 1,
+          withFairy: true,
+        ),
+        13,
+      );
+    });
+
+    test('wróżka daje 3 pkt także bez zwykłych punktów', () {
+      // Nieukończone miasto z katedrą = 0 pkt, ale wróżka nadal punktuje.
+      expect(
+        calculatePoints(
+          ScoringType.city,
+          tiles: 4,
+          completed: false,
+          bonus: true,
+          withFairy: true,
+        ),
+        kFairyFeaturePoints,
+      );
+    });
+
+    test('wróżka działa przy drodze, klasztorze i polu', () {
+      expect(calculatePoints(ScoringType.road, tiles: 5, withFairy: true), 8);
+      expect(calculatePoints(ScoringType.cloister, withFairy: true), 12);
+      expect(
+        calculatePoints(ScoringType.meadow, tiles: 2, withFairy: true),
+        9,
+      );
+    });
+
+    test('wróżka nie dodaje punktów do zamku ani owiec', () {
+      expect(
+        calculatePoints(ScoringType.castle, tiles: 6, withFairy: true),
+        6,
+      );
+      expect(
+        calculatePoints(ScoringType.sheep, tiles: 5, withFairy: true),
+        5,
+      );
+    });
+
+    test('wróżka łączy się z dyrektorem cyrku', () {
+      expect(
+        calculatePoints(
+          ScoringType.road,
+          tiles: 5,
+          circusTiles: 4,
+          withFairy: true,
+        ),
+        16,
+      );
+    });
+  });
+
+  group('ustawienia', () {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    test('domyślnie ekran nie jest wygaszany i wszystkie dodatki są włączone',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+
+      final settings = await SettingsStorage().load();
+
+      expect(settings.keepScreenOn, isTrue);
+      expect(settings.expansions, Expansion.values.toSet());
+    });
+
+    test('ustawienie nie wygaszania ekranu jest zapamiętywane', () async {
+      SharedPreferences.setMockInitialValues({});
+      final storage = SettingsStorage();
+
+      await storage.save(GameSettings(keepScreenOn: false));
+      final restored = await storage.load();
+
+      expect(restored.keepScreenOn, isFalse);
+    });
+
+    test('po aktualizacji nowy dodatek Księżniczka i smok jest włączony',
+        () async {
+      // Zapis sprzed wprowadzenia dodatku: wybrany tylko cyrk.
+      SharedPreferences.setMockInitialValues({
+        'expansions': ['circus'],
+      });
+
+      final settings = await SettingsStorage().load();
+
+      expect(
+        settings.expansions,
+        {Expansion.circus, Expansion.princessDragon},
+      );
+    });
+
+    test('świadomie wyłączony dodatek pozostaje wyłączony', () async {
+      SharedPreferences.setMockInitialValues({});
+      final storage = SettingsStorage();
+
+      await storage.save(
+        GameSettings(expansions: {Expansion.circus}),
+      );
+      final restored = await storage.load();
+
+      expect(restored.expansions, {Expansion.circus});
+    });
+  });
+
   group('dostępne typy punktacji', () {
-    test('bez dodatków: gra podstawowa i wróżka', () {
+    test('bez dodatków: tylko gra podstawowa', () {
       expect(ScoringType.availableFor({}), [
         ScoringType.city,
         ScoringType.road,
         ScoringType.cloister,
         ScoringType.meadow,
-        ScoringType.fairy,
       ]);
+    });
+
+    test('wróżka należy do dodatku Księżniczka i smok', () {
+      expect(
+        ScoringType.availableFor({Expansion.princessDragon}),
+        contains(ScoringType.fairy),
+      );
+      expect(
+        ScoringType.availableFor({Expansion.circus}),
+        isNot(contains(ScoringType.fairy)),
+      );
     });
 
     test('cyrk dodaje cyrk, akrobatów i dyrektora', () {

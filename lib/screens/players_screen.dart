@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../models/circus.dart';
 import '../models/expansion.dart';
+import '../models/fairy.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
@@ -17,15 +19,15 @@ import '../widgets/player_dialog.dart';
 import 'add_points_screen.dart';
 import 'bazaar_screen.dart';
 import 'circus_screen.dart';
-import 'expansions_screen.dart';
 import 'flock_screen.dart';
 import 'pyramid_screen.dart';
 import 'select_points_type_screen.dart';
+import 'settings_screen.dart';
 
 enum _MenuAction {
   undo,
   reset,
-  expansions,
+  settings,
   startTimer,
   stopTimer,
   resetTimer,
@@ -69,6 +71,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   @override
   void dispose() {
     _ticker?.cancel();
+    unawaited(WakelockPlus.disable().catchError((Object _) {}));
     super.dispose();
   }
 
@@ -85,6 +88,16 @@ class _PlayersScreenState extends State<PlayersScreen> {
         ..addAll(loaded);
       _sortPlayers();
     });
+    _applyWakelock();
+  }
+
+  /// Włącza lub wyłącza blokadę wygaszania ekranu zgodnie z ustawieniem.
+  void _applyWakelock() {
+    unawaited(
+      WakelockPlus.toggle(
+        enable: _settings.keepScreenOn,
+      ).catchError((Object _) {}),
+    );
   }
 
   void _save() => unawaited(_storage.save(_players));
@@ -215,6 +228,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
     );
     if (type == null || !mounted) return;
 
+    if (type == ScoringType.fairy) {
+      _scoreFairy(player);
+      return;
+    }
+
     final event = await Navigator.push<ScoreEvent>(
       context,
       MaterialPageRoute(builder: (_) => _scoringScreen(player, type)),
@@ -222,6 +240,31 @@ class _PlayersScreenState extends State<PlayersScreen> {
     if (event == null || !mounted) return;
 
     _applyEvent(event);
+  }
+
+  /// Wróżka przy ludku gracza daje 1 pkt na początku jego tury, więc
+  /// dopisujemy go od razu, bez osobnego ekranu. Można go cofnąć z paska.
+  void _scoreFairy(Player player) {
+    final event = ScoreEvent('${player.name}: Wróżka +$kFairyTurnPoints', [
+      ScoreChange(player, kFairyTurnPoints),
+    ]);
+    _applyEvent(event);
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text('Wróżka: ${player.name} +$kFairyTurnPoints pkt'),
+          action: SnackBarAction(
+            label: 'Cofnij',
+            onPressed: () {
+              // Cofamy tylko, jeśli to nadal ostatnie zdarzenie.
+              if (_history.isNotEmpty && identical(_history.last, event)) {
+                _undo();
+              }
+            },
+          ),
+        ),
+      );
   }
 
   Widget _scoringScreen(Player player, ScoringType type) {
@@ -245,6 +288,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   void _applyEvent(ScoreEvent event) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     setState(() {
       event.apply();
       _history.add(event);
@@ -301,18 +345,21 @@ class _PlayersScreenState extends State<PlayersScreen> {
     _saveSettings();
   }
 
-  Future<void> _openExpansions() async {
+  Future<void> _openSettings() async {
     await Navigator.push<void>(
       context,
       MaterialPageRoute(
-        builder: (_) => ExpansionsScreen(
-          initial: _settings.expansions,
-          onChanged: (enabled) {
+        builder: (_) => SettingsScreen(
+          expansions: _settings.expansions,
+          keepScreenOn: _settings.keepScreenOn,
+          onChanged: (enabled, keepScreenOn) {
             setState(() {
               _settings.expansions
                 ..clear()
                 ..addAll(enabled);
+              _settings.keepScreenOn = keepScreenOn;
             });
+            _applyWakelock();
             _saveSettings();
           },
         ),
@@ -326,8 +373,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
         _undo();
       case _MenuAction.reset:
         _onReset();
-      case _MenuAction.expansions:
-        _openExpansions();
+      case _MenuAction.settings:
+        _openSettings();
       case _MenuAction.startTimer:
         _startTimer();
       case _MenuAction.stopTimer:
@@ -354,8 +401,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
         child: Text('Resetuj punkty'),
       ),
       const PopupMenuItem(
-        value: _MenuAction.expansions,
-        child: Text('Dodatki…'),
+        value: _MenuAction.settings,
+        child: Text('Ustawienia…'),
       ),
       const PopupMenuDivider(),
       PopupMenuItem(
@@ -380,8 +427,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
   Widget build(BuildContext context) {
     final showTimer =
         _stopwatch.isRunning || _stopwatch.elapsed > Duration.zero;
-    final showGoods =
-        _has(Expansion.tradersBuilders) && _players.any((p) => p.goodsTotal > 0);
 
     return Scaffold(
       appBar: AppBar(
@@ -411,7 +456,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 ),
               ),
             ),
-          if (showGoods) GoodsLeaderboard(players: _players),
           Expanded(
             child: _players.isEmpty
                 ? const Center(

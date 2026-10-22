@@ -13,6 +13,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   shared_preferences: ^2.3.3
   flutter_colorpicker: ^1.0.3
+  wakelock_plus: ^1.2.8
 
 dev_dependencies:
   flutter_test:
@@ -26,13 +27,8 @@ flutter:
 
   assets:
     - assets/icons/
-    - assets/images/city.jpg
-    - assets/images/road.jpg
-    - assets/images/meadow.jpg
-    - assets/images/cloister.jpg
+    - assets/icons/game/
     - assets/images/bgc.jpg
-    - assets/images/fairy.png
-    - assets/images/sheeps.jpg
 
 flutter_launcher_icons:
   android: true

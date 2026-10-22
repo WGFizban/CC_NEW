@@ -6,14 +6,20 @@ z obsługą wybranych dodatków.
 ## Funkcje
 
 - lista graczy z pionkami w wybranych kolorach, posortowana wg wyniku na bieżąco,
-- punkty za miasto, drogę, klasztor, pola i wróżkę (z katedrą, karczmą, świnką
+- punkty za miasto, drogę, klasztor i pola (z katedrą, karczmą, świnką
   oraz obiektami nieukończonymi),
+- zatwierdzanie punktów dużą fajką w prawym górnym rogu ekranu punktacji,
+- małe podpowiedzi „?" zamiast długich opisów (dotknięcie na telefonie,
+  najechanie myszą na komputerze),
 - cofanie ostatniego zatwierdzenia (także tych dotyczących wielu graczy),
 - stoper czasu gry,
-- zapis graczy, punktów, surowców i ustawień w pamięci urządzenia.
+- zapis graczy, punktów, surowców i ustawień w pamięci urządzenia,
+- ustawienia: nie wygaszaj ekranu podczas gry (domyślnie włączone)
+  i wybór dodatków,
+- jeden spójny zestaw ikon (`assets/icons/game/`).
 
 Kliknięcie gracza otwiera wybór rodzaju punktacji, a przytrzymanie – edycję
-lub usunięcie. Dodatki włączasz w menu (**Dodatki…**); domyślnie są włączone
+lub usunięcie. Dodatki włączasz w menu (**Ustawienia…**); domyślnie są włączone
 wszystkie.
 
 ## Obsługiwane dodatki
@@ -26,8 +32,17 @@ wszystkie.
 - **Premia 10 pkt** dla prowadzącego w każdym rodzaju surowca liczona na
   bieżąco: przy remisie każdy z remisujących dostaje pełne 10, a przy zerze
   nikt. Wynik na liście to punkty z planszy + premia (np. `35 + 10`),
-  a nad listą jest tabela prowadzących.
+  a prowadzący w danym surowcu jest wyróżniony na swojej karcie.
+- Sekcja surowców w punktacji miasta jest zwijana.
 - Świnka na polu: miasta po 4 pkt zamiast 3.
+
+### Księżniczka i smok
+- **Wróżka**: kafelek dopisuje graczowi od razu **1 pkt** (wróżka stoi przy
+  jego ludku na początku tury), z możliwością cofnięcia z paska u dołu.
+- **+3 pkt** za budowlę punktowaną z ludkiem przy wróżce to opcja
+  „Wróżka przy ludku" przy mieście, drodze, klasztorze i polu; dodaje się do
+  zwykłej punktacji, także gdy ta wynosi 0. Dotyczy też końca gry.
+- Dodatek można wyłączyć w ustawieniach, wtedy znika kafelek i opcja.
 
 ### Mosty, zamki i bazary
 - **Mosty** punktują jak płytki z drogą: płytkę z mostem liczysz raz, więc

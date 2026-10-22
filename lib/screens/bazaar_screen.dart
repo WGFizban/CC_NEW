@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../models/player.dart';
 import '../models/score_event.dart';
+import '../widgets/confirm_action.dart';
+import '../widgets/info_hint.dart';
 import '../widgets/number_keypad.dart';
 import '../widgets/player_picker.dart';
 
@@ -72,7 +74,10 @@ class _BazaarScreenState extends State<BazaarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Bazar – licytacja')),
+      appBar: AppBar(
+        title: const Text('Bazar – licytacja'),
+        actions: [ConfirmAction(onPressed: _canConfirm ? _confirm : null)],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -90,6 +95,15 @@ class _BazaarScreenState extends State<BazaarScreen> {
             }),
           ),
           const SizedBox(height: 16),
+          const LabelWithHint(
+            'Jak rozliczono licytację?',
+            'Kupuje: wybierający płaci najwyżej licytującemu. '
+                'Sprzedaje: najwyżej licytujący płaci wybierającemu. '
+                'Jedyny: licytował tylko wybierający – płaci, a nikt nie '
+                'zyskuje. Wynik może spaść poniżej zera.',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
           SegmentedButton<_Deal>(
             segments: const [
               ButtonSegment(value: _Deal.buy, label: Text('Kupuje')),
@@ -126,11 +140,6 @@ class _BazaarScreenState extends State<BazaarScreen> {
           NumberKeypad(
             onKey: (key) =>
                 setState(() => _price = applyKey(_price, key, max: 9999)),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _canConfirm ? _confirm : null,
-            child: const Text('Zatwierdź'),
           ),
         ],
       ),

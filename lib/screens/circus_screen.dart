@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/circus.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
+import '../widgets/confirm_action.dart';
+import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
 
 /// Punktowanie cyrku: po wyłożeniu płytki cyrku odkrywasz żeton zwierzęcia
@@ -61,7 +63,12 @@ class _CircusScreenState extends State<CircusScreen> {
     final allUsed = CircusAnimal.values.every((a) => _remaining(a) <= 0);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Punktacja cyrku')),
+      appBar: AppBar(
+        title: const Text('Punktacja cyrku'),
+        actions: [
+          ConfirmAction(onPressed: animal == null ? null : _confirm),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -96,17 +103,13 @@ class _CircusScreenState extends State<CircusScreen> {
               ),
             ),
           const SizedBox(height: 16),
-          const Text(
+          const LabelWithHint(
             '2. Ile ludków ma każdy gracz na płytce cyrku i ośmiu '
             'sąsiednich?',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
             'Liczą się zwykłe ludki, duże ludki, opaci, wozy, burmistrzowie '
-            'i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, '
-            'pasterze ani stodoły.',
-            style: Theme.of(context).textTheme.bodySmall,
+                'i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, '
+                'pasterze ani stodoły. Punktujące ludki zostają na planszy.',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           for (final p in widget.players)
@@ -117,11 +120,6 @@ class _CircusScreenState extends State<CircusScreen> {
               caption: animal == null ? null : '= ${_pointsOf(p)} pkt',
               onChanged: (v) => setState(() => _meeples[p] = v),
             ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: animal == null ? null : _confirm,
-            child: const Text('Zatwierdź'),
-          ),
         ],
       ),
     );
