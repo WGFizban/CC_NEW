@@ -1,57 +1,68 @@
-import 'package:flutter/material.dart';
-
 import 'circus.dart';
 import 'expansion.dart';
+import 'fairy.dart';
 import 'sheep.dart';
 
 /// Rodzaje punktacji dostępne w aplikacji. Typy z dodatków pojawiają się
 /// tylko wtedy, gdy dany dodatek jest włączony.
+///
+/// Wszystkie ikony pochodzą z jednego zestawu w `assets/icons/game/`.
 enum ScoringType {
-  city('Miasto', Icons.location_city, imagePath: 'assets/images/city.jpg'),
-  road('Droga', Icons.route, imagePath: 'assets/images/road.jpg'),
-  cloister('Klasztor', Icons.church, imagePath: 'assets/images/cloister.jpg'),
-  meadow('Pola', Icons.grass, imagePath: 'assets/images/meadow.jpg'),
-  fairy('Wróżka', Icons.auto_awesome, imagePath: 'assets/images/fairy.png'),
+  city('Miasto', 'assets/icons/game/city.svg'),
+  road('Droga', 'assets/icons/game/road.svg'),
+  cloister('Klasztor', 'assets/icons/game/cloister.svg'),
+  meadow('Pola', 'assets/icons/game/meadow.svg'),
+  fairy(
+    'Wróżka',
+    'assets/icons/game/fairy.svg',
+    expansion: Expansion.princessDragon,
+  ),
   sheep(
     'Owce',
-    Icons.pets,
-    imagePath: 'assets/images/sheeps.jpg',
+    'assets/icons/game/sheep.svg',
     expansion: Expansion.hillsSheep,
   ),
   goods(
     'Surowce',
-    Icons.inventory_2,
+    'assets/icons/game/goods.svg',
     expansion: Expansion.tradersBuilders,
   ),
   castle(
     'Zamek',
-    Icons.castle,
+    'assets/icons/game/castle.svg',
     expansion: Expansion.bridgesCastlesBazaars,
   ),
   bazaar(
     'Bazar',
-    Icons.gavel,
+    'assets/icons/game/bazaar.svg',
     expansion: Expansion.bridgesCastlesBazaars,
   ),
-  circus('Cyrk', Icons.festival, expansion: Expansion.circus),
-  pyramid('Akrobaci', Icons.change_history, expansion: Expansion.circus),
-  ringmaster('Dyrektor cyrku', Icons.star, expansion: Expansion.circus);
+  circus('Cyrk', 'assets/icons/game/circus.svg', expansion: Expansion.circus),
+  pyramid(
+    'Akrobaci',
+    'assets/icons/game/acrobats.svg',
+    expansion: Expansion.circus,
+  ),
+  ringmaster(
+    'Dyrektor cyrku',
+    'assets/icons/game/ringmaster.svg',
+    expansion: Expansion.circus,
+  );
 
-  const ScoringType(
-    this.displayName,
-    this.icon, {
-    this.imagePath,
-    this.expansion,
-  });
+  const ScoringType(this.displayName, this.iconAsset, {this.expansion});
 
   final String displayName;
-  final IconData icon;
 
-  /// Zdjęcie na kafelku; typy bez zdjęcia pokazują [icon].
-  final String? imagePath;
+  /// Ikona SVG z jednolitego zestawu gry.
+  final String iconAsset;
 
   /// Dodatek wymagany do tego typu punktacji (`null` = gra podstawowa).
   final Expansion? expansion;
+
+  /// Budowle punktowane według zasad (do nich można dodać wróżkę
+  /// i dyrektora cyrku).
+  bool get isFeature =>
+      this == city || this == road || this == cloister || this == meadow;
 
   static List<ScoringType> availableFor(Set<Expansion> enabled) => [
     for (final t in values)
@@ -61,8 +72,8 @@ enum ScoringType {
 
 /// Liczy punkty za pojedynczy obiekt.
 ///
-/// - [tiles] – liczba płytek (pola: liczba ukończonych miast; wróżka:
-///   wpisane punkty; zamek: punkty ukończonej sąsiedniej budowli),
+/// - [tiles] – liczba płytek (pola: liczba ukończonych miast; zamek: punkty
+///   ukończonej sąsiedniej budowli; owce: wpisane punkty),
 /// - [banners] – sztandary (tylko miasto),
 /// - [bridges] – płytki z mostem, których nie ma jeszcze w [tiles]
 ///   (most punktuje jak płytka z drogą, ale płytka liczy się tylko raz),
@@ -71,10 +82,14 @@ enum ScoringType {
 /// - [completed] – czy miasto/droga/klasztor jest ukończony,
 /// - [bonus] – katedra (miasto), karczma (droga) lub świnka (pola),
 /// - [circusTiles] – płytki cyrku i akrobatów wokół dyrektora cyrku
-///   (po 2 pkt, doliczane do dowolnej punktacji z jego udziałem).
+///   (po 2 pkt, doliczane do dowolnej punktacji z jego udziałem),
+/// - [withFairy] – wróżka stoi przy ludku w tej budowli: +3 pkt
+///   niezależnie od reszty (tylko miasto, droga, klasztor i pole).
+///
+/// Wróżka sama w sobie ([ScoringType.fairy]) to zawsze 1 pkt.
 int calculatePoints(
   ScoringType type, {
-  required int tiles,
+  int tiles = 0,
   int banners = 0,
   int bridges = 0,
   int castles = 0,
@@ -82,6 +97,7 @@ int calculatePoints(
   bool completed = true,
   bool bonus = false,
   int circusTiles = 0,
+  bool withFairy = false,
 }) {
   final int base;
   switch (type) {
@@ -113,6 +129,8 @@ int calculatePoints(
       base = tiles * (bonus ? 4 : 3) + castles * (bonus ? 5 : 4);
 
     case ScoringType.fairy:
+      return kFairyTurnPoints;
+
     case ScoringType.sheep:
     case ScoringType.castle:
       base = tiles;
@@ -124,5 +142,6 @@ int calculatePoints(
     case ScoringType.ringmaster:
       base = 0;
   }
-  return base + ringmasterPoints(circusTiles);
+  final fairy = withFairy && type.isFeature ? kFairyFeaturePoints : 0;
+  return base + ringmasterPoints(circusTiles) + fairy;
 }

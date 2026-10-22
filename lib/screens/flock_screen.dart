@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/sheep.dart';
+import '../widgets/confirm_action.dart';
 import '../widgets/counter_stepper.dart';
+import '../widgets/info_hint.dart';
 import '../widgets/meeple_icon.dart';
 
 /// Punktowanie stada z dodatku „Wzgórza i owce".
@@ -55,12 +57,21 @@ class _FlockScreenState extends State<FlockScreen> {
       appBar: AppBar(
         title: Text('${widget.player.name} — Owce'),
         backgroundColor: widget.player.color.withValues(alpha: 0.2),
+        actions: [
+          ConfirmAction(
+            onPressed: sheep > 0 && _shepherds.isNotEmpty ? _confirm : null,
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text(
+          const LabelWithHint(
             'Z ilu żetonów składa się stado?',
+            'Liczbę żetonów każdego rodzaju ogranicza ich liczba w grze '
+                '(4×1, 5×2, 5×3, 2×4), więc stado ma najwyżej $kMaxSheep owiec. '
+                'Wilk rozpędza stado – wtedy nie dopisuj punktów. '
+                'Owce na koniec gry nie punktują.',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -101,8 +112,9 @@ class _FlockScreenState extends State<FlockScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Pasterze w tym polu (każdy dostaje punkty za całe stado):',
+          const LabelWithHint(
+            'Pasterze w tym polu',
+            'Każdy pasterz w tym polu dostaje punkty za całe stado.',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -124,17 +136,6 @@ class _FlockScreenState extends State<FlockScreen> {
                   }),
                 ),
             ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Wilk rozpędza stado – wtedy nie dopisuj punktów. '
-            'Owce na koniec gry nie punktują.',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: sheep > 0 && _shepherds.isNotEmpty ? _confirm : null,
-            child: const Text('Zatwierdź'),
           ),
         ],
       ),

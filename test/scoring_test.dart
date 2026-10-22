@@ -86,8 +86,7 @@ void main() {
     });
   });
 
-  test('wróżka i owce zwracają wpisaną liczbę punktów', () {
-    expect(calculatePoints(ScoringType.fairy, tiles: 3), 3);
+  test('owce zwracają wpisaną liczbę punktów', () {
     expect(calculatePoints(ScoringType.sheep, tiles: 7), 7);
   });
 }

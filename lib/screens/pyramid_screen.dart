@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../models/circus.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
+import '../widgets/confirm_action.dart';
+import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
 import '../widgets/pyramid_view.dart';
 
@@ -88,7 +90,10 @@ class _PyramidScreenState extends State<PyramidScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Akrobaci')),
+      appBar: AppBar(
+        title: const Text('Akrobaci'),
+        actions: [ConfirmAction(onPressed: _canConfirm ? _confirm : null)],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -107,14 +112,17 @@ class _PyramidScreenState extends State<PyramidScreen> {
             onSelectionChanged: (s) => _setMode(s.first),
           ),
           const SizedBox(height: 12),
-          Text(
+          LabelWithHint(
             _isCompleted
-                ? 'Wskaż, czyje są trzy ludki w piramidzie. Każdy akrobata '
-                      'daje właścicielowi $kAcrobatPoints pkt i wraca do '
-                      'puli. Możesz podliczyć piramidę, nawet jeśli nie '
-                      'masz w niej akrobaty.'
+                ? 'Czyje są trzy ludki w piramidzie?'
+                : 'Ilu akrobatów ma każdy gracz?',
+            _isCompleted
+                ? 'Każdy akrobata w ukończonej piramidzie daje właścicielowi '
+                      '$kAcrobatPoints pkt i wraca do puli. Piramidę możesz '
+                      'podliczyć, nawet jeśli nie masz w niej akrobaty.'
                 : 'Na koniec gry każdy akrobata na planszy daje '
                       '$kAcrobatPoints pkt, także w niedokończonej piramidzie.',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           if (_isCompleted) ...[
             const SizedBox(height: 12),
@@ -137,11 +145,6 @@ class _PyramidScreenState extends State<PyramidScreen> {
                 textAlign: TextAlign.center,
               ),
             ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _canConfirm ? _confirm : null,
-            child: const Text('Zatwierdź'),
-          ),
         ],
       ),
     );

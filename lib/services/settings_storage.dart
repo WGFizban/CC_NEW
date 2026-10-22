@@ -13,9 +13,15 @@ class GameSettings {
   /// Ile żetonów zwierząt cyrku zostało już odkrytych i zużytych.
   final Map<CircusAnimal, int> usedAnimals;
 
-  GameSettings({Set<Expansion>? expansions, Map<CircusAnimal, int>? usedAnimals})
-    : expansions = expansions ?? Expansion.values.toSet(),
-      usedAnimals = usedAnimals ?? {};
+  /// Czy nie wygaszać ekranu, gdy aplikacja jest otwarta.
+  bool keepScreenOn;
+
+  GameSettings({
+    Set<Expansion>? expansions,
+    Map<CircusAnimal, int>? usedAnimals,
+    this.keepScreenOn = true,
+  }) : expansions = expansions ?? Expansion.values.toSet(),
+       usedAnimals = usedAnimals ?? {};
 
   /// Ile żetonów danego zwierzęcia zostało jeszcze w stosie.
   int remaining(CircusAnimal animal) =>
@@ -24,7 +30,16 @@ class GameSettings {
 
 class SettingsStorage {
   static const _expansionsKey = 'expansions';
+  static const _seenKey = 'expansions_seen';
   static const _usedAnimalsKey = 'circus_used';
+  static const _keepScreenOnKey = 'keep_screen_on';
+
+  /// Dodatki znane, zanim zaczęliśmy zapisywać listę „widzianych". Wróżka
+  /// była wtedy częścią gry podstawowej, więc po aktualizacji ma być włączona.
+  static final _legacyExpansions = {
+    for (final e in Expansion.values)
+      if (e != Expansion.princessDragon) e.name,
+  };
 
   Future<GameSettings> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -32,9 +47,12 @@ class SettingsStorage {
     Set<Expansion>? expansions;
     final names = prefs.getStringList(_expansionsKey);
     if (names != null) {
+      final seen = (prefs.getStringList(_seenKey) ?? _legacyExpansions.toList())
+          .toSet();
       expansions = {
         for (final e in Expansion.values)
-          if (names.contains(e.name)) e,
+          // Nowy dodatek, którego użytkownik jeszcze nie widział, jest włączony.
+          if (names.contains(e.name) || !seen.contains(e.name)) e,
       };
     }
 
@@ -52,7 +70,11 @@ class SettingsStorage {
       }
     }
 
-    return GameSettings(expansions: expansions, usedAnimals: used);
+    return GameSettings(
+      expansions: expansions,
+      usedAnimals: used,
+      keepScreenOn: prefs.getBool(_keepScreenOnKey) ?? true,
+    );
   }
 
   Future<void> save(GameSettings settings) async {
@@ -60,6 +82,10 @@ class SettingsStorage {
     await prefs.setStringList(_expansionsKey, [
       for (final e in settings.expansions) e.name,
     ]);
+    await prefs.setStringList(_seenKey, [
+      for (final e in Expansion.values) e.name,
+    ]);
+    await prefs.setBool(_keepScreenOnKey, settings.keepScreenOn);
     await prefs.setString(
       _usedAnimalsKey,
       json.encode({

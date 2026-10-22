@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/player.dart';
 import '../models/scoring.dart';
 import '../theme/app_colors.dart';
+import '../widgets/game_icon.dart';
 
 /// Wybór rodzaju punktacji. Zwraca wybrany [ScoringType] przez `Navigator.pop`.
 class SelectPointsTypeScreen extends StatelessWidget {
@@ -71,7 +72,6 @@ class _TypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePath = type.imagePath;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -86,19 +86,14 @@ class _TypeButton extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: imagePath != null
-                      ? Image.asset(
-                          imagePath,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                        )
-                      : Container(
-                          width: double.infinity,
-                          color: kBrandColor.withValues(alpha: 0.35),
-                          child: Icon(type.icon, size: 40),
-                        ),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: kBrandColor.withValues(alpha: 0.35),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: FittedBox(child: GameIcon(type.iconAsset, size: 64)),
                 ),
               ),
             ),
