@@ -1,26 +1,39 @@
 name: Release APK
 
+# Każdy merge do master (czyli push na master) buduje APK i publikuje wydanie
+# z kolejnym numerem wersji: v1, v2, v3 ... Numer jest liczony z istniejących
+# tagów vN, więc nie trzeba go nigdzie ręcznie podbijać.
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - master
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag wydania, np. v0.1.0'
-        required: true
 
 permissions:
   contents: write
+
+# Wydania idą po kolei, żeby dwa przebiegi nie wzięły tego samego numeru.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      TAG: ${{ github.event.inputs.tag || github.ref_name }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v5
+
+      - name: Wylicz numer wersji
+        run: |
+          # Tylko tagi w postaci vN (starsze, jak v1.0.4, są pomijane).
+          LAST=$(git ls-remote --tags --refs origin 'refs/tags/v*' \
+            | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+$' | sort -n | tail -n 1 || true)
+          VERSION=$(( ${LAST:-0} + 1 ))
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "TAG=v$VERSION" >> "$GITHUB_ENV"
+          echo "Wersja wydania: v$VERSION"
 
       - uses: actions/setup-java@v5
         with:
@@ -60,7 +73,8 @@ jobs:
       - name: Zbuduj APK
         run: |
           set -o pipefail
-          if ! flutter build apk --release 2>&1 | tee build.log; then
+          # Numer wersji (też jako kod wersji Androida) rośnie z każdym wydaniem.
+          if ! flutter build apk --release --build-name="$VERSION" --build-number="$VERSION" 2>&1 | tee build.log; then
             # Skrót błędu jako adnotacja, widoczna na stronie przebiegu bez otwierania logów.
             MSG=$(grep -E -A6 'What went wrong|FAILURE|error:|Error:|Exception' build.log | head -n 40 | tr '\n' '|' | cut -c1-3500)
             echo "::error title=Build APK failed::$MSG"

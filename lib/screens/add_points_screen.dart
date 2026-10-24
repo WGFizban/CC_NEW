@@ -63,6 +63,14 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool _scorerCastle = false;
   int _scorerCastles = 1;
 
+  /// Punktujący ma ludka w budowli i dodatkowo zamki przy niej: dostaje swoje
+  /// punkty plus punkty budowli za każdy zamek.
+  bool _scorerHasCastle = false;
+  int _scorerHasCastles = 1;
+
+  /// Klawiatura numeryczna jest wysuwana; zwija się na życzenie.
+  bool _keypadOpen = true;
+
   final Map<Goods, int> _goods = {for (final g in Goods.values) g: 0};
   late Player _goodsRecipient = widget.player;
 
@@ -85,6 +93,12 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       _has(Expansion.bridgesCastlesBazaars);
 
   bool get _castleMode => _castleOk && _scorerCastle;
+
+  /// Liczba zamków punktującego liczonych *oprócz* jego własnych punktów.
+  int get _scorerExtraCastles =>
+      _castleOk && !_scorerCastle && _scorerHasCastle ? _scorerHasCastles : 0;
+
+  bool get _keypadVisible => _usesKeypad && _keypadOpen;
 
   /// Wróżka i dyrektor cyrku są przy ludku, a właściciel zamku go nie ma.
   bool get _showRingmaster =>
@@ -137,6 +151,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       extras: _points - _basePoints,
       scorerAsCastle: _castleMode,
       scorerCastles: _scorerCastles,
+      scorerExtraCastles: _scorerExtraCastles,
       others: {
         for (final e in _shares.entries)
           e.key: _castleOk ? e.value : e.value.copyWith(castle: false),
@@ -191,6 +206,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     }
     final scorer = _castleMode
         ? '${widget.player.name} (zamek ×$_scorerCastles)'
+        : _scorerExtraCastles > 0
+        ? '${widget.player.name} (+ zamek ×$_scorerExtraCastles)'
         : widget.player.name;
     return [
       '$scorer: ${_type.displayName} ${parts.join(', ')}',
@@ -270,24 +287,29 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                 ),
               ),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    ..._buildInputs(),
-                    if (_castleOk) ..._buildCastleMode(),
-                    if (_showFairy) ..._buildFairy(),
-                    if (_showRingmaster) ..._buildRingmaster(),
-                    if (_showSharing) _buildSharing(),
-                    if (_showGoods) _buildGoods(),
-                    if (_usesKeypad) ...[
-                      const SizedBox(height: 16),
-                      NumberKeypad(onKey: _onKey),
+              // Stuknięcie w puste miejsce zwija klawiaturę. Kontrolki
+              // (pola, checkboxy) obsługują stuknięcie same i jej nie chowają.
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: _keypadVisible
+                    ? () => setState(() => _keypadOpen = false)
+                    : null,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      ..._buildInputs(),
+                      if (_castleOk) ..._buildCastleMode(),
+                      if (_showFairy) ..._buildFairy(),
+                      if (_showRingmaster) ..._buildRingmaster(),
+                      if (_showSharing) _buildSharing(),
+                      if (_showGoods) _buildGoods(),
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),
+            _buildKeypadPanel(),
           ],
         ),
       ),
@@ -295,6 +317,46 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   }
 
   // ------------------------------------------------------------ sekcje
+
+  /// Klawiatura przypięta do dołu ekranu. Wysuwa się po wejściu na ekran i po
+  /// stuknięciu w pole (płytki, sztandary); przycisk w prawym górnym rogu
+  /// panelu ją zwija.
+  Widget _buildKeypadPanel() {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+      alignment: Alignment.bottomCenter,
+      child: _keypadVisible
+          ? Material(
+              elevation: 8,
+              color: Theme.of(context).colorScheme.surfaceContainerHigh,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        tooltip: 'Zwiń klawiaturę',
+                        visualDensity: VisualDensity.compact,
+                        iconSize: 24,
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                        onPressed: () => setState(() => _keypadOpen = false),
+                      ),
+                    ),
+                    NumberKeypad(onKey: _onKey),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ),
+            )
+          : const SizedBox(width: double.infinity),
+    );
+  }
 
   List<Widget> _buildInputs() {
     switch (_type) {
@@ -458,7 +520,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         castleOk && e.value.castle
             ? '${e.key.name} (zamek ×${e.value.castles})'
             : e.key.name,
-      if (_castleMode) '${widget.player.name} (zamek ×$_scorerCastles)',
+      if (_castleMode)
+        '${widget.player.name} (punktujący, jako zamek ×$_scorerCastles)'
+      else if (_scorerExtraCastles > 0)
+        '${widget.player.name} (punktujący, ma zamek ×$_scorerExtraCastles)',
     ];
 
     return ExpansionTile(
@@ -476,33 +541,36 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             'punktującemu.'
             '${castleOk ? ' Dla gracza możesz wybrać „Zamek": dostaje wtedy '
                 'punkty budowli za każdy swój zamek przy niej, '
-                'a nie ze współdzielenia.' : ''}',
+                'a nie ze współdzielenia. Punktujący ma tu opcję „ma zamek": '
+                'dostaje swoje punkty i dodatkowo punkty za zamek '
+                '(punkty tylko jako zamek to pole „Punkty jako zamek").' : ''}',
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(chosen.isEmpty ? 'brak' : chosen.join(' · ')),
       children: [
-        if (castleOk) _scorerCastleRow(),
+        if (castleOk && !_scorerCastle) _scorerCastleRow(),
         for (final p in _otherPlayers) _shareRow(p),
         const SizedBox(height: 8),
       ],
     );
   }
 
-  /// Punktujący (ty) jako właściciel zamku – to samo co pole „Punkty jako zamek".
+  /// Punktujący ma ludka w budowli i dodatkowo zamek przy niej: dostaje swoje
+  /// punkty oraz punkty za zamek (inaczej niż „Punkty jako zamek").
   Widget _scorerCastleRow() {
     return Column(
       children: [
         CheckboxListTile(
           secondary: MeepleIcon(color: widget.player.color, size: 28),
-          title: Text('${widget.player.name} (punktujący): jako zamek'),
-          value: _scorerCastle,
-          onChanged: (v) => setState(() => _scorerCastle = v ?? false),
+          title: Text('${widget.player.name} (punktujący) ma zamek'),
+          value: _scorerHasCastle,
+          onChanged: (v) => setState(() => _scorerHasCastle = v ?? false),
         ),
-        if (_scorerCastle)
+        if (_scorerHasCastle)
           _stepperRow(
             'Liczba zamków',
-            _scorerCastles,
-            (v) => _scorerCastles = v,
+            _scorerHasCastles,
+            (v) => _scorerHasCastles = v,
             min: 1,
             max: kMaxCastlesPerFeature,
           ),
@@ -705,7 +773,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   Widget _valueBox(String label, int value, _Field field, {String? hint}) {
     final isActive = _active == field;
     return GestureDetector(
-      onTap: () => setState(() => _active = field),
+      onTap: () => setState(() {
+        _active = field;
+        _keypadOpen = true;
+      }),
       child: Column(
         children: [
           hint == null
