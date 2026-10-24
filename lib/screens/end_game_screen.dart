@@ -36,7 +36,8 @@ class EndGameScreen extends StatelessWidget {
       }
     }
     // Punkty bez wpisu w historii (np. po jej wyczyszczeniu).
-    final rest = p.points - result.values.fold(0, (a, b) => a + b);
+    final counted = result.values.fold<int>(0, (a, b) => a + b);
+    final rest = p.points - counted;
     if (rest != 0) result['Inne'] = (result['Inne'] ?? 0) + rest;
     return result;
   }
