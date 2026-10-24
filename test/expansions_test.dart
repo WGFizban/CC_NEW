@@ -7,11 +7,13 @@ import 'package:cc_new/models/circus.dart';
 import 'package:cc_new/models/expansion.dart';
 import 'package:cc_new/models/fairy.dart';
 import 'package:cc_new/models/goods.dart';
+import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/score_event.dart';
 import 'package:cc_new/models/scoring.dart';
 import 'package:cc_new/models/sheep.dart';
 import 'package:cc_new/models/standings.dart';
+import 'package:cc_new/services/history_storage.dart';
 import 'package:cc_new/services/settings_storage.dart';
 
 Player _player(String name, {int points = 0, Map<Goods, int>? goods}) =>
@@ -389,7 +391,8 @@ void main() {
       expect(restored.keepScreenOn, isFalse);
     });
 
-    test('po aktualizacji nowy dodatek Księżniczka i smok jest włączony',
+    test('po aktualizacji nowe dodatki (Księżniczka i smok, Karczmy i katedry) '
+        'są włączone',
         () async {
       // Zapis sprzed wprowadzenia dodatku: wybrany tylko cyrk.
       SharedPreferences.setMockInitialValues({
@@ -400,7 +403,11 @@ void main() {
 
       expect(
         settings.expansions,
-        {Expansion.circus, Expansion.princessDragon},
+        {
+          Expansion.circus,
+          Expansion.princessDragon,
+          Expansion.innsCathedrals,
+        },
       );
     });
 
@@ -414,6 +421,56 @@ void main() {
       final restored = await storage.load();
 
       expect(restored.expansions, {Expansion.circus});
+    });
+  });
+
+  group('historia punktów', () {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    test('wpis opisuje punkty i surowce każdego gracza', () {
+      final entry = HistoryEntry.fromEvent(
+        ScoreEvent('Miasto', [
+          ScoreChange(_player('Ala'), 12, goods: {Goods.wine: 1}),
+          ScoreChange(_player('Ola'), -3),
+        ]),
+        now: DateTime(2026, 10, 24, 14, 5),
+      );
+
+      expect(entry.label, 'Miasto');
+      expect(entry.lines, ['Ala: +12 pkt, Wino ×1', 'Ola: -3 pkt']);
+    });
+
+    test('historia przetrwa zapis i odczyt', () async {
+      SharedPreferences.setMockInitialValues({});
+      final storage = HistoryStorage();
+      final entry = HistoryEntry(
+        id: 1,
+        time: DateTime.fromMillisecondsSinceEpoch(1000),
+        label: 'Test',
+        lines: const ['Ala: +1 pkt'],
+      );
+
+      await storage.save([entry]);
+      final restored = await storage.load();
+
+      expect(restored, hasLength(1));
+      expect(restored.single.label, 'Test');
+      expect(restored.single.lines, ['Ala: +1 pkt']);
+      expect(restored.single.time, entry.time);
+    });
+
+    test('zapisujemy tylko ostatnie wpisy', () async {
+      SharedPreferences.setMockInitialValues({});
+      final storage = HistoryStorage();
+      await storage.save([
+        for (var i = 0; i < HistoryStorage.maxEntries + 5; i++)
+          HistoryEntry(id: i, time: DateTime(2026), label: '$i'),
+      ]);
+
+      final restored = await storage.load();
+
+      expect(restored, hasLength(HistoryStorage.maxEntries));
+      expect(restored.first.label, '5');
     });
   });
 

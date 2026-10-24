@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../models/expansion.dart';
+import '../models/history_entry.dart';
+import 'history_screen.dart';
 
 /// Ustawienia aplikacji: ekran i dodatki. Zmiany są zgłaszane od razu przez
 /// [onChanged], a ekran tylko pokazuje przełączniki.
@@ -9,11 +11,17 @@ class SettingsScreen extends StatefulWidget {
   final bool keepScreenOn;
   final void Function(Set<Expansion> expansions, bool keepScreenOn) onChanged;
 
+  /// Historia zatwierdzonych punktów i jej czyszczenie.
+  final List<HistoryEntry> history;
+  final VoidCallback onClearHistory;
+
   const SettingsScreen({
     super.key,
     required this.expansions,
     required this.keepScreenOn,
     required this.onChanged,
+    required this.history,
+    required this.onClearHistory,
   });
 
   @override
@@ -57,6 +65,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() => _keepScreenOn = on);
               _notify();
             },
+          ),
+          const Divider(),
+          _header('Historia'),
+          ListTile(
+            leading: const Icon(Icons.history),
+            title: const Text('Historia punktów'),
+            subtitle: const Text('Wszystkie zatwierdzone punkty, od najnowszych.'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => HistoryScreen(
+                  entries: widget.history,
+                  onClear: widget.onClearHistory,
+                ),
+              ),
+            ),
           ),
           const Divider(),
           _header('Dodatki'),

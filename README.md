@@ -8,14 +8,15 @@ z obsługą wybranych dodatków.
 - lista graczy z pionkami w wybranych kolorach, posortowana wg wyniku na bieżąco,
 - punkty za miasto, drogę, klasztor i pola (z katedrą, karczmą, świnką
   oraz obiektami nieukończonymi),
-- zatwierdzanie punktów dużą fajką w prawym górnym rogu ekranu punktacji,
+- zatwierdzanie punktów dużą zieloną fajką w prawym górnym rogu ekranu,
 - małe podpowiedzi „?" zamiast długich opisów (dotknięcie na telefonie,
   najechanie myszą na komputerze),
 - cofanie ostatniego zatwierdzenia (także tych dotyczących wielu graczy),
 - stoper czasu gry,
 - zapis graczy, punktów, surowców i ustawień w pamięci urządzenia,
-- ustawienia: nie wygaszaj ekranu podczas gry (domyślnie włączone)
-  i wybór dodatków,
+- ustawienia: nie wygaszaj ekranu podczas gry (domyślnie włączone),
+  wybór dodatków i **historia punktów** (zapamiętywana między uruchomieniami,
+  ostatnie 500 wpisów; cofnięcie usuwa też wpis, „Resetuj punkty" czyści),
 - jeden spójny zestaw ikon (`assets/icons/game/`).
 
 Kliknięcie gracza otwiera wybór rodzaju punktacji, a przytrzymanie – edycję
@@ -24,6 +25,12 @@ wszystkie.
 
 ## Obsługiwane dodatki
 
+### Karczmy i katedry
+- Opcje **Katedra** (miasto: 3 pkt za płytkę i sztandar) i **Karczma**
+  (droga: 2 pkt za płytkę) są dostępne tylko przy włączonym dodatku.
+- Nieukończona budowla z katedrą lub karczmą nie daje punktów, więc nie ma
+  osobnej opcji „nieukończone" – po prostu niczego się nie dopisuje.
+
 ### Kupcy i budowniczowie
 - W punktacji miasta liczniki **wina, żyta i sukna** – surowce dostaje gracz,
   który domknął miasto (nawet bez ludka w mieście).
@@ -31,7 +38,7 @@ wszystkie.
 - Liczniki pilnują limitów z gry: 9 wina, 6 żyta i 5 sukna (razem 20 żetonów).
 - **Premia 10 pkt** dla prowadzącego w każdym rodzaju surowca liczona na
   bieżąco: przy remisie każdy z remisujących dostaje pełne 10, a przy zerze
-  nikt. Wynik na liście to punkty z planszy + premia (np. `35 + 10`),
+  nikt. Premia od razu podnosi wynik na liście, bez osobnych opisów,
   a prowadzący w danym surowcu jest wyróżniony na swojej karcie.
 - Sekcja surowców w punktacji miasta jest zwijana.
 - Świnka na polu: miasta po 4 pkt zamiast 3.

@@ -73,7 +73,7 @@ class GoodsCounters extends StatelessWidget {
   }
 }
 
-/// Surowce gracza w wierszu; te, w których prowadzi (premia +10), są wyróżnione.
+/// Surowce gracza w wierszu; te, w których prowadzi, są wyróżnione.
 class GoodsBadges extends StatelessWidget {
   final Player player;
   final List<Player> players;
@@ -127,7 +127,7 @@ class _GoodsBadge extends StatelessWidget {
           GameIcon(goods.iconAsset, size: 20),
           const SizedBox(width: 4),
           Text(
-            leading ? '$count · +$kGoodsBonus' : '$count',
+            '$count',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
