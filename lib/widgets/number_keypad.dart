@@ -38,7 +38,7 @@ class NumberKeypad extends StatelessWidget {
                     onPressed: () => onKey(key),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                        vertical: 16,
+                        vertical: 12,
                         horizontal: 20,
                       ),
                       textStyle: const TextStyle(fontSize: 18),

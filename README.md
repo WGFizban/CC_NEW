@@ -8,6 +8,8 @@ z obsługą wybranych dodatków.
 - lista graczy z pionkami w wybranych kolorach, posortowana wg wyniku na bieżąco,
 - punkty za miasto, drogę, klasztor i pola (z katedrą, karczmą, świnką
   oraz obiektami nieukończonymi),
+- klawiatura numeryczna wysuwana od dołu (po wejściu na ekran i po stuknięciu
+  w pole), zwijana przyciskiem w rogu lub stuknięciem w puste miejsce,
 - zatwierdzanie punktów dużą zieloną fajką w prawym górnym rogu ekranu,
 - małe podpowiedzi „?" zamiast długich opisów (dotknięcie na telefonie,
   najechanie myszą na komputerze),
@@ -64,9 +66,11 @@ wszystkie.
 - **Zamek** przy mieście, drodze lub klasztorze: właściciel zamku dostaje
   punkty ukończonej budowli. Nie ma osobnego kafelka – pole **Punkty jako
   zamek** (z liczbą zamków) jest w punktacji miasta, drogi i klasztoru, a w
-  sekcji **Punkty wspólne / zamki** każdy gracz może dostać punkty „jako zamek"
-  (np. A i B dzielą miasto, C ma przy nim zamek). Wróżka i dyrektor cyrku
-  liczą się tylko punktującemu, zamek na końcu gry nie punktuje.
+  sekcji **Punkty wspólne / zamki** każdy inny gracz może dostać punkty „jako
+  zamek" (np. A i B dzielą miasto, C ma przy nim zamek). Punktujący ma w sekcji
+  opcję „ma zamek": dostaje swoje punkty *i* punkty za zamek, a „Punkty jako
+  zamek" to punkty wyłącznie z zamku. Wróżka i dyrektor cyrku liczą się tylko
+  punktującemu, zamek na końcu gry nie punktuje.
 - Kafelek **Bazar**: rozliczenie licytacji – kupno od najwyżej licytującego,
   sprzedaż jemu albo zapłata, gdy licytował tylko wybierający. Wynik może
   spaść poniżej zera.
@@ -103,3 +107,11 @@ flutter pub get
 flutter run
 flutter test
 ```
+
+## Wydania
+
+Każdy merge do `master` uruchamia workflow **Release APK**: testy, budowa APK
+i wydanie na GitHubie z kolejnym numerem wersji **v1, v2, v3…** Numer jest
+liczony z istniejących tagów `vN` (starsze, jak `v1.0.4`, są pomijane) i trafia
+też do aplikacji jako wersja i kod wersji Androida. Workflow można odpalić
+ręcznie z zakładki Actions.

@@ -489,6 +489,34 @@ void main() {
       expect(result, {a: 8});
     });
 
+    test('punktujący z ludkiem i zamkiem dostaje punkty oraz punkty za zamek',
+        () {
+      final a = _player('A');
+
+      // Własne 6 pkt + 3 (wróżka) + 6 za jeden zamek.
+      expect(
+        splitPoints(scorer: a, base: 6, extras: 3, scorerExtraCastles: 1),
+        {a: 15},
+      );
+      // Dwa zamki: 6 + 2 × 6.
+      expect(splitPoints(scorer: a, base: 6, scorerExtraCastles: 2), {a: 18});
+    });
+
+    test('„jako zamek" zastępuje własne punkty, a nie dodaje się do nich', () {
+      final a = _player('A');
+
+      expect(
+        splitPoints(
+          scorer: a,
+          base: 6,
+          scorerAsCastle: true,
+          scorerCastles: 1,
+          scorerExtraCastles: 1,
+        ),
+        {a: 6},
+      );
+    });
+
     test('punktujący jest pierwszy i nie liczy się dwa razy', () {
       final a = _player('A');
       final b = _player('B');

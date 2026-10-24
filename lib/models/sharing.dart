@@ -29,6 +29,9 @@ class PointsShare {
 ///   jako zamek (zamek nie ma tam ludka),
 /// - [scorerAsCastle] / [scorerCastles] – punktujący dostaje punkty tylko
 ///   jako właściciel zamków (nikt nie miał w budowli ludka),
+/// - [scorerExtraCastles] – punktujący ma ludka w budowli *i dodatkowo* zamki
+///   przy niej: dostaje swoje punkty plus punkty budowli za każdy zamek
+///   (nie łączy się z [scorerAsCastle]),
 /// - [others] – pozostali gracze i sposób, w jaki dostają punkty.
 Map<Player, int> splitPoints({
   required Player scorer,
@@ -36,10 +39,13 @@ Map<Player, int> splitPoints({
   int extras = 0,
   bool scorerAsCastle = false,
   int scorerCastles = 1,
+  int scorerExtraCastles = 0,
   Map<Player, PointsShare> others = const {},
 }) {
   final result = <Player, int>{
-    scorer: scorerAsCastle ? base * scorerCastles : base + extras,
+    scorer: scorerAsCastle
+        ? base * scorerCastles
+        : base + extras + base * scorerExtraCastles,
   };
   for (final e in others.entries) {
     if (e.key == scorer) continue;
