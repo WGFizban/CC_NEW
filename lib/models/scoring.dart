@@ -27,11 +27,6 @@ enum ScoringType {
     'assets/icons/game/goods.svg',
     expansion: Expansion.tradersBuilders,
   ),
-  castle(
-    'Zamek',
-    'assets/icons/game/castle.svg',
-    expansion: Expansion.bridgesCastlesBazaars,
-  ),
   bazaar(
     'Bazar',
     'assets/icons/game/bazaar.svg',
@@ -64,6 +59,11 @@ enum ScoringType {
   bool get isFeature =>
       this == city || this == road || this == cloister || this == meadow;
 
+  /// Budowle, przy których może stać zamek z dodatku „Mosty, zamki i bazary":
+  /// jego właściciel dostaje punkty ukończonej sąsiedniej budowli (na polach
+  /// zamek nie punktuje).
+  bool get supportsCastle => this == city || this == road || this == cloister;
+
   static List<ScoringType> availableFor(Set<Expansion> enabled) => [
     for (final t in values)
       if (t.expansion == null || enabled.contains(t.expansion)) t,
@@ -73,7 +73,7 @@ enum ScoringType {
 /// Liczy punkty za pojedynczy obiekt.
 ///
 /// - [tiles] – liczba płytek (pola: liczba ukończonych miast; zamek: punkty
-///   ukończonej sąsiedniej budowli; owce: wpisane punkty),
+///   owce: wpisane punkty),
 /// - [banners] – sztandary (tylko miasto),
 /// - [bridges] – płytki z mostem, których nie ma jeszcze w [tiles]
 ///   (most punktuje jak płytka z drogą, ale płytka liczy się tylko raz),
@@ -132,7 +132,6 @@ int calculatePoints(
       return kFairyTurnPoints;
 
     case ScoringType.sheep:
-    case ScoringType.castle:
       base = tiles;
 
     case ScoringType.goods:

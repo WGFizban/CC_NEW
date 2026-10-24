@@ -68,7 +68,7 @@ class _BazaarScreenState extends State<BazaarScreen> {
         changes = [ScoreChange(_chooser, -_price)];
         label = 'Bazar: ${_chooser.name} płaci $_price (jedyny licytujący)';
     }
-    Navigator.pop(context, ScoreEvent(label, changes));
+    Navigator.pop(context, ScoreEvent(label, changes, category: 'Bazar'));
   }
 
   @override

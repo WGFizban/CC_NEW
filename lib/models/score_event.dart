@@ -20,7 +20,10 @@ class ScoreEvent {
   /// Żeton zwierzęcia zużyty przy punktowaniu cyrku (jeśli to było ono).
   final CircusAnimal? animal;
 
-  const ScoreEvent(this.label, this.changes, {this.animal});
+  /// Rodzaj punktacji (np. „Miasto"), używany w historii i podsumowaniu gry.
+  final String? category;
+
+  const ScoreEvent(this.label, this.changes, {this.animal, this.category});
 
   void apply() => _shift(1);
 

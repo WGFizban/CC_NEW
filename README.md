@@ -11,12 +11,18 @@ z obsługą wybranych dodatków.
 - zatwierdzanie punktów dużą zieloną fajką w prawym górnym rogu ekranu,
 - małe podpowiedzi „?" zamiast długich opisów (dotknięcie na telefonie,
   najechanie myszą na komputerze),
+- **punkty wspólne** w mieście, drodze, klasztorze i polach: zwijana sekcja,
+  w której wskazujesz graczy dostających te same punkty (remis o większość),
+- wybór rodzaju punktacji w siatce pogrupowanej według dodatków,
 - cofanie ostatniego zatwierdzenia (także tych dotyczących wielu graczy),
+- **historia punktów** jako tabela (menu → Historia punktów),
+- **Zakończ grę** (menu): zwycięzca, ranking i rozbicie punktów według rodzaju
+  punktacji, z opcją nowej gry,
 - stoper czasu gry,
 - zapis graczy, punktów, surowców i ustawień w pamięci urządzenia,
 - ustawienia: nie wygaszaj ekranu podczas gry (domyślnie włączone),
-  wybór dodatków i **historia punktów** (zapamiętywana między uruchomieniami,
-  ostatnie 500 wpisów; cofnięcie usuwa też wpis, „Resetuj punkty" czyści),
+  wybór dodatków. Historia punktów jest zapamiętywana między uruchomieniami
+  (ostatnie 500 wpisów; cofnięcie usuwa też wpis, „Resetuj punkty" czyści),
 - jeden spójny zestaw ikon (`assets/icons/game/`).
 
 Kliknięcie gracza otwiera wybór rodzaju punktacji, a przytrzymanie – edycję
@@ -55,7 +61,12 @@ wszystkie.
 - **Mosty** punktują jak płytki z drogą: płytkę z mostem liczysz raz, więc
   w osobnym liczniku wpisz tylko te płytki, których nie ma jeszcze w „Płytkach".
 - **Zamki** na polach są warte 4 pkt zamiast 3 (ze świnką 5).
-- Kafelek **Zamek**: punkty równe punktom ukończonej sąsiedniej budowli.
+- **Zamek** przy mieście, drodze lub klasztorze: właściciel zamku dostaje
+  punkty ukończonej budowli. Nie ma osobnego kafelka – pole **Punkty jako
+  zamek** (z liczbą zamków) jest w punktacji miasta, drogi i klasztoru, a w
+  sekcji **Punkty wspólne / zamki** każdy gracz może dostać punkty „jako zamek"
+  (np. A i B dzielą miasto, C ma przy nim zamek). Wróżka i dyrektor cyrku
+  liczą się tylko punktującemu, zamek na końcu gry nie punktuje.
 - Kafelek **Bazar**: rozliczenie licytacji – kupno od najwyżej licytującego,
   sprzedaż jemu albo zapłata, gdy licytował tylko wybierający. Wynik może
   spaść poniżej zera.

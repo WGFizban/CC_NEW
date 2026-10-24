@@ -18,6 +18,46 @@ class SelectPointsTypeScreen extends StatelessWidget {
     required this.types,
   });
 
+  /// Typy pogrupowane według dodatku (gra podstawowa jest pierwsza).
+  List<(String, List<ScoringType>)> _groups() {
+    final groups = <String, List<ScoringType>>{};
+    for (final t in types) {
+      (groups[t.expansion?.displayName ?? 'Gra podstawowa'] ??= []).add(t);
+    }
+    return [for (final e in groups.entries) (e.key, e.value)];
+  }
+
+  List<Widget> _buildGroup(
+    BuildContext context,
+    String title,
+    List<ScoringType> group,
+  ) {
+    return [
+      Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
+        child: Text(
+          title,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      ),
+      GridView.count(
+        crossAxisCount: 3,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          for (final type in group)
+            _TypeButton(type: type, onTap: () => Navigator.pop(context, type)),
+        ],
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final color = player.color;
@@ -40,16 +80,10 @@ class SelectPointsTypeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: GridView.count(
-                crossAxisCount: 3,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
+              child: ListView(
                 children: [
-                  for (final type in types)
-                    _TypeButton(
-                      type: type,
-                      onTap: () => Navigator.pop(context, type),
-                    ),
+                  for (final group in _groups())
+                    ..._buildGroup(context, group.$1, group.$2),
                 ],
               ),
             ),
