@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/gold.dart';
 import '../models/goods.dart';
 import '../models/history_entry.dart';
 import '../models/player.dart';
@@ -15,12 +16,14 @@ class EndGameScreen extends StatelessWidget {
   /// Czas gry, jeśli stoper był używany.
   final Duration? elapsed;
   final bool showGoods;
+  final bool showGold;
 
   const EndGameScreen({
     super.key,
     required this.players,
     required this.log,
     required this.showGoods,
+    required this.showGold,
     this.elapsed,
   });
 
@@ -126,6 +129,7 @@ class EndGameScreen extends StatelessWidget {
   Widget _playerCard(BuildContext context, Player p, int place, int total) {
     final bonus = goodsBonus(p, players);
     final categories = _categories(p);
+    final gold = goldPoints(p.gold);
     final goods = [
       for (final g in Goods.values)
         if (p.goodsOf(g) > 0) '${g.displayName} ×${p.goodsOf(g)}',
@@ -169,10 +173,18 @@ class EndGameScreen extends StatelessWidget {
                 ),
               ],
             ),
-            if (categories.isNotEmpty || bonus > 0) const Divider(height: 20),
+            if (categories.isNotEmpty ||
+                bonus > 0 ||
+                (showGold && p.gold > 0))
+              const Divider(height: 20),
             for (final e in categories.entries) _row(e.key, '${e.value}'),
             if (showGoods && bonus > 0)
               _row('Premia za surowce', '+$bonus'),
+            if (showGold && p.gold > 0)
+              _row(
+                'Złoto ×${p.gold} (po ${goldValuePerPiece(p.gold)} pkt)',
+                '+$gold',
+              ),
             if (showGoods && goods.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4),

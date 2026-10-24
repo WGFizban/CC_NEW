@@ -1,13 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
-<g fill="none" stroke="#3B2F2F" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-
-<path d="M14 36 V84 M82 36 V84" stroke-width="4"/>
-<path d="M10.00 16 H22.67 V32 a6.33 6.33 0 0 1 -12.67 0 Z" fill="#C0504D"/><path d="M22.67 16 H35.33 V32 a6.33 6.33 0 0 1 -12.67 0 Z" fill="#F4EBD0"/><path d="M35.33 16 H48.00 V32 a6.33 6.33 0 0 1 -12.67 0 Z" fill="#C0504D"/><path d="M48.00 16 H60.67 V32 a6.33 6.33 0 0 1 -12.67 0 Z" fill="#F4EBD0"/><path d="M60.67 16 H73.33 V32 a6.33 6.33 0 0 1 -12.67 0 Z" fill="#C0504D"/><path d="M73.33 16 H86.00 V32 a6.33 6.33 0 0 1 -12.67 0 Z" fill="#F4EBD0"/>
-<rect x="10" y="62" width="76" height="8" fill="#A8693B"/>
-<rect x="16" y="70" width="64" height="14" fill="#C98B4E"/>
-<circle cx="32" cy="54" r="7" fill="#F2B63D"/>
-<circle cx="48" cy="54" r="7" fill="#F2B63D"/>
-<circle cx="66" cy="54" r="7" fill="#C0504D"/>
-
+<defs><clipPath id="t"><rect x="4" y="4" width="88" height="88" rx="18"/></clipPath></defs>
+<rect x="4" y="4" width="88" height="88" rx="18" fill="#EBCB92"/>
+<g clip-path="url(#t)"><circle cx="12" cy="84" r="1.6" fill="#D9B070"/><circle cx="84" cy="82" r="1.6" fill="#D9B070"/><circle cx="86" cy="20" r="1.6" fill="#D9B070"/><circle cx="12" cy="20" r="1.6" fill="#D9B070"/><circle cx="50" cy="86" r="1.6" fill="#D9B070"/></g>
+<g fill="none" stroke="#3B2F2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M24 38 V76 M72 38 V76" stroke-width="4" stroke="#B9753F"/><path d="M18 22 H30 L32 38 H16 Z" fill="#4A86C5" stroke="none"/><path d="M30 22 H42 L44 38 H28 Z" fill="#F8EDCD" stroke="none"/><path d="M42 22 H54 L56 38 H40 Z" fill="#4A86C5" stroke="none"/><path d="M54 22 H66 L68 38 H52 Z" fill="#F8EDCD" stroke="none"/><path d="M66 22 H78 L80 38 H64 Z" fill="#4A86C5" stroke="none"/><path d="M18 22 H78 L82 38 H14 Z" fill="none"/><rect x="20" y="58" width="56" height="8" fill="#D9A06A"/><circle cx="34" cy="52" r="6" fill="#F08A3C"/><circle cx="48" cy="53" r="5" fill="#7FBF4D"/><circle cx="62" cy="52" r="6" fill="#D2343F"/><path d="M26 66 V80 M70 66 V80" stroke-width="4" stroke="#B9753F"/>
 </g>
+<rect x="4" y="4" width="88" height="88" rx="18" fill="none" stroke="#3B2F2F" stroke-width="3.5"/>
 </svg>

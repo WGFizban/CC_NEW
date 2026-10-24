@@ -24,12 +24,12 @@ class PointsShare {
 /// (punktujący jest pierwszy).
 ///
 /// - [base] – punkty budowli (to samo dostają współdzielący),
-/// - [extras] – premie przypisane do ludka punktującego (wróżka, dyrektor
+/// - [extras] – premie przypisane do mepla punktującego (wróżka, dyrektor
 ///   cyrku); dostaje je tylko punktujący, i to tylko wtedy, gdy nie punktuje
-///   jako zamek (zamek nie ma tam ludka),
+///   jako zamek (zamek nie ma tam mepla),
 /// - [scorerAsCastle] / [scorerCastles] – punktujący dostaje punkty tylko
-///   jako właściciel zamków (nikt nie miał w budowli ludka),
-/// - [scorerExtraCastles] – punktujący ma ludka w budowli *i dodatkowo* zamki
+///   jako właściciel zamków (nikt nie miał w budowli mepla),
+/// - [scorerExtraCastles] – punktujący ma mepla w budowli *i dodatkowo* zamki
 ///   przy niej: dostaje swoje punkty plus punkty budowli za każdy zamek
 ///   (nie łączy się z [scorerAsCastle]),
 /// - [others] – pozostali gracze i sposób, w jaki dostają punkty.

@@ -7,7 +7,7 @@ import '../models/expansion.dart';
 
 /// Ustawienia i stan gry niezwiązany z konkretnym graczem.
 class GameSettings {
-  /// Włączone dodatki (domyślnie wszystkie).
+  /// Włączone dodatki (domyślnie żaden).
   final Set<Expansion> expansions;
 
   /// Ile żetonów zwierząt cyrku zostało już odkrytych i zużytych.
@@ -20,7 +20,7 @@ class GameSettings {
     Set<Expansion>? expansions,
     Map<CircusAnimal, int>? usedAnimals,
     this.keepScreenOn = true,
-  }) : expansions = expansions ?? Expansion.values.toSet(),
+  }) : expansions = expansions ?? <Expansion>{},
        usedAnimals = usedAnimals ?? {};
 
   /// Ile żetonów danego zwierzęcia zostało jeszcze w stosie.
@@ -34,13 +34,20 @@ class SettingsStorage {
   static const _usedAnimalsKey = 'circus_used';
   static const _keepScreenOnKey = 'keep_screen_on';
 
-  /// Dodatki znane, zanim zaczęliśmy zapisywać listę „widzianych". Wróżka
-  /// oraz katedra z karczmą były wtedy częścią gry podstawowej, więc po
-  /// aktualizacji mają być włączone.
-  static final _legacyExpansions = {
-    for (final e in Expansion.values)
-      if (e != Expansion.princessDragon && e != Expansion.innsCathedrals)
-        e.name,
+  /// Dodatki znane, zanim zaczęliśmy zapisywać listę „widzianych".
+  static const _legacyExpansions = {
+    'tradersBuilders',
+    'bridgesCastlesBazaars',
+    'circus',
+    'hillsSheep',
+  };
+
+  /// Elementy, które w starych zapisach były częścią gry podstawowej (wróżka
+  /// oraz katedra i karczma), więc po aktualizacji zostają włączone. Wszystkie
+  /// nowsze dodatki startują jako wyłączone.
+  static const _formerlyBaseGame = {
+    Expansion.princessDragon,
+    Expansion.innsCathedrals,
   };
 
   Future<GameSettings> load() async {
@@ -49,12 +56,17 @@ class SettingsStorage {
     Set<Expansion>? expansions;
     final names = prefs.getStringList(_expansionsKey);
     if (names != null) {
-      final seen = (prefs.getStringList(_seenKey) ?? _legacyExpansions.toList())
-          .toSet();
+      final storedSeen = prefs.getStringList(_seenKey);
+      final seen = (storedSeen ?? _legacyExpansions.toList()).toSet();
       expansions = {
         for (final e in Expansion.values)
-          // Nowy dodatek, którego użytkownik jeszcze nie widział, jest włączony.
-          if (names.contains(e.name) || !seen.contains(e.name)) e,
+          if (names.contains(e.name) ||
+              // Tylko bardzo stary zapis (bez listy „widzianych") traktuje
+              // wróżkę oraz katedrę i karczmę jako grę podstawową.
+              (storedSeen == null &&
+                  !seen.contains(e.name) &&
+                  _formerlyBaseGame.contains(e)))
+            e,
       };
     }
 

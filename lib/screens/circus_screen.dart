@@ -8,8 +8,8 @@ import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
 
 /// Punktowanie cyrku: po wyłożeniu płytki cyrku odkrywasz żeton zwierzęcia
-/// spod namiotu, a każdy ludek na tej płytce i ośmiu sąsiednich daje
-/// właścicielowi tyle punktów, ile wynosi żeton. Ludki zostają na planszy.
+/// spod namiotu, a każdy mepel na tej płytce i ośmiu sąsiednich daje
+/// właścicielowi tyle punktów, ile wynosi żeton. Meple zostają na planszy.
 ///
 /// Zwraca [ScoreEvent] z zużytym żetonem zwierzęcia.
 class CircusScreen extends StatefulWidget {
@@ -109,11 +109,11 @@ class _CircusScreenState extends State<CircusScreen> {
             ),
           const SizedBox(height: 16),
           const LabelWithHint(
-            '2. Ile ludków ma każdy gracz na płytce cyrku i ośmiu '
+            '2. Ile mepli ma każdy gracz na płytce cyrku i ośmiu '
             'sąsiednich?',
-            'Liczą się zwykłe ludki, duże ludki, opaci, wozy, burmistrzowie '
+            'Liczą się zwykłe meple, duże meple, opaci, wozy '
                 'i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, '
-                'pasterze ani stodoły. Punktujące ludki zostają na planszy.',
+                'pasterze ani stodoły. Punktujące meple zostają na planszy.',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),

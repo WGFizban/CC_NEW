@@ -12,11 +12,15 @@ class Player {
   /// Zebrane surowce z dodatku „Kupcy i budowniczowie".
   final Map<Goods, int> goods;
 
+  /// Sztabki złota z minidodatku „Kopalnie złota".
+  int gold;
+
   Player({
     required this.name,
     required this.color,
     this.points = 0,
     Map<Goods, int>? goods,
+    this.gold = 0,
   }) : goods = {for (final g in Goods.values) g: goods?[g] ?? 0};
 
   int goodsOf(Goods g) => goods[g] ?? 0;
@@ -28,6 +32,7 @@ class Player {
     'color': color.toARGB32(),
     'points': points,
     'goods': {for (final e in goods.entries) e.key.name: e.value},
+    'gold': gold,
   };
 
   factory Player.fromJson(Map<String, dynamic> json) {
@@ -36,6 +41,7 @@ class Player {
       name: json['name'] as String,
       color: Color(json['color'] as int),
       points: (json['points'] as int?) ?? 0,
+      gold: (json['gold'] as int?) ?? 0,
       goods: {
         if (rawGoods is Map)
           for (final g in Goods.values) g: (rawGoods[g.name] as int?) ?? 0,

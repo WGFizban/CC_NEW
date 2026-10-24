@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/circus.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
+import '../models/gold.dart';
 import '../models/goods.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
@@ -12,6 +13,7 @@ import '../models/sheep.dart';
 import '../models/standings.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/counter_stepper.dart';
+import '../widgets/game_icon.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/meeple_icon.dart';
@@ -44,7 +46,6 @@ class AddPointsScreen extends StatefulWidget {
 class _AddPointsScreenState extends State<AddPointsScreen> {
   int _tiles = 0;
   int _banners = 0;
-  int _bridges = 0;
   int _castles = 0;
   int _vineyards = 0;
   bool _completed = true;
@@ -63,10 +64,16 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool _scorerCastle = false;
   int _scorerCastles = 1;
 
-  /// Punktujący ma ludka w budowli i dodatkowo zamki przy niej: dostaje swoje
+  /// Punktujący ma mepla w budowli i dodatkowo zamki przy niej: dostaje swoje
   /// punkty plus punkty budowli za każdy zamek.
   bool _scorerHasCastle = false;
   int _scorerHasCastles = 1;
+
+  /// Sposób punktowania pola (stodoła, dodatek „Opactwo i burmistrz").
+  FarmScoring _farm = FarmScoring.normal;
+
+  /// Sztabki złota (minidodatek „Kopalnie złota") dla graczy.
+  final Map<Player, int> _gold = {};
 
   /// Klawiatura numeryczna jest wysuwana; zwija się na życzenie.
   bool _keypadOpen = true;
@@ -86,6 +93,33 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           _completed &&
           _has(Expansion.tradersBuilders));
 
+  bool get _showGold =>
+      _type == ScoringType.gold ||
+      (_type.supportsGold && _completed && _has(Expansion.goldMines));
+
+  FarmScoring get _farmActive =>
+      _type == ScoringType.meadow && _has(Expansion.abbeyMayor)
+      ? _farm
+      : FarmScoring.normal;
+
+  /// Gracze, którym można dopisać złoto: wszyscy (ekran „Złoto") albo
+  /// punktujący i wskazani gracze z punktów wspólnych.
+  List<Player> get _goldPlayers => _type == ScoringType.gold
+      ? widget.players
+      : [widget.player, ..._shares.keys];
+
+  Map<Player, int> get _goldToAdd => _showGold
+      ? {
+          for (final p in _goldPlayers)
+            if ((_gold[p] ?? 0) > 0) p: _gold[p]!,
+        }
+      : const {};
+
+  /// Ile sztabek zostało jeszcze do rozdania (poza już wybranymi).
+  int get _goldAvailable =>
+      goldRemaining(widget.players) -
+      _goldToAdd.values.fold<int>(0, (a, b) => a + b);
+
   /// Zamek może punktować przy tej budowli (tylko ukończonej).
   bool get _castleOk =>
       _type.supportsCastle &&
@@ -100,7 +134,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   bool get _keypadVisible => _usesKeypad && _keypadOpen;
 
-  /// Wróżka i dyrektor cyrku są przy ludku, a właściciel zamku go nie ma.
+  /// Wróżka i dyrektor cyrku są przy meplu, a właściciel zamku go nie ma.
   bool get _showRingmaster =>
       _isFeature && _has(Expansion.circus) && !_castleMode;
 
@@ -120,14 +154,15 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       _type == ScoringType.ringmaster || (_showRingmaster && _ringmaster);
 
   bool get _usesKeypad => switch (_type) {
-    ScoringType.goods || ScoringType.ringmaster => false,
-    ScoringType.cloister => !_completed,
+    ScoringType.goods || ScoringType.ringmaster || ScoringType.gold => false,
+    ScoringType.cloister || ScoringType.abbey => !_completed,
     _ => true,
   };
 
   /// Niedokończony klasztor to najwyżej 8 płytek (razem z nim samym);
   /// komplet 9 płytek to już klasztor ukończony.
-  int get _tilesMax => _type == ScoringType.cloister ? 8 : 999;
+  int get _tilesMax =>
+      _type == ScoringType.cloister || _type == ScoringType.abbey ? 8 : 999;
 
   Map<Goods, int> get _goodsToAdd => _showGoods
       ? {
@@ -138,7 +173,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   int get _points => _calc(circusTiles: _ringmasterActive ? _circusTiles : 0, fairy: _showFairy && _fairy);
 
-  /// Punkty budowli bez premii przy ludku (wróżka, dyrektor cyrku) – to dostają
+  /// Punkty budowli bez premii przy meplu (wróżka, dyrektor cyrku) – to dostają
   /// współdzielący i właściciele zamków.
   int get _basePoints => _calc(circusTiles: 0, fairy: false);
 
@@ -163,17 +198,17 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     _type,
     tiles: _tiles,
     banners: _banners,
-    bridges: _type == ScoringType.road && _has(Expansion.bridgesCastlesBazaars)
-        ? _bridges
-        : 0,
     castles: _type == ScoringType.meadow && _has(Expansion.bridgesCastlesBazaars)
         ? _castles
         : 0,
-    vineyards: _type == ScoringType.cloister && _has(Expansion.hillsSheep)
+    vineyards:
+        (_type == ScoringType.cloister || _type == ScoringType.abbey) &&
+            _has(Expansion.hillsSheep)
         ? _vineyards
         : 0,
     completed: _completed,
     bonus: _bonus,
+    farm: _farmActive,
     circusTiles: circusTiles,
     withFairy: fairy,
   );
@@ -188,7 +223,16 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     });
   }
 
-  String _label(Map<Player, int> distribution, Map<Goods, int> goods) {
+  String _label(
+    Map<Player, int> distribution,
+    Map<Goods, int> goods,
+    Map<Player, int> gold,
+  ) {
+    final goldText = gold.entries
+        .map((e) => '${e.key.name} ×${e.value}')
+        .join(', ');
+    if (_type == ScoringType.gold) return 'Złoto: $goldText';
+
     final parts = <String>[];
     final mine = distribution[widget.player] ?? 0;
     if (mine != 0) parts.add('+$mine');
@@ -213,30 +257,36 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       '$scorer: ${_type.displayName} ${parts.join(', ')}',
       if (shared.isNotEmpty) 'wspólnie: ${shared.join(', ')}',
       if (castles.isNotEmpty) 'zamki: ${castles.join(', ')}',
+      if (goldText.isNotEmpty) 'złoto: $goldText',
     ].join(' · ');
   }
 
   void _confirm() {
     final distribution = _distribution;
     final goods = _goodsToAdd;
+    final gold = _goldToAdd;
     // Surowce dostaje gracz, który domknął miasto, a punkty – punktujący
-    // (i ewentualnie pozostali gracze z podziału).
+    // (i ewentualnie pozostali gracze z podziału). Złoto dostają wskazani gracze.
     final recipient = goods.isEmpty ? null : _goodsRecipient;
     final totals = <Player, int>{...distribution};
     if (recipient != null) totals.putIfAbsent(recipient, () => 0);
+    for (final p in gold.keys) {
+      totals.putIfAbsent(p, () => 0);
+    }
     final changes = [
       for (final e in totals.entries)
-        if (e.value != 0 || e.key == recipient)
+        if (e.value != 0 || e.key == recipient || gold.containsKey(e.key))
           ScoreChange(
             e.key,
             e.value,
             goods: e.key == recipient ? goods : const {},
+            gold: gold[e.key] ?? 0,
           ),
     ];
     Navigator.pop(
       context,
       ScoreEvent(
-        _label(distribution, goods),
+        _label(distribution, goods, gold),
         changes,
         category: _type.displayName,
       ),
@@ -249,7 +299,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final distribution = _distribution;
     final points = distribution[widget.player] ?? 0;
     final canConfirm =
-        distribution.values.any((v) => v > 0) || _goodsToAdd.isNotEmpty;
+        distribution.values.any((v) => v > 0) ||
+        _goodsToAdd.isNotEmpty ||
+        _goldToAdd.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -262,7 +314,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         child: Column(
           children: [
             // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.
-            if (_type != ScoringType.goods)
+            if (_type != ScoringType.goods && _type != ScoringType.gold)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(
@@ -303,6 +355,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                       if (_showFairy) ..._buildFairy(),
                       if (_showRingmaster) ..._buildRingmaster(),
                       if (_showSharing) _buildSharing(),
+                      if (_showGold) _buildGold(),
                       if (_showGoods) _buildGoods(),
                     ],
                   ),
@@ -388,16 +441,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       case ScoringType.road:
         return [
           _valueBoxes([_valueBox('Płytki', _tiles, _Field.tiles)]),
-          if (_has(Expansion.bridgesCastlesBazaars))
-            _stepperRow(
-              'Płytki z mostem',
-              _bridges,
-              (v) => _bridges = v,
-              hint:
-                  'Most punktuje jak płytka z drogą, ale płytka liczy się '
-                  'tylko raz. Wpisz tu tylko te płytki z mostem, których '
-                  'nie wliczyłeś w „Płytkach".',
-            ),
           // Bez karczmy ukończona i nieukończona droga liczą się tak samo,
           // a nieukończona z karczmą nie daje punktów (nie dopisujemy jej).
           if (_has(Expansion.innsCathedrals))
@@ -413,29 +456,34 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         ];
 
       case ScoringType.cloister:
+      case ScoringType.abbey:
+        final isAbbey = _type == ScoringType.abbey;
+        final noun = isAbbey ? 'opactwo' : 'klasztor';
         return [
           _check(
-            'Niedokończony (punkty na koniec gry)',
+            'Niedokończone (punkty na koniec gry)',
             !_completed,
             (v) => _completed = !v,
             hint:
-                'Na koniec gry niedokończony klasztor daje 1 pkt za każdą '
-                'płytkę: klasztor i otaczające go płytki.',
+                'Na koniec gry niedokończone $noun daje 1 pkt za każdą '
+                'płytkę: ${isAbbey ? 'opactwo' : 'klasztor'} i otaczające '
+                'je płytki.',
           ),
           if (_completed) ...[
-            const Text(
-              'Ukończony klasztor = 9 pkt',
-              style: TextStyle(fontSize: 20),
+            Text(
+              'Ukończone $noun = 9 pkt',
+              style: const TextStyle(fontSize: 20),
             ),
             if (_has(Expansion.hillsSheep))
               _stepperRow(
-                'Winnice wokół klasztoru',
+                'Winnice wokół ${isAbbey ? 'opactwa' : 'klasztoru'}',
                 _vineyards,
                 (v) => _vineyards = v,
                 max: kMaxVineyards,
                 hint:
                     '$kVineyardPoints pkt za każdą winnicę na płytkach wokół '
-                    'ukończonego klasztoru (najwyżej $kMaxVineyards).',
+                    'ukończonego ${isAbbey ? 'opactwa' : 'klasztoru'} '
+                    '(najwyżej $kMaxVineyards).',
               ),
           ] else
             _valueBoxes([_valueBox('Płytki', _tiles, _Field.tiles)]),
@@ -454,12 +502,15 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                   'Zamek przy polu jest wart 4 pkt zamiast 3, '
                   'a ze świnką 5 pkt, tak jak ukończone miasto.',
             ),
-          _check(
-            'Świnka',
-            _bonus,
-            (v) => _bonus = v,
-            hint: 'Ze świnką każde ukończone miasto przy polu daje 4 pkt.',
-          ),
+          if (_has(Expansion.abbeyMayor)) _buildBarnChoice(),
+          if (_farmActive != FarmScoring.barnOwner)
+            _check(
+              'Świnka',
+              _bonus,
+              (v) => _bonus = v,
+              hint: 'Ze świnką każde ukończone miasto przy polu daje 4 pkt '
+                  '(przy polu połączonym ze stodołą 2 pkt zamiast 1).',
+            ),
         ];
 
       case ScoringType.ringmaster:
@@ -478,6 +529,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
       case ScoringType.fairy:
       case ScoringType.goods:
+      case ScoringType.gold:
       case ScoringType.sheep:
       case ScoringType.bazaar:
       case ScoringType.circus:
@@ -488,7 +540,116 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     }
   }
 
-  /// „Punkty jako zamek": nikt nie miał w budowli ludka, a zamek stoi przy
+  /// Wybór sposobu punktowania pola przy stodole.
+  Widget _buildBarnChoice() {
+    const labels = {
+      FarmScoring.normal: 'Zwykłe',
+      FarmScoring.barnJoined: 'Połączone ze stodołą',
+      FarmScoring.barnOwner: 'Właściciel stodoły',
+    };
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const GameIcon('assets/icons/game/barn.svg', size: 28),
+              const SizedBox(width: 8),
+              Expanded(
+                child: LabelWithHint(
+                  'Stodoła',
+                  'Zwykłe: punktowanie pola na koniec gry albo w chwili '
+                      'postawienia stodoły (3 pkt za miasto). Połączone ze '
+                      'stodołą: rolnicy na polu, które właśnie połączono z '
+                      'polem ze stodołą, dostają 1 pkt za miasto (2 ze '
+                      'świnką). Właściciel stodoły na koniec gry: 4 pkt za '
+                      'miasto i 5 za zamek, bez świnki; każda stodoła na '
+                      'połączonym polu dostaje pełną punktację.',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final e in labels.entries)
+                ChoiceChip(
+                  label: Text(e.value),
+                  selected: _farm == e.key,
+                  onSelected: (_) => setState(() {
+                    _farm = e.key;
+                    if (e.key == FarmScoring.barnOwner) _bonus = false;
+                  }),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Sztabki złota z ukończonej budowli (minidodatek „Kopalnie złota").
+  Widget _buildGold() {
+    final chosen = [
+      for (final e in _goldToAdd.entries) '${e.key.name} ×${e.value}',
+    ];
+    final onlyGold = _type == ScoringType.gold;
+
+    return ExpansionTile(
+      initiallyExpanded: onlyGold,
+      shape: const Border(),
+      collapsedShape: const Border(),
+      tilePadding: EdgeInsets.zero,
+      title: LabelWithHint(
+        onlyGold ? 'Sztabki złota do dopisania' : 'Sztabki złota',
+        'Sztabki z płytek ukończonej budowli dostaje gracz z przewagą; przy '
+            'remisie dzielą się nimi według kolejności. Rolnicy złota nie '
+            'dostają. Na koniec gry im więcej sztabek, tym więcej warta '
+            'każda: 1–3 po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.',
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(chosen.isEmpty ? 'brak' : chosen.join(' · ')),
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'W puli: ${goldRemaining(widget.players)} z $kGoldSupply',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+        for (final p in _goldPlayers) _goldRow(p),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _goldRow(Player p) {
+    final value = _gold[p] ?? 0;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          const GameIcon('assets/icons/game/gold.svg', size: 30),
+          const SizedBox(width: 8),
+          MeepleIcon(color: p.color, size: 22),
+          const SizedBox(width: 6),
+          Expanded(child: Text(p.name)),
+          CounterStepper(
+            value: value,
+            max: value + _goldAvailable,
+            onChanged: (v) => setState(() => _gold[p] = v),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// „Punkty jako zamek": nikt nie miał w budowli mepla, a zamek stoi przy
   /// niej – punktujący dostaje punkty jako jego właściciel.
   List<Widget> _buildCastleMode() {
     return [
@@ -497,7 +658,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         _scorerCastle,
         (v) => _scorerCastle = v,
         hint:
-            'Zaznacz, gdy nikt nie miał ludka w tej budowli, ale '
+            'Zaznacz, gdy nikt nie miał mepla w tej budowli, ale '
             '${widget.player.name} ma przy niej zamek: dostaje punkty '
             'ukończonej budowli (za każdy swój zamek).',
       ),
@@ -555,7 +716,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     );
   }
 
-  /// Punktujący ma ludka w budowli i dodatkowo zamek przy niej: dostaje swoje
+  /// Punktujący ma mepla w budowli i dodatkowo zamek przy niej: dostaje swoje
   /// punkty oraz punkty za zamek (inaczej niż „Punkty jako zamek").
   Widget _scorerCastleRow() {
     return Column(
@@ -627,11 +788,11 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   List<Widget> _buildFairy() {
     return [
       _check(
-        'Wróżka przy ludku (+$kFairyFeaturePoints pkt)',
+        'Wróżka przy meplu (+$kFairyFeaturePoints pkt)',
         _fairy,
         (v) => _fairy = v,
         hint:
-            'Jeśli wróżka stoi przy ludku w punktowanej budowli (miasto, '
+            'Jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, '
             'droga, klasztor lub pole), jego właściciel dostaje '
             '$kFairyFeaturePoints pkt niezależnie od zwykłej punktacji. '
             'Dotyczy też punktowania na koniec gry.',
@@ -656,7 +817,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         isCity ? 'Surowce w mieście' : 'Surowce do dopisania',
         isCity
             ? 'Surowce dostaje gracz, który domknął miasto – '
-                  'nawet bez ludka w mieście.'
+                  'nawet bez mepla w mieście.'
             : 'Surowce dostaje wskazany gracz.',
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),

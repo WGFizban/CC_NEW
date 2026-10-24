@@ -7,12 +7,16 @@ import '../models/expansion.dart';
 class SettingsScreen extends StatefulWidget {
   final Set<Expansion> expansions;
   final bool keepScreenOn;
+
+  /// Gra trwa: dodatków nie można zmieniać do jej zakończenia.
+  final bool expansionsLocked;
   final void Function(Set<Expansion> expansions, bool keepScreenOn) onChanged;
 
   const SettingsScreen({
     super.key,
     required this.expansions,
     required this.keepScreenOn,
+    required this.expansionsLocked,
     required this.onChanged,
   });
 
@@ -60,21 +64,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           _header('Dodatki'),
+          if (widget.expansionsLocked)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Card(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                child: const ListTile(
+                  leading: Icon(Icons.lock_outline),
+                  title: Text('Gra trwa'),
+                  subtitle: Text(
+                    'Dodatków nie można zmienić do końca gry. Zakończ grę '
+                    'i zacznij nową albo zresetuj punkty w menu.',
+                  ),
+                ),
+              ),
+            ),
           for (final e in Expansion.values)
             SwitchListTile(
               title: Text(e.displayName),
               subtitle: Text(e.description),
               value: _expansions.contains(e),
-              onChanged: (on) {
-                setState(() {
-                  if (on) {
-                    _expansions.add(e);
-                  } else {
-                    _expansions.remove(e);
-                  }
-                });
-                _notify();
-              },
+              onChanged: widget.expansionsLocked
+                  ? null
+                  : (on) {
+                      setState(() {
+                        if (on) {
+                          _expansions.add(e);
+                        } else {
+                          _expansions.remove(e);
+                        }
+                      });
+                      _notify();
+                    },
             ),
         ],
       ),

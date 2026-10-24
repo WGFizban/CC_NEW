@@ -1,15 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
-<g fill="none" stroke="#3B2F2F" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-
-<ellipse cx="30" cy="40" rx="14" ry="22" transform="rotate(-25 30 40)" fill="#CDEBFA"/>
-<ellipse cx="66" cy="40" rx="14" ry="22" transform="rotate(25 66 40)" fill="#CDEBFA"/>
-<ellipse cx="35" cy="62" rx="8" ry="13" transform="rotate(25 35 62)" fill="#E3F4FC"/>
-<ellipse cx="61" cy="62" rx="8" ry="13" transform="rotate(-25 61 62)" fill="#E3F4FC"/>
-<path d="M48 40 L34 80 Q48 87 62 80 Z" fill="#F18AB5"/>
-<path d="M56 48 L72 36"/>
-<circle cx="48" cy="30" r="10" fill="#F6D7B8"/>
-<path d="M38 29 C37 15 59 15 58 29 C54 22 42 22 38 29 Z" fill="#F2B63D" stroke-width="2.5"/>
-<polygon points="78.0,19.0 80.4,24.8 86.6,25.2 81.8,29.2 83.3,35.3 78.0,32.0 72.7,35.3 74.2,29.2 69.4,25.2 75.6,24.8" fill="#F2B63D" stroke-width="2.5"/>
-
+<defs><clipPath id="t"><rect x="4" y="4" width="88" height="88" rx="18"/></clipPath></defs>
+<rect x="4" y="4" width="88" height="88" rx="18" fill="#E7DDF4"/>
+<g clip-path="url(#t)"></g>
+<g fill="none" stroke="#3B2F2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="48" cy="73" rx="18" ry="5" fill="#3B2F2F" fill-opacity=".18" stroke="none"/><path d="M40 44 C26 36 22 54 36 56 Z" fill="#fff"/><path d="M56 44 C70 36 74 54 60 56 Z" fill="#fff"/><path d="M48 36 C40 44 34 58 32 70 C40 75 56 75 64 70 C62 58 56 44 48 36 Z" fill="#fff"/><circle cx="48" cy="28" r="9.5" fill="#fff"/><path d="M72 18 L74 24 L80 26 L74 28 L72 34 L70 28 L64 26 L70 24 Z" fill="#E3A92B" stroke-width="2"/>
 </g>
+<rect x="4" y="4" width="88" height="88" rx="18" fill="none" stroke="#3B2F2F" stroke-width="3.5"/>
 </svg>
