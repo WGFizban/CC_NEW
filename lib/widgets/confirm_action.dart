@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 /// Duża fajka zatwierdzająca w prawym górnym rogu paska (`AppBar.actions`).
-/// Gdy [onPressed] jest `null`, przycisk jest wyszarzony.
+/// Jest zielona, żeby wyróżniała się w pasku. Gdy [onPressed] jest `null`,
+/// przycisk jest wyszarzony.
 class ConfirmAction extends StatelessWidget {
   final VoidCallback? onPressed;
 
@@ -13,6 +14,11 @@ class ConfirmAction extends StatelessWidget {
       padding: const EdgeInsets.only(right: 8),
       child: IconButton.filled(
         onPressed: onPressed,
+        style: IconButton.styleFrom(
+          backgroundColor: const Color(0xFF2E9E44),
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: Colors.black12,
+        ),
         tooltip: 'Zatwierdź',
         iconSize: 30,
         icon: const Icon(Icons.check),

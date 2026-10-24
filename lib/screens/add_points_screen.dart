@@ -206,15 +206,23 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             _valueBox('Płytki', _tiles, _Field.tiles),
             _valueBox('Sztandary', _banners, _Field.banners),
           ]),
-          _check(
-            'Katedra',
-            _bonus,
-            (v) => _bonus = v,
-            hint:
-                'Miasto z katedrą: 3 pkt za płytkę i sztandar. '
-                'Nieukończone miasto z katedrą nie daje punktów.',
-          ),
-          _check('Ukończone miasto', _completed, (v) => _completed = v),
+          if (_has(Expansion.innsCathedrals))
+            _check(
+              'Katedra',
+              _bonus,
+              (v) {
+                _bonus = v;
+                // Nieukończone miasto z katedrą nie daje punktów, więc
+                // takiego punktowania po prostu się nie dopisuje.
+                if (v) _completed = true;
+              },
+              hint:
+                  'Miasto z katedrą: 3 pkt za płytkę i sztandar. '
+                  'Nieukończone miasto z katedrą nie daje punktów, '
+                  'więc nie ma czego dopisywać.',
+            ),
+          if (!_bonus)
+            _check('Ukończone miasto', _completed, (v) => _completed = v),
         ];
 
       case ScoringType.road:
@@ -230,17 +238,18 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                   'tylko raz. Wpisz tu tylko te płytki z mostem, których '
                   'nie wliczyłeś w „Płytkach".',
             ),
-          _check(
-            'Karczma',
-            _bonus,
-            (v) => _bonus = v,
-            hint:
-                'Droga z karczmą: 2 pkt za płytkę. '
-                'Nieukończona droga z karczmą nie daje punktów.',
-          ),
-          // Bez karczmy ukończona i nieukończona droga liczą się tak samo.
-          if (_bonus)
-            _check('Ukończona droga', _completed, (v) => _completed = v),
+          // Bez karczmy ukończona i nieukończona droga liczą się tak samo,
+          // a nieukończona z karczmą nie daje punktów (nie dopisujemy jej).
+          if (_has(Expansion.innsCathedrals))
+            _check(
+              'Karczma',
+              _bonus,
+              (v) => _bonus = v,
+              hint:
+                  'Droga z karczmą: 2 pkt za płytkę. '
+                  'Nieukończona droga z karczmą nie daje punktów, '
+                  'więc nie ma czego dopisywać.',
+            ),
         ];
 
       case ScoringType.cloister:

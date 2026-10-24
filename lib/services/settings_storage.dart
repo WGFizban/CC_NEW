@@ -35,10 +35,12 @@ class SettingsStorage {
   static const _keepScreenOnKey = 'keep_screen_on';
 
   /// Dodatki znane, zanim zaczęliśmy zapisywać listę „widzianych". Wróżka
-  /// była wtedy częścią gry podstawowej, więc po aktualizacji ma być włączona.
+  /// oraz katedra z karczmą były wtedy częścią gry podstawowej, więc po
+  /// aktualizacji mają być włączone.
   static final _legacyExpansions = {
     for (final e in Expansion.values)
-      if (e != Expansion.princessDragon) e.name,
+      if (e != Expansion.princessDragon && e != Expansion.innsCathedrals)
+        e.name,
   };
 
   Future<GameSettings> load() async {

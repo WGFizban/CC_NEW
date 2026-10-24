@@ -6,10 +6,12 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../models/circus.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
+import '../models/history_entry.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../models/standings.dart';
+import '../services/history_storage.dart';
 import '../services/players_storage.dart';
 import '../services/settings_storage.dart';
 import '../theme/app_colors.dart';
@@ -43,11 +45,17 @@ class PlayersScreen extends StatefulWidget {
 class _PlayersScreenState extends State<PlayersScreen> {
   final _storage = PlayersStorage();
   final _settingsStorage = SettingsStorage();
+  final _historyStorage = HistoryStorage();
   final List<Player> _players = [];
   GameSettings _settings = GameSettings();
 
   /// Historia zatwierdzonych punktów w tej sesji (do cofania).
   final List<ScoreEvent> _history = [];
+
+  /// Trwała historia punktów (do przeglądania w ustawieniach). Cofnięcie
+  /// zdarzenia usuwa też jego wpis.
+  final List<HistoryEntry> _log = [];
+  final Map<ScoreEvent, int> _logIds = {};
 
   // Stoper liczy czas z [Stopwatch], więc nie gubi sekund, gdy aplikacja
   // jest w tle; [Timer] służy tylko do odświeżania widoku.
@@ -80,9 +88,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
   Future<void> _load() async {
     final loaded = await _storage.load();
     final settings = await _settingsStorage.load();
+    final log = await _historyStorage.load();
     if (!mounted) return;
     setState(() {
       _settings = settings;
+      _log
+        ..clear()
+        ..addAll(log);
       _players
         ..clear()
         ..addAll(loaded);
@@ -103,6 +115,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
   void _save() => unawaited(_storage.save(_players));
 
   void _saveSettings() => unawaited(_settingsStorage.save(_settings));
+
+  void _saveLog() => unawaited(_historyStorage.save(_log));
 
   /// Sortuje po wyniku na bieżąco, czyli z premią za surowce.
   void _sortPlayers() {
@@ -292,6 +306,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
     setState(() {
       event.apply();
       _history.add(event);
+      final entry = HistoryEntry.fromEvent(event);
+      _log.add(entry);
+      _logIds[event] = entry.id;
       final animal = event.animal;
       if (animal != null) {
         _settings.usedAnimals[animal] =
@@ -301,6 +318,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     });
     _save();
     _saveSettings();
+    _saveLog();
   }
 
   void _undo() {
@@ -308,6 +326,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final event = _history.removeLast();
     setState(() {
       event.revert();
+      final logId = _logIds.remove(event);
+      if (logId != null) _log.removeWhere((e) => e.id == logId);
       final animal = event.animal;
       if (animal != null) {
         final left = (_settings.usedAnimals[animal] ?? 0) - 1;
@@ -321,6 +341,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     });
     _save();
     _saveSettings();
+    _saveLog();
   }
 
   Future<void> _onReset() async {
@@ -338,11 +359,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
         p.goods.updateAll((goods, count) => 0);
       }
       _history.clear();
+      _logIds.clear();
+      _log.clear();
       _settings.usedAnimals.clear();
     });
     _resetTimer();
     _save();
     _saveSettings();
+    _saveLog();
   }
 
   Future<void> _openSettings() async {
@@ -352,6 +376,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
         builder: (_) => SettingsScreen(
           expansions: _settings.expansions,
           keepScreenOn: _settings.keepScreenOn,
+          history: List<HistoryEntry>.of(_log),
+          onClearHistory: () {
+            setState(() => _log.clear());
+            _saveLog();
+          },
           onChanged: (enabled, keepScreenOn) {
             setState(() {
               _settings.expansions
@@ -505,11 +534,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
               '${p.points + bonus}',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            if (bonus > 0)
-              Text(
-                '${p.points} + $bonus',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
           ],
         ),
       ),
