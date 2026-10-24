@@ -8,25 +8,33 @@ class HistoryChange {
   /// Surowce według nazw (np. „Wino": 1).
   final Map<String, int> goods;
 
+  /// Sztabki złota.
+  final int gold;
+
   const HistoryChange({
     required this.player,
     required this.points,
     this.goods = const {},
+    this.gold = 0,
   });
 
-  /// Surowce jako tekst, np. „Wino ×1, Sukno ×2".
-  String get goodsText =>
-      goods.entries.map((e) => '${e.key} ×${e.value}').join(', ');
+  /// Surowce i złoto jako tekst, np. „Wino ×1, Sukno ×2, Złoto ×3".
+  String get goodsText => [
+    for (final e in goods.entries) '${e.key} ×${e.value}',
+    if (gold != 0) 'Złoto ×$gold',
+  ].join(', ');
 
   Map<String, dynamic> toJson() => {
     'player': player,
     'points': points,
     'goods': goods,
+    'gold': gold,
   };
 
   factory HistoryChange.fromJson(Map<String, dynamic> json) => HistoryChange(
     player: json['player'] as String,
     points: (json['points'] as int?) ?? 0,
+    gold: (json['gold'] as int?) ?? 0,
     goods: {
       for (final e in ((json['goods'] as Map?) ?? const {}).entries)
         e.key as String: e.value as int,
@@ -66,6 +74,7 @@ class HistoryEntry {
             player: c.player.name,
             points: c.points,
             goods: {for (final g in c.goods.entries) g.key.displayName: g.value},
+            gold: c.gold,
           ),
       ],
     );
@@ -76,7 +85,7 @@ class HistoryEntry {
     for (final c in changes)
       '${c.player}: ${[
         if (c.points != 0) '${c.points > 0 ? '+' : ''}${c.points} pkt',
-        if (c.goods.isNotEmpty) c.goodsText,
+        if (c.goodsText.isNotEmpty) c.goodsText,
       ].join(', ')}',
   ];
 

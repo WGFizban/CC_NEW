@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'gold.dart';
 import 'goods.dart';
 import 'player.dart';
 
@@ -39,6 +40,16 @@ int goodsRemaining(Goods goods, List<Player> players) {
   return math.max(0, goods.supply - held);
 }
 
-/// Wynik gracza na bieżąco: punkty z planszy plus premia za surowce.
+/// Ile sztabek złota zostało jeszcze w puli, czyli poza graczami.
+int goldRemaining(List<Player> players) {
+  var held = 0;
+  for (final p in players) {
+    held += p.gold;
+  }
+  return math.max(0, kGoldSupply - held);
+}
+
+/// Wynik gracza na bieżąco: punkty z planszy plus premia za surowce oraz
+/// wartość zebranego złota.
 int totalScore(Player player, List<Player> players) =>
-    player.points + goodsBonus(player, players);
+    player.points + goodsBonus(player, players) + goldPoints(player.gold);

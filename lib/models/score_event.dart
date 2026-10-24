@@ -8,7 +8,15 @@ class ScoreChange {
   final int points;
   final Map<Goods, int> goods;
 
-  const ScoreChange(this.player, this.points, {this.goods = const {}});
+  /// Sztabki złota (minidodatek „Kopalnie złota").
+  final int gold;
+
+  const ScoreChange(
+    this.player,
+    this.points, {
+    this.goods = const {},
+    this.gold = 0,
+  });
 }
 
 /// Jedno zatwierdzenie punktów. Może dotyczyć wielu graczy naraz
@@ -32,6 +40,7 @@ class ScoreEvent {
   void _shift(int sign) {
     for (final change in changes) {
       change.player.points += sign * change.points;
+      change.player.gold += sign * change.gold;
       change.goods.forEach((goods, count) {
         change.player.goods[goods] =
             change.player.goodsOf(goods) + sign * count;

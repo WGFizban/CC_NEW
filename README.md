@@ -28,8 +28,10 @@ z obsługą wybranych dodatków.
 - jeden spójny zestaw ikon (`assets/icons/game/`).
 
 Kliknięcie gracza otwiera wybór rodzaju punktacji, a przytrzymanie – edycję
-lub usunięcie. Dodatki włączasz w menu (**Ustawienia…**); domyślnie są włączone
-wszystkie.
+lub usunięcie. Dodatki włączasz w menu (**Ustawienia…**); na starcie wszystkie
+są **wyłączone**. Gdy gra trwa (ruszył licznik albo ktoś ma już punkty,
+surowce lub złoto), dodatków nie można zmieniać do końca gry – zakończ ją i
+zacznij nową albo zresetuj punkty.
 
 ## Obsługiwane dodatki
 
@@ -60,8 +62,6 @@ wszystkie.
 - Dodatek można wyłączyć w ustawieniach, wtedy znika kafelek i opcja.
 
 ### Mosty, zamki i bazary
-- **Mosty** punktują jak płytki z drogą: płytkę z mostem liczysz raz, więc
-  w osobnym liczniku wpisz tylko te płytki, których nie ma jeszcze w „Płytkach".
 - **Zamki** na polach są warte 4 pkt zamiast 3 (ze świnką 5).
 - **Zamek** przy mieście, drodze lub klasztorze: właściciel zamku dostaje
   punkty ukończonej budowli. Nie ma osobnego kafelka – pole **Punkty jako
@@ -74,6 +74,28 @@ wszystkie.
 - Kafelek **Bazar**: rozliczenie licytacji – kupno od najwyżej licytującego,
   sprzedaż jemu albo zapłata, gdy licytował tylko wybierający. Wynik może
   spaść poniżej zera.
+
+### Opactwo i burmistrz
+- **Opactwo** (kafelek w wyborze punktacji): punktuje jak klasztor, czyli 9 pkt
+  po ukończeniu, a na koniec gry 1 pkt za płytkę. Działają przy nim winnice,
+  zamek, wróżka, dyrektor cyrku, punkty wspólne i sztabki złota.
+- **Burmistrz**: w punktacji miasta zwijany pomocnik **Przewaga w mieście**.
+  Siła gracza to ludki (zwykły 1, duży 2) plus burmistrz o sile równej liczbie
+  sztandarów. Pokazuje, kto dostaje punkty (przy remisie wszyscy), i dodaje
+  ich do punktów wspólnych. Wóz liczy się jak zwykły ludek.
+- **Stodoła**: w punktacji pól wybór sposobu punktowania. Zwykłe (także w chwili
+  postawienia stodoły): 3 pkt za miasto. Połączone ze stodołą: 1 pkt za miasto,
+  2 za zamek, ze świnką o 1 więcej. Właściciel stodoły na koniec gry: 4 pkt za
+  miasto i 5 za zamek, bez świnki; kilku właścicieli dodajesz w punktach
+  wspólnych.
+
+### Kopalnie złota
+- 16 sztabek złota, dopisywanych w punktacji miasta, drogi, klasztoru i opactwa
+  (sekcja **Sztabki złota**: punktujący i gracze z punktów wspólnych) albo
+  osobnym kafelkiem **Złoto**. Rolnicy złota nie dostają.
+- Na koniec gry każda sztabka jest warta tym więcej, im ich więcej: 1–3 sztuki
+  po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4. Wartość liczy się na bieżąco
+  i jest w wyniku, na liście i w podsumowaniu gry.
 
 ### Cyrk objazdowy
 - **Cyrk**: wybierasz odkryty żeton zwierzęcia (słoń 7, lew 6, niedźwiedź 5,

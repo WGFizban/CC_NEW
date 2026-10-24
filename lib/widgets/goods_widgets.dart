@@ -17,7 +17,7 @@ extension GoodsStyle on Goods {
   Color get color => switch (this) {
     Goods.wine => const Color(0xFF7B3FA0),
     Goods.grain => const Color(0xFFD99A1E),
-    Goods.cloth => const Color(0xFFD6456B),
+    Goods.cloth => const Color(0xFFC8303B),
   };
 }
 
@@ -130,6 +130,33 @@ class _GoodsBadge extends StatelessWidget {
             '$count',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Sztabki złota gracza w wierszu (minidodatek „Kopalnie złota").
+class GoldBadge extends StatelessWidget {
+  final int count;
+
+  const GoldBadge({super.key, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.white54,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black26),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const GameIcon('assets/icons/game/gold.svg', size: 20),
+          const SizedBox(width: 4),
+          Text('$count', style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );

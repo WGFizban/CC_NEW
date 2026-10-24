@@ -10,6 +10,11 @@ enum Expansion {
     'Surowce (wino, żyto, sukno) i premia 10 pkt dla prowadzącego, '
         'liczona na bieżąco.',
   ),
+  abbeyMayor(
+    'Opactwo i burmistrz',
+    'Opactwo (punktuje jak klasztor), burmistrz w mieście (siła równa '
+        'sztandarom) i stodoła na polach.',
+  ),
   princessDragon(
     'Księżniczka i smok',
     'Wróżka: 1 pkt na początku tury i 3 pkt przy punktowaniu budowli '
@@ -17,7 +22,7 @@ enum Expansion {
   ),
   bridgesCastlesBazaars(
     'Mosty, zamki i bazary',
-    'Mosty na drogach, punktacja zamków, zamki na polach i licytacje '
+    'Punktacja zamków, zamki na polach i licytacje '
         'na bazarach.',
   ),
   circus(
@@ -28,6 +33,11 @@ enum Expansion {
   hillsSheep(
     'Wzgórza i owce',
     'Stada owiec z żetonów 1–4 owce, w granicach limitów z gry.',
+  ),
+  goldMines(
+    'Kopalnie złota',
+    'Sztabki złota za ukończone budowle; na koniec gry im więcej sztabek, '
+        'tym więcej warta każda (1–4 pkt).',
   );
 
   const Expansion(this.displayName, this.description);

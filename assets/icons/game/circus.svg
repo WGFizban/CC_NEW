@@ -1,12 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
-<g fill="none" stroke="#3B2F2F" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-
-<rect x="14" y="50" width="68" height="34" fill="#F4EBD0"/>
-<polygon points="48,18 8,50 24,50" fill="#C0504D"/><polygon points="48,18 24,50 40,50" fill="#F4EBD0"/><polygon points="48,18 40,50 56,50" fill="#C0504D"/><polygon points="48,18 56,50 72,50" fill="#F4EBD0"/><polygon points="48,18 72,50 88,50" fill="#C0504D"/>
-<path d="M38 84 V66 Q48 52 58 66 V84 Z" fill="#5B3A5B"/>
-<path d="M48 18 V5"/>
-<path d="M48 5 L62 9 L48 14 Z" fill="#F2B63D" stroke-width="2.5"/>
-<path d="M8 86 H88" stroke-width="3"/>
-
+<defs><clipPath id="t"><rect x="4" y="4" width="88" height="88" rx="18"/></clipPath></defs>
+<rect x="4" y="4" width="88" height="88" rx="18" fill="#A9D3EC"/>
+<g clip-path="url(#t)"><ellipse cx="48" cy="88" rx="60" ry="14" fill="#8FC46A"/></g>
+<g fill="none" stroke="#3B2F2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M48 28 L18 66 L30 66 Z" fill="#C8433A" stroke="none"/><path d="M48 28 L30 66 L42 66 Z" fill="#F8EDCD" stroke="none"/><path d="M48 28 L42 66 L54 66 Z" fill="#C8433A" stroke="none"/><path d="M48 28 L54 66 L66 66 Z" fill="#F8EDCD" stroke="none"/><path d="M48 28 L66 66 L78 66 Z" fill="#C8433A" stroke="none"/><path d="M48 28 L18 66 L78 66 Z" fill="none"/><path d="M18 66 H78 V74 H18 Z" fill="#E2685D"/><path d="M42 74 V62 a6 6 0 0 1 12 0 V74 Z" fill="#3B2F2F"/><path d="M48 28 V14" stroke-width="3"/><path d="M48 14 L62 18 L48 22 Z" fill="#E3A92B" stroke-width="2.2"/>
 </g>
+<rect x="4" y="4" width="88" height="88" rx="18" fill="none" stroke="#3B2F2F" stroke-width="3.5"/>
 </svg>

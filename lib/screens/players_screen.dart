@@ -6,6 +6,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../models/circus.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
+import '../models/game_state.dart';
 import '../models/history_entry.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
@@ -364,6 +365,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     setState(() {
       for (final p in _players) {
         p.points = 0;
+        p.gold = 0;
         p.goods.updateAll((goods, count) => 0);
       }
       _history.clear();
@@ -402,6 +404,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
           players: List<Player>.of(_players),
           log: List<HistoryEntry>.of(_log),
           showGoods: _has(Expansion.tradersBuilders),
+          showGold: _has(Expansion.goldMines),
           elapsed: _stopwatch.elapsed,
         ),
       ),
@@ -416,6 +419,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
         builder: (_) => SettingsScreen(
           expansions: _settings.expansions,
           keepScreenOn: _settings.keepScreenOn,
+          expansionsLocked: isGameStarted(
+            timerRunning: _stopwatch.isRunning,
+            elapsed: _stopwatch.elapsed,
+            players: _players,
+          ),
           onChanged: (enabled, keepScreenOn) {
             setState(() {
               _settings.expansions
@@ -553,8 +561,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   Widget _buildPlayerCard(Player p) {
-    final bonus = goodsBonus(p, _players);
+    final total = totalScore(p, _players);
     final hasGoods = _has(Expansion.tradersBuilders) && p.goodsTotal > 0;
+    final hasGold = _has(Expansion.goldMines) && p.gold > 0;
 
     return Card(
       color: kBrandColor.withValues(alpha: 180 / 255),
@@ -567,22 +576,22 @@ class _PlayersScreenState extends State<PlayersScreen> {
           p.name,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        subtitle: hasGoods
+        subtitle: hasGoods || hasGold
             ? Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: GoodsBadges(player: p, players: _players),
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: [
+                    if (hasGoods) GoodsBadges(player: p, players: _players),
+                    if (hasGold) GoldBadge(count: p.gold),
+                  ],
+                ),
               )
             : null,
-        trailing: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              '${p.points + bonus}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ],
+        trailing: Text(
+          '$total',
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
     );

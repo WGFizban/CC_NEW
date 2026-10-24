@@ -6,7 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cc_new/models/circus.dart';
 import 'package:cc_new/models/expansion.dart';
 import 'package:cc_new/models/fairy.dart';
+import 'package:cc_new/models/game_state.dart';
+import 'package:cc_new/models/gold.dart';
 import 'package:cc_new/models/goods.dart';
+import 'package:cc_new/models/mayor.dart';
 import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/score_event.dart';
@@ -22,23 +25,11 @@ Player _player(String name, {int points = 0, Map<Goods, int>? goods}) =>
 
 void main() {
   group('mosty, zamki, dyrektor cyrku w punktacji', () {
-    test('most liczy się jak płytka drogi', () {
-      expect(
-        calculatePoints(ScoringType.road, tiles: 4, bridges: 2),
-        6,
-      );
-      expect(
-        calculatePoints(ScoringType.road, tiles: 4, bridges: 2, bonus: true),
-        12,
-      );
-    });
-
     test('nieukończona droga z karczmą nadal daje 0 pkt', () {
       expect(
         calculatePoints(
           ScoringType.road,
           tiles: 4,
-          bridges: 2,
           completed: false,
           bonus: true,
         ),
@@ -375,14 +366,14 @@ void main() {
   group('ustawienia', () {
     TestWidgetsFlutterBinding.ensureInitialized();
 
-    test('domyślnie ekran nie jest wygaszany i wszystkie dodatki są włączone',
+    test('domyślnie ekran nie jest wygaszany i wszystkie dodatki są wyłączone',
         () async {
       SharedPreferences.setMockInitialValues({});
 
       final settings = await SettingsStorage().load();
 
       expect(settings.keepScreenOn, isTrue);
-      expect(settings.expansions, Expansion.values.toSet());
+      expect(settings.expansions, isEmpty);
     });
 
     test('ustawienie nie wygaszania ekranu jest zapamiętywane', () async {
@@ -395,24 +386,31 @@ void main() {
       expect(restored.keepScreenOn, isFalse);
     });
 
-    test('po aktualizacji nowe dodatki (Księżniczka i smok, Karczmy i katedry) '
-        'są włączone',
-        () async {
-      // Zapis sprzed wprowadzenia dodatku: wybrany tylko cyrk.
+    test('stary zapis: wróżka, katedra i karczma zostają włączone, nowe są '
+        'wyłączone', () async {
+      // Zapis sprzed wprowadzenia dodatków: wybrany tylko cyrk.
       SharedPreferences.setMockInitialValues({
         'expansions': ['circus'],
       });
 
       final settings = await SettingsStorage().load();
 
-      expect(
-        settings.expansions,
-        {
-          Expansion.circus,
-          Expansion.princessDragon,
-          Expansion.innsCathedrals,
-        },
-      );
+      expect(settings.expansions, {
+        Expansion.circus,
+        Expansion.princessDragon,
+        Expansion.innsCathedrals,
+      });
+    });
+
+    test('nowy dodatek w aktualnym zapisie startuje jako wyłączony', () async {
+      SharedPreferences.setMockInitialValues({
+        'expansions': ['circus'],
+        'expansions_seen': ['circus', 'princessDragon', 'innsCathedrals'],
+      });
+
+      final settings = await SettingsStorage().load();
+
+      expect(settings.expansions, {Expansion.circus});
     });
 
     test('świadomie wyłączony dodatek pozostaje wyłączony', () async {
@@ -425,6 +423,220 @@ void main() {
       final restored = await storage.load();
 
       expect(restored.expansions, {Expansion.circus});
+    });
+  });
+
+  group('opactwo', () {
+    test('ukończone opactwo daje 9 pkt, nieukończone 1 pkt za płytkę', () {
+      expect(calculatePoints(ScoringType.abbey), 9);
+      expect(calculatePoints(ScoringType.abbey, tiles: 6, completed: false), 6);
+    });
+
+    test('winnice dodają się do ukończonego opactwa', () {
+      expect(
+        calculatePoints(ScoringType.abbey, vineyards: 2),
+        9 + 2 * kVineyardPoints,
+      );
+    });
+
+    test('opactwo jest budowlą dla wróżki, zamku i złota', () {
+      expect(ScoringType.abbey.isFeature, isTrue);
+      expect(ScoringType.abbey.supportsCastle, isTrue);
+      expect(ScoringType.abbey.supportsGold, isTrue);
+      expect(calculatePoints(ScoringType.abbey, withFairy: true), 12);
+    });
+  });
+
+  group('stodoła', () {
+    test('zwykłe pole: 3 pkt za miasto, 4 za zamek, ze świnką o 1 więcej', () {
+      expect(calculatePoints(ScoringType.meadow, tiles: 2, castles: 1), 10);
+      expect(
+        calculatePoints(ScoringType.meadow, tiles: 2, castles: 1, bonus: true),
+        13,
+      );
+    });
+
+    test('pole połączone ze stodołą: 1 pkt za miasto, 2 za zamek', () {
+      expect(
+        calculatePoints(
+          ScoringType.meadow,
+          tiles: 3,
+          castles: 1,
+          farm: FarmScoring.barnJoined,
+        ),
+        5,
+      );
+    });
+
+    test('pole połączone ze stodołą ze świnką: 2 pkt za miasto, 3 za zamek', () {
+      expect(
+        calculatePoints(
+          ScoringType.meadow,
+          tiles: 3,
+          castles: 1,
+          bonus: true,
+          farm: FarmScoring.barnJoined,
+        ),
+        9,
+      );
+    });
+
+    test('właściciel stodoły: 4 pkt za miasto i 5 za zamek, bez świnki', () {
+      expect(
+        calculatePoints(
+          ScoringType.meadow,
+          tiles: 3,
+          castles: 1,
+          farm: FarmScoring.barnOwner,
+        ),
+        17,
+      );
+      expect(
+        calculatePoints(
+          ScoringType.meadow,
+          tiles: 3,
+          castles: 1,
+          bonus: true,
+          farm: FarmScoring.barnOwner,
+        ),
+        17,
+      );
+    });
+  });
+
+  group('burmistrz', () {
+    test('siła burmistrza to liczba sztandarów', () {
+      expect(cityStrength(mayor: true, banners: 3), 3);
+      expect(cityStrength(mayor: true, banners: 0), 0);
+    });
+
+    test('siły ludków sumują się: zwykły 1, duży 2', () {
+      expect(cityStrength(knights: 2, bigFollower: true), 4);
+      expect(cityStrength(knights: 1, mayor: true, banners: 2), 3);
+    });
+
+    test('przewagę ma największa niezerowa siła, remis dzieli', () {
+      final a = _player('A');
+      final b = _player('B');
+      final c = _player('C');
+
+      expect(majorityHolders({a: 3, b: 2, c: 0}), [a]);
+      expect(majorityHolders({a: 2, b: 2, c: 0}), [a, b]);
+      expect(majorityHolders({a: 0, b: 0, c: 0}), isEmpty);
+    });
+  });
+
+  group('kopalnie złota', () {
+    test('wartość sztabki zależy od liczby sztabek', () {
+      expect(goldValuePerPiece(0), 0);
+      expect(goldValuePerPiece(3), 1);
+      expect(goldValuePerPiece(4), 2);
+      expect(goldValuePerPiece(6), 2);
+      expect(goldValuePerPiece(7), 3);
+      expect(goldValuePerPiece(9), 3);
+      expect(goldValuePerPiece(10), 4);
+    });
+
+    test('przykład z instrukcji: 7 sztabek to 21 pkt', () {
+      expect(goldPoints(7), 21);
+    });
+
+    test('złoto wlicza się do wyniku na bieżąco', () {
+      final a = _player('A', points: 102)..gold = 7;
+
+      expect(totalScore(a, [a]), 123);
+    });
+
+    test('w puli zostaje reszta z 16 sztabek', () {
+      final a = _player('A')..gold = 5;
+      final b = _player('B')..gold = 4;
+
+      expect(goldRemaining([a, b]), kGoldSupply - 9);
+    });
+
+    test('zdarzenie dopisuje i cofa złoto', () {
+      final a = _player('A');
+      final event = ScoreEvent('test', [ScoreChange(a, 6, gold: 2)]);
+
+      event.apply();
+      expect(a.gold, 2);
+      expect(a.points, 6);
+
+      event.revert();
+      expect(a.gold, 0);
+      expect(a.points, 0);
+    });
+
+    test('złoto przetrwa zapis gracza', () {
+      final a = _player('A')..gold = 3;
+
+      expect(Player.fromJson(a.toJson()).gold, 3);
+    });
+
+    test('złoto za miasto, drogę, klasztor i opactwo, nie za pola', () {
+      expect(ScoringType.city.supportsGold, isTrue);
+      expect(ScoringType.road.supportsGold, isTrue);
+      expect(ScoringType.cloister.supportsGold, isTrue);
+      expect(ScoringType.meadow.supportsGold, isFalse);
+    });
+  });
+
+  group('rozpoczęcie gry', () {
+    test('świeża gra nie jest rozpoczęta', () {
+      expect(
+        isGameStarted(
+          timerRunning: false,
+          elapsed: Duration.zero,
+          players: [_player('A'), _player('B')],
+        ),
+        isFalse,
+      );
+    });
+
+    test('gra rozpoczyna się po ruszeniu licznika', () {
+      expect(
+        isGameStarted(
+          timerRunning: true,
+          elapsed: Duration.zero,
+          players: [_player('A')],
+        ),
+        isTrue,
+      );
+      expect(
+        isGameStarted(
+          timerRunning: false,
+          elapsed: const Duration(seconds: 5),
+          players: [_player('A')],
+        ),
+        isTrue,
+      );
+    });
+
+    test('gra rozpoczyna się po dodaniu punktów, surowców lub złota', () {
+      expect(
+        isGameStarted(
+          timerRunning: false,
+          elapsed: Duration.zero,
+          players: [_player('A', points: 2)],
+        ),
+        isTrue,
+      );
+      expect(
+        isGameStarted(
+          timerRunning: false,
+          elapsed: Duration.zero,
+          players: [_player('A', goods: {Goods.wine: 1})],
+        ),
+        isTrue,
+      );
+      expect(
+        isGameStarted(
+          timerRunning: false,
+          elapsed: Duration.zero,
+          players: [_player('A')..gold = 1],
+        ),
+        isTrue,
+      );
     });
   });
 
