@@ -5,7 +5,6 @@ import '../models/expansion.dart';
 import '../models/fairy.dart';
 import '../models/gold.dart';
 import '../models/goods.dart';
-import '../models/mayor.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
@@ -22,13 +21,6 @@ import '../widgets/number_keypad.dart';
 import '../widgets/player_picker.dart';
 
 enum _Field { tiles, banners }
-
-/// Ludki gracza w mieście, do ustalenia przewagi (burmistrz).
-class _Force {
-  int knights = 0;
-  bool big = false;
-  bool mayor = false;
-}
 
 /// Ekran liczenia punktów za miasto, drogę, klasztor, pola, zamek, surowce
 /// i dyrektora cyrku. Zwraca [ScoreEvent] przez `Navigator.pop` (albo `null`,
@@ -72,16 +64,13 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool _scorerCastle = false;
   int _scorerCastles = 1;
 
-  /// Punktujący ma ludka w budowli i dodatkowo zamki przy niej: dostaje swoje
+  /// Punktujący ma mepla w budowli i dodatkowo zamki przy niej: dostaje swoje
   /// punkty plus punkty budowli za każdy zamek.
   bool _scorerHasCastle = false;
   int _scorerHasCastles = 1;
 
   /// Sposób punktowania pola (stodoła, dodatek „Opactwo i burmistrz").
   FarmScoring _farm = FarmScoring.normal;
-
-  /// Ludki w mieście do ustalenia przewagi (burmistrz).
-  final Map<Player, _Force> _force = {};
 
   /// Sztabki złota (minidodatek „Kopalnie złota") dla graczy.
   final Map<Player, int> _gold = {};
@@ -107,11 +96,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool get _showGold =>
       _type == ScoringType.gold ||
       (_type.supportsGold && _completed && _has(Expansion.goldMines));
-
-  bool get _showMayor =>
-      _type == ScoringType.city &&
-      _completed &&
-      _has(Expansion.abbeyMayor);
 
   FarmScoring get _farmActive =>
       _type == ScoringType.meadow && _has(Expansion.abbeyMayor)
@@ -150,7 +134,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   bool get _keypadVisible => _usesKeypad && _keypadOpen;
 
-  /// Wróżka i dyrektor cyrku są przy ludku, a właściciel zamku go nie ma.
+  /// Wróżka i dyrektor cyrku są przy meplu, a właściciel zamku go nie ma.
   bool get _showRingmaster =>
       _isFeature && _has(Expansion.circus) && !_castleMode;
 
@@ -189,7 +173,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   int get _points => _calc(circusTiles: _ringmasterActive ? _circusTiles : 0, fairy: _showFairy && _fairy);
 
-  /// Punkty budowli bez premii przy ludku (wróżka, dyrektor cyrku) – to dostają
+  /// Punkty budowli bez premii przy meplu (wróżka, dyrektor cyrku) – to dostają
   /// współdzielący i właściciele zamków.
   int get _basePoints => _calc(circusTiles: 0, fairy: false);
 
@@ -370,7 +354,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                       if (_castleOk) ..._buildCastleMode(),
                       if (_showFairy) ..._buildFairy(),
                       if (_showRingmaster) ..._buildRingmaster(),
-                      if (_showMayor) _buildMayor(),
                       if (_showSharing) _buildSharing(),
                       if (_showGold) _buildGold(),
                       if (_showGoods) _buildGoods(),
@@ -610,120 +593,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     );
   }
 
-  int _strength(Player p) {
-    final f = _force[p];
-    if (f == null) return 0;
-    return cityStrength(
-      knights: f.knights,
-      bigFollower: f.big,
-      mayor: f.mayor,
-      banners: _banners,
-    );
-  }
-
-  /// Pomocnik przewagi w mieście: siła ludków, w tym burmistrza (siła równa
-  /// sztandarom). Pokazuje, kto dostaje punkty, i dodaje ich do punktów wspólnych.
-  Widget _buildMayor() {
-    final strengths = {for (final p in widget.players) p: _strength(p)};
-    final leaders = majorityHolders(strengths);
-    final others = [
-      for (final p in leaders)
-        if (p != widget.player) p,
-    ];
-    final String summary;
-    if (leaders.isEmpty) {
-      summary = 'nikt nie ma przewagi';
-    } else {
-      summary =
-          '${leaders.map((p) => p.name).join(', ')} '
-          '(siła ${strengths[leaders.first]})';
-    }
-
-    return ExpansionTile(
-      initiallyExpanded: false,
-      shape: const Border(),
-      collapsedShape: const Border(),
-      tilePadding: EdgeInsets.zero,
-      title: LabelWithHint(
-        'Przewaga w mieście (burmistrz)',
-        'Siła gracza: zwykły ludek (także wóz) 1, duży ludek 2, burmistrz '
-            'tyle, ile sztandarów w mieście (bez sztandarów 0). Punkty '
-            'dostaje gracz z największą siłą, a przy remisie wszyscy '
-            'remisujący – pełne punkty za miasto.',
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text(summary),
-      children: [
-        for (final p in widget.players) _forceRow(p),
-        if (leaders.isNotEmpty && !leaders.contains(widget.player))
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Text(
-              'Uwaga: ${widget.player.name} nie ma przewagi. Punkty '
-              'dostaje ${leaders.map((p) => p.name).join(', ')}.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        if (others.isNotEmpty)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              icon: const Icon(Icons.group_add),
-              label: const Text('Dodaj do punktów wspólnych'),
-              onPressed: () => setState(() {
-                for (final p in others) {
-                  _shares.putIfAbsent(p, () => const PointsShare());
-                }
-              }),
-            ),
-          ),
-        const SizedBox(height: 8),
-      ],
-    );
-  }
-
-  Widget _forceRow(Player p) {
-    final f = _force.putIfAbsent(p, _Force.new);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          MeepleIcon(color: p.color, size: 26),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(p.name),
-                Wrap(
-                  spacing: 6,
-                  children: [
-                    if (_has(Expansion.innsCathedrals))
-                      FilterChip(
-                        label: const Text('Duży'),
-                        selected: f.big,
-                        onSelected: (v) => setState(() => f.big = v),
-                      ),
-                    FilterChip(
-                      label: const Text('Burmistrz'),
-                      selected: f.mayor,
-                      onSelected: (v) => setState(() => f.mayor = v),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          CounterStepper(
-            value: f.knights,
-            max: 20,
-            onChanged: (v) => setState(() => f.knights = v),
-          ),
-        ],
-      ),
-    );
-  }
-
   /// Sztabki złota z ukończonej budowli (minidodatek „Kopalnie złota").
   Widget _buildGold() {
     final chosen = [
@@ -780,7 +649,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     );
   }
 
-  /// „Punkty jako zamek": nikt nie miał w budowli ludka, a zamek stoi przy
+  /// „Punkty jako zamek": nikt nie miał w budowli mepla, a zamek stoi przy
   /// niej – punktujący dostaje punkty jako jego właściciel.
   List<Widget> _buildCastleMode() {
     return [
@@ -789,7 +658,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         _scorerCastle,
         (v) => _scorerCastle = v,
         hint:
-            'Zaznacz, gdy nikt nie miał ludka w tej budowli, ale '
+            'Zaznacz, gdy nikt nie miał mepla w tej budowli, ale '
             '${widget.player.name} ma przy niej zamek: dostaje punkty '
             'ukończonej budowli (za każdy swój zamek).',
       ),
@@ -847,7 +716,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     );
   }
 
-  /// Punktujący ma ludka w budowli i dodatkowo zamek przy niej: dostaje swoje
+  /// Punktujący ma mepla w budowli i dodatkowo zamek przy niej: dostaje swoje
   /// punkty oraz punkty za zamek (inaczej niż „Punkty jako zamek").
   Widget _scorerCastleRow() {
     return Column(
@@ -919,11 +788,11 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   List<Widget> _buildFairy() {
     return [
       _check(
-        'Wróżka przy ludku (+$kFairyFeaturePoints pkt)',
+        'Wróżka przy meplu (+$kFairyFeaturePoints pkt)',
         _fairy,
         (v) => _fairy = v,
         hint:
-            'Jeśli wróżka stoi przy ludku w punktowanej budowli (miasto, '
+            'Jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, '
             'droga, klasztor lub pole), jego właściciel dostaje '
             '$kFairyFeaturePoints pkt niezależnie od zwykłej punktacji. '
             'Dotyczy też punktowania na koniec gry.',
@@ -948,7 +817,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         isCity ? 'Surowce w mieście' : 'Surowce do dopisania',
         isCity
             ? 'Surowce dostaje gracz, który domknął miasto – '
-                  'nawet bez ludka w mieście.'
+                  'nawet bez mepla w mieście.'
             : 'Surowce dostaje wskazany gracz.',
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),

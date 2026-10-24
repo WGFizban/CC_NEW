@@ -9,7 +9,6 @@ import 'package:cc_new/models/fairy.dart';
 import 'package:cc_new/models/game_state.dart';
 import 'package:cc_new/models/gold.dart';
 import 'package:cc_new/models/goods.dart';
-import 'package:cc_new/models/mayor.dart';
 import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/score_event.dart';
@@ -144,11 +143,11 @@ void main() {
       expect(CircusAnimal.flea.value, 1);
     });
 
-    test('foka i trzy ludki dają 12 pkt (przykład z instrukcji)', () {
+    test('foka i trzy meple dają 12 pkt (przykład z instrukcji)', () {
       expect(circusPoints(CircusAnimal.seal, 3), 12);
     });
 
-    test('akrobata jest wart 5 pkt, piramida ma 3 ludki', () {
+    test('akrobata jest wart 5 pkt, piramida ma 3 meple', () {
       expect(acrobatPoints(3), 15);
       expect(kPyramidSize, 3);
     });
@@ -504,28 +503,6 @@ void main() {
     });
   });
 
-  group('burmistrz', () {
-    test('siła burmistrza to liczba sztandarów', () {
-      expect(cityStrength(mayor: true, banners: 3), 3);
-      expect(cityStrength(mayor: true, banners: 0), 0);
-    });
-
-    test('siły ludków sumują się: zwykły 1, duży 2', () {
-      expect(cityStrength(knights: 2, bigFollower: true), 4);
-      expect(cityStrength(knights: 1, mayor: true, banners: 2), 3);
-    });
-
-    test('przewagę ma największa niezerowa siła, remis dzieli', () {
-      final a = _player('A');
-      final b = _player('B');
-      final c = _player('C');
-
-      expect(majorityHolders({a: 3, b: 2, c: 0}), [a]);
-      expect(majorityHolders({a: 2, b: 2, c: 0}), [a, b]);
-      expect(majorityHolders({a: 0, b: 0, c: 0}), isEmpty);
-    });
-  });
-
   group('kopalnie złota', () {
     test('wartość sztabki zależy od liczby sztabek', () {
       expect(goldValuePerPiece(0), 0);
@@ -673,7 +650,7 @@ void main() {
       expect(result, {a: 10, b: 10, c: 20});
     });
 
-    test('premie przy ludku dostaje tylko punktujący', () {
+    test('premie przy meplu dostaje tylko punktujący', () {
       final a = _player('A');
       final b = _player('B');
 
@@ -687,7 +664,7 @@ void main() {
       expect(result, {a: 9, b: 6});
     });
 
-    test('punktujący jako zamek nie dostaje premii przy ludku', () {
+    test('punktujący jako zamek nie dostaje premii przy meplu', () {
       final a = _player('A');
 
       final result = splitPoints(
@@ -701,7 +678,7 @@ void main() {
       expect(result, {a: 8});
     });
 
-    test('punktujący z ludkiem i zamkiem dostaje punkty oraz punkty za zamek',
+    test('punktujący z meplem i zamkiem dostaje punkty oraz punkty za zamek',
         () {
       final a = _player('A');
 

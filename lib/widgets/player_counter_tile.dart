@@ -4,7 +4,7 @@ import '../models/player.dart';
 import 'counter_stepper.dart';
 import 'meeple_icon.dart';
 
-/// Wiersz „gracz + licznik", np. liczba ludków na planszy.
+/// Wiersz „gracz + licznik", np. liczba mepli na planszy.
 class PlayerCounterTile extends StatelessWidget {
   final Player player;
   final int value;

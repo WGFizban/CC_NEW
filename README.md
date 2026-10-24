@@ -5,7 +5,7 @@ z obsługą wybranych dodatków.
 
 ## Funkcje
 
-- lista graczy z pionkami w wybranych kolorach, posortowana wg wyniku na bieżąco,
+- lista graczy z meplami w wybranych kolorach, posortowana wg wyniku na bieżąco,
 - punkty za miasto, drogę, klasztor i pola (z katedrą, karczmą, świnką
   oraz obiektami nieukończonymi),
 - klawiatura numeryczna wysuwana od dołu (po wejściu na ekran i po stuknięciu
@@ -43,7 +43,7 @@ zacznij nową albo zresetuj punkty.
 
 ### Kupcy i budowniczowie
 - W punktacji miasta liczniki **wina, żyta i sukna** – surowce dostaje gracz,
-  który domknął miasto (nawet bez ludka w mieście).
+  który domknął miasto (nawet bez mepla w mieście).
 - Osobny kafelek **Surowce** do ręcznego dopisania żetonów.
 - Liczniki pilnują limitów z gry: 9 wina, 6 żyta i 5 sukna (razem 20 żetonów).
 - **Premia 10 pkt** dla prowadzącego w każdym rodzaju surowca liczona na
@@ -55,9 +55,9 @@ zacznij nową albo zresetuj punkty.
 
 ### Księżniczka i smok
 - **Wróżka**: kafelek dopisuje graczowi od razu **1 pkt** (wróżka stoi przy
-  jego ludku na początku tury), z możliwością cofnięcia z paska u dołu.
-- **+3 pkt** za budowlę punktowaną z ludkiem przy wróżce to opcja
-  „Wróżka przy ludku" przy mieście, drodze, klasztorze i polu; dodaje się do
+  jego meplu na początku tury), z możliwością cofnięcia z paska u dołu.
+- **+3 pkt** za budowlę punktowaną z meplem przy wróżce to opcja
+  „Wróżka przy meplu" przy mieście, drodze, klasztorze i polu; dodaje się do
   zwykłej punktacji, także gdy ta wynosi 0. Dotyczy też końca gry.
 - Dodatek można wyłączyć w ustawieniach, wtedy znika kafelek i opcja.
 
@@ -79,10 +79,6 @@ zacznij nową albo zresetuj punkty.
 - **Opactwo** (kafelek w wyborze punktacji): punktuje jak klasztor, czyli 9 pkt
   po ukończeniu, a na koniec gry 1 pkt za płytkę. Działają przy nim winnice,
   zamek, wróżka, dyrektor cyrku, punkty wspólne i sztabki złota.
-- **Burmistrz**: w punktacji miasta zwijany pomocnik **Przewaga w mieście**.
-  Siła gracza to ludki (zwykły 1, duży 2) plus burmistrz o sile równej liczbie
-  sztandarów. Pokazuje, kto dostaje punkty (przy remisie wszyscy), i dodaje
-  ich do punktów wspólnych. Wóz liczy się jak zwykły ludek.
 - **Stodoła**: w punktacji pól wybór sposobu punktowania. Zwykłe (także w chwili
   postawienia stodoły): 3 pkt za miasto. Połączone ze stodołą: 1 pkt za miasto,
   2 za zamek, ze świnką o 1 więcej. Właściciel stodoły na koniec gry: 4 pkt za
@@ -99,9 +95,9 @@ zacznij nową albo zresetuj punkty.
 
 ### Cyrk objazdowy
 - **Cyrk**: wybierasz odkryty żeton zwierzęcia (słoń 7, lew 6, niedźwiedź 5,
-  foka 4, małpka 3, pchła 1) i wpisujesz, ile ludków ma każdy gracz na płytce
+  foka 4, małpka 3, pchła 1) i wpisujesz, ile mepli ma każdy gracz na płytce
   cyrku i ośmiu sąsiednich. Aplikacja pilnuje zapasu żetonów (16 sztuk).
-- **Akrobaci**: ukończona piramida (3 ludki, każdy akrobata 5 pkt) oraz
+- **Akrobaci**: ukończona piramida (3 meple, każdy akrobata 5 pkt) oraz
   punktacja końcowa (5 pkt za każdego akrobatę na planszy).
 - **Dyrektor cyrku**: 2 pkt za każdą płytkę cyrku lub akrobatów wokół niego,
   jako opcja przy mieście, drodze, klasztorze i polach albo osobny kafelek.
@@ -119,7 +115,7 @@ zacznij nową albo zresetuj punkty.
 | `models/` | gracz, reguły punktacji, surowce, cyrk, owce, zdarzenia punktowe |
 | `services/` | zapis graczy i ustawień (`shared_preferences`) |
 | `screens/` | lista graczy, wybór punktacji i osobne ekrany dodatków |
-| `widgets/` | pionek, liczniki, klawiatura, piramida, widżety surowców |
+| `widgets/` | mepel, liczniki, klawiatura, piramida, widżety surowców |
 | `theme/` | kolory aplikacji i graczy |
 
 ## Uruchomienie

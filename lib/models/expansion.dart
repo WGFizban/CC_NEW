@@ -12,13 +12,12 @@ enum Expansion {
   ),
   abbeyMayor(
     'Opactwo i burmistrz',
-    'Opactwo (punktuje jak klasztor), burmistrz w mieście (siła równa '
-        'sztandarom) i stodoła na polach.',
+    'Opactwo (punktuje jak klasztor) i stodoła na polach.',
   ),
   princessDragon(
     'Księżniczka i smok',
     'Wróżka: 1 pkt na początku tury i 3 pkt przy punktowaniu budowli '
-        'z jej ludkiem.',
+        'z jej meplem.',
   ),
   bridgesCastlesBazaars(
     'Mosty, zamki i bazary',

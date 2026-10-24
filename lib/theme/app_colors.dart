@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Główny kolor aplikacji (lawenda) – używany w motywie, kartach i tle pionka.
+/// Główny kolor aplikacji (lawenda) – używany w motywie, kartach i tle mepla.
 const Color kBrandColor = Color(0xFFBDABFB);
 
-/// Kolory pionków dostępne do wyboru bez otwierania palety.
+/// Kolory mepli dostępne do wyboru bez otwierania palety.
 const List<Color> kPlayerColors = [
   Color(0xFF1D27EA), // niebieski
   Color(0xFF078E04), // zielony

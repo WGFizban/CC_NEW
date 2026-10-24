@@ -14,7 +14,7 @@ enum _PyramidMode { completed, endGame }
 
 /// Punktowanie akrobatów.
 ///
-/// - **Ukończona piramida**: trzech ludków (dowolnych kolorów) na płytce
+/// - **Ukończona piramida**: trzech mepli (dowolnych kolorów) na płytce
 ///   akrobatów. Każdy akrobata daje właścicielowi 5 pkt i wraca do puli.
 ///   Piramidę można podliczyć, nawet nie mając w niej akrobaty.
 /// - **Koniec gry**: każdy akrobata na planszy daje 5 pkt, niezależnie od
@@ -29,7 +29,7 @@ class PyramidScreen extends StatefulWidget {
 }
 
 class _PyramidScreenState extends State<PyramidScreen> {
-  /// Każdy gracz ma 7 ludków, więc tylu akrobatów może mieć najwyżej.
+  /// Każdy gracz ma 7 mepli, więc tylu akrobatów może mieć najwyżej.
   static const _maxPerPlayer = 7;
 
   _PyramidMode _mode = _PyramidMode.completed;
@@ -115,7 +115,7 @@ class _PyramidScreenState extends State<PyramidScreen> {
           const SizedBox(height: 12),
           LabelWithHint(
             _isCompleted
-                ? 'Czyje są trzy ludki w piramidzie?'
+                ? 'Czyje są trzy meple w piramidzie?'
                 : 'Ilu akrobatów ma każdy gracz?',
             _isCompleted
                 ? 'Każdy akrobata w ukończonej piramidzie daje właścicielowi '
@@ -142,7 +142,7 @@ class _PyramidScreenState extends State<PyramidScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                'Ludki w piramidzie: $_total / $kPyramidSize',
+                'Meple w piramidzie: $_total / $kPyramidSize',
                 textAlign: TextAlign.center,
               ),
             ),

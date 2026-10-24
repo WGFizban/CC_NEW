@@ -116,7 +116,7 @@ enum FarmScoring {
 /// - [bonus] – katedra (miasto), karczma (droga) lub świnka (pola),
 /// - [circusTiles] – płytki cyrku i akrobatów wokół dyrektora cyrku
 ///   (po 2 pkt, doliczane do dowolnej punktacji z jego udziałem),
-/// - [withFairy] – wróżka stoi przy ludku w tej budowli: +3 pkt
+/// - [withFairy] – wróżka stoi przy meplu w tej budowli: +3 pkt
 ///   niezależnie od reszty (tylko miasto, droga, klasztor i pole).
 ///
 /// Wróżka sama w sobie ([ScoringType.fairy]) to zawsze 1 pkt.

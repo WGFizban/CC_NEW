@@ -261,7 +261,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     _applyEvent(event);
   }
 
-  /// Wróżka przy ludku gracza daje 1 pkt na początku jego tury, więc
+  /// Wróżka przy meplu gracza daje 1 pkt na początku jego tury, więc
   /// dopisujemy go od razu, bez osobnego ekranu. Można go cofnąć z paska.
   void _scoreFairy(Player player) {
     final event = ScoreEvent('${player.name}: Wróżka +$kFairyTurnPoints', [

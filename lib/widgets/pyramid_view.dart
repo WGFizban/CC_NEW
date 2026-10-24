@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'meeple_icon.dart';
 
-/// Piramida z trzech ludków: dwóch na dole i jednego na górze.
+/// Piramida z trzech mepli: dwóch na dole i jednego na górze.
 ///
 /// [slots] to kolory kolejnych miejsc (dół-lewo, dół-prawo, góra);
 /// `null` oznacza puste miejsce.
