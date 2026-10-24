@@ -43,7 +43,7 @@ class _FlockScreenState extends State<FlockScreen> {
       context,
       ScoreEvent('Owce: $names +$sheep', [
         for (final p in owners) ScoreChange(p, sheep),
-      ]),
+      ], category: 'Owce'),
     );
   }
 

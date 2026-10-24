@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../models/history_entry.dart';
 
-/// Historia zatwierdzonych punktów, od najnowszych. Dostępna z ustawień.
+/// Historia zatwierdzonych punktów jako tabela, od najnowszych wpisów.
+/// Każda zmiana gracza to osobny wiersz; czas i zdarzenie są przy pierwszym
+/// wierszu danego wpisu.
 class HistoryScreen extends StatefulWidget {
   final List<HistoryEntry> entries;
   final VoidCallback onClear;
@@ -44,9 +46,39 @@ class _HistoryScreenState extends State<HistoryScreen> {
     setState(() => _entries = []);
   }
 
+  List<DataRow> _rows() {
+    final rows = <DataRow>[];
+    for (final e in _entries.reversed) {
+      final changes = e.changes;
+      final count = changes.isEmpty ? 1 : changes.length;
+      for (var i = 0; i < count; i++) {
+        final c = changes.isEmpty ? null : changes[i];
+        final first = i == 0;
+        rows.add(
+          DataRow(
+            cells: [
+              DataCell(Text(first ? _format(e.time) : '')),
+              DataCell(Text(first ? e.category ?? e.label : '')),
+              DataCell(Text(c?.player ?? '')),
+              DataCell(
+                Text(
+                  c == null || c.points == 0
+                      ? ''
+                      : '${c.points > 0 ? '+' : ''}${c.points}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataCell(Text(c?.goodsText ?? '')),
+            ],
+          ),
+        );
+      }
+    }
+    return rows;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final newestFirst = _entries.reversed.toList();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Historia punktów'),
@@ -58,22 +90,25 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
         ],
       ),
-      body: newestFirst.isEmpty
+      body: _entries.isEmpty
           ? const Center(child: Text('Historia jest pusta.'))
-          : ListView.separated(
-              itemCount: newestFirst.length,
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (context, i) {
-                final e = newestFirst[i];
-                return ListTile(
-                  title: Text(e.label),
-                  subtitle: e.lines.isEmpty ? null : Text(e.lines.join('\n')),
-                  trailing: Text(
-                    _format(e.time),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                );
-              },
+          : SingleChildScrollView(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columnSpacing: 20,
+                  dataRowMinHeight: 36,
+                  dataRowMaxHeight: 48,
+                  columns: const [
+                    DataColumn(label: Text('Czas')),
+                    DataColumn(label: Text('Zdarzenie')),
+                    DataColumn(label: Text('Gracz')),
+                    DataColumn(label: Text('Punkty'), numeric: true),
+                    DataColumn(label: Text('Surowce')),
+                  ],
+                  rows: _rows(),
+                ),
+              ),
             ),
     );
   }

@@ -10,6 +10,7 @@ import 'package:cc_new/models/goods.dart';
 import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/score_event.dart';
+import 'package:cc_new/models/sharing.dart';
 import 'package:cc_new/models/scoring.dart';
 import 'package:cc_new/models/sheep.dart';
 import 'package:cc_new/models/standings.dart';
@@ -61,8 +62,11 @@ void main() {
       );
     });
 
-    test('zamek punktuje tyle, ile ukończona sąsiednia budowla', () {
-      expect(calculatePoints(ScoringType.castle, tiles: 12), 12);
+    test('zamek może punktować przy mieście, drodze i klasztorze', () {
+      expect(ScoringType.city.supportsCastle, isTrue);
+      expect(ScoringType.road.supportsCastle, isTrue);
+      expect(ScoringType.cloister.supportsCastle, isTrue);
+      expect(ScoringType.meadow.supportsCastle, isFalse);
     });
 
     test('dyrektor cyrku dodaje 2 pkt za płytkę (przykład z instrukcji)', () {
@@ -346,7 +350,7 @@ void main() {
 
     test('wróżka nie dodaje punktów do zamku ani owiec', () {
       expect(
-        calculatePoints(ScoringType.castle, tiles: 6, withFairy: true),
+        calculatePoints(ScoringType.sheep, tiles: 6, withFairy: true),
         6,
       );
       expect(
@@ -424,6 +428,82 @@ void main() {
     });
   });
 
+  group('punkty wspólne i zamki', () {
+    test('współdzielący dostają te same punkty co punktujący', () {
+      final a = _player('A');
+      final b = _player('B');
+      final c = _player('C');
+
+      final result = splitPoints(
+        scorer: a,
+        base: 8,
+        others: {b: const PointsShare(), c: const PointsShare()},
+      );
+
+      expect(result, {a: 8, b: 8, c: 8});
+    });
+
+    test('właściciel zamku dostaje punkty za każdy zamek', () {
+      final a = _player('A');
+      final b = _player('B');
+      final c = _player('C');
+
+      // A i B dzielą budowlę, C ma przy niej dwa zamki.
+      final result = splitPoints(
+        scorer: a,
+        base: 10,
+        others: {
+          b: const PointsShare(),
+          c: const PointsShare(castle: true, castles: 2),
+        },
+      );
+
+      expect(result, {a: 10, b: 10, c: 20});
+    });
+
+    test('premie przy ludku dostaje tylko punktujący', () {
+      final a = _player('A');
+      final b = _player('B');
+
+      final result = splitPoints(
+        scorer: a,
+        base: 6,
+        extras: 3,
+        others: {b: const PointsShare()},
+      );
+
+      expect(result, {a: 9, b: 6});
+    });
+
+    test('punktujący jako zamek nie dostaje premii przy ludku', () {
+      final a = _player('A');
+
+      final result = splitPoints(
+        scorer: a,
+        base: 4,
+        extras: 3,
+        scorerAsCastle: true,
+        scorerCastles: 2,
+      );
+
+      expect(result, {a: 8});
+    });
+
+    test('punktujący jest pierwszy i nie liczy się dwa razy', () {
+      final a = _player('A');
+      final b = _player('B');
+
+      final result = splitPoints(
+        scorer: a,
+        base: 5,
+        others: {a: const PointsShare(), b: const PointsShare()},
+      );
+
+      expect(result.keys.toList(), [a, b]);
+      expect(result[a], 5);
+    });
+  });
+
   group('historia punktów', () {
     TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -447,7 +527,10 @@ void main() {
         id: 1,
         time: DateTime.fromMillisecondsSinceEpoch(1000),
         label: 'Test',
-        lines: const ['Ala: +1 pkt'],
+        category: 'Miasto',
+        changes: const [
+          HistoryChange(player: 'Ala', points: 1, goods: {'Wino': 2}),
+        ],
       );
 
       await storage.save([entry]);
@@ -455,7 +538,8 @@ void main() {
 
       expect(restored, hasLength(1));
       expect(restored.single.label, 'Test');
-      expect(restored.single.lines, ['Ala: +1 pkt']);
+      expect(restored.single.category, 'Miasto');
+      expect(restored.single.lines, ['Ala: +1 pkt, Wino ×2']);
       expect(restored.single.time, entry.time);
     });
 

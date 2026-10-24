@@ -83,6 +83,7 @@ class _PyramidScreenState extends State<PyramidScreen> {
       ScoreEvent(
         _isCompleted ? 'Piramida akrobatów' : 'Akrobaci (koniec gry)',
         changes,
+        category: 'Akrobaci',
       ),
     );
   }

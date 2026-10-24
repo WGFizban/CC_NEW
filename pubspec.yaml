@@ -26,9 +26,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/icons/
+    - assets/icons/meeple.svg
     - assets/icons/game/
-    - assets/images/bgc.jpg
 
 flutter_launcher_icons:
   android: true

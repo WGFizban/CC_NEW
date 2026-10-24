@@ -7,12 +7,14 @@ import '../models/goods.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
+import '../models/sharing.dart';
 import '../models/sheep.dart';
 import '../models/standings.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/info_hint.dart';
+import '../widgets/meeple_icon.dart';
 import '../widgets/number_keypad.dart';
 import '../widgets/player_picker.dart';
 
@@ -54,6 +56,13 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool _fairy = false;
   _Field _active = _Field.tiles;
 
+  /// Pozostali gracze, którzy dostają punkty tej budowli (wspólnie lub z zamku).
+  final Map<Player, PointsShare> _shares = {};
+
+  /// Punktujący dostaje punkty tylko jako właściciel zamków.
+  bool _scorerCastle = false;
+  int _scorerCastles = 1;
+
   final Map<Goods, int> _goods = {for (final g in Goods.values) g: 0};
   late Player _goodsRecipient = widget.player;
 
@@ -69,9 +78,29 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           _completed &&
           _has(Expansion.tradersBuilders));
 
-  bool get _showRingmaster => _isFeature && _has(Expansion.circus);
+  /// Zamek może punktować przy tej budowli (tylko ukończonej).
+  bool get _castleOk =>
+      _type.supportsCastle &&
+      _completed &&
+      _has(Expansion.bridgesCastlesBazaars);
 
-  bool get _showFairy => _isFeature && _has(Expansion.princessDragon);
+  bool get _castleMode => _castleOk && _scorerCastle;
+
+  /// Wróżka i dyrektor cyrku są przy ludku, a właściciel zamku go nie ma.
+  bool get _showRingmaster =>
+      _isFeature && _has(Expansion.circus) && !_castleMode;
+
+  bool get _showFairy =>
+      _isFeature && _has(Expansion.princessDragon) && !_castleMode;
+
+  bool get _showSharing =>
+      _isFeature &&
+      (widget.players.length > 1 || _castleOk);
+
+  List<Player> get _otherPlayers => [
+    for (final p in widget.players)
+      if (p != widget.player) p,
+  ];
 
   bool get _ringmasterActive =>
       _type == ScoringType.ringmaster || (_showRingmaster && _ringmaster);
@@ -93,7 +122,29 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         }
       : const {};
 
-  int get _points => calculatePoints(
+  int get _points => _calc(circusTiles: _ringmasterActive ? _circusTiles : 0, fairy: _showFairy && _fairy);
+
+  /// Punkty budowli bez premii przy ludku (wróżka, dyrektor cyrku) – to dostają
+  /// współdzielący i właściciele zamków.
+  int get _basePoints => _calc(circusTiles: 0, fairy: false);
+
+  /// Punkty każdego gracza po podziale (punktujący jest pierwszy).
+  Map<Player, int> get _distribution {
+    if (!_isFeature) return {widget.player: _points};
+    return splitPoints(
+      scorer: widget.player,
+      base: _basePoints,
+      extras: _points - _basePoints,
+      scorerAsCastle: _castleMode,
+      scorerCastles: _scorerCastles,
+      others: {
+        for (final e in _shares.entries)
+          e.key: _castleOk ? e.value : e.value.copyWith(castle: false),
+      },
+    );
+  }
+
+  int _calc({required int circusTiles, required bool fairy}) => calculatePoints(
     _type,
     tiles: _tiles,
     banners: _banners,
@@ -108,8 +159,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         : 0,
     completed: _completed,
     bonus: _bonus,
-    circusTiles: _ringmasterActive ? _circusTiles : 0,
-    withFairy: _showFairy && _fairy,
+    circusTiles: circusTiles,
+    withFairy: fairy,
   );
 
   void _onKey(String key) {
@@ -122,34 +173,66 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     });
   }
 
-  String _label(int points, Map<Goods, int> goods) {
+  String _label(Map<Player, int> distribution, Map<Goods, int> goods) {
     final parts = <String>[];
-    if (points != 0) parts.add('+$points');
+    final mine = distribution[widget.player] ?? 0;
+    if (mine != 0) parts.add('+$mine');
     for (final e in goods.entries) {
       parts.add('${e.key.displayName} ×${e.value}');
     }
-    return '${widget.player.name}: ${_type.displayName} ${parts.join(', ')}';
+    final shared = <String>[];
+    final castles = <String>[];
+    for (final e in _shares.entries) {
+      if (_castleOk && e.value.castle) {
+        castles.add('${e.key.name} ×${e.value.castles}');
+      } else {
+        shared.add(e.key.name);
+      }
+    }
+    final scorer = _castleMode
+        ? '${widget.player.name} (zamek ×$_scorerCastles)'
+        : widget.player.name;
+    return [
+      '$scorer: ${_type.displayName} ${parts.join(', ')}',
+      if (shared.isNotEmpty) 'wspólnie: ${shared.join(', ')}',
+      if (castles.isNotEmpty) 'zamki: ${castles.join(', ')}',
+    ].join(' · ');
   }
 
   void _confirm() {
-    final points = _points;
+    final distribution = _distribution;
     final goods = _goodsToAdd;
-    final changes = <ScoreChange>[];
-    if (goods.isNotEmpty && _goodsRecipient != widget.player) {
-      // Surowce dostaje gracz, który domknął miasto, a punkty – punktujący.
-      if (points != 0) changes.add(ScoreChange(widget.player, points));
-      changes.add(ScoreChange(_goodsRecipient, 0, goods: goods));
-    } else {
-      changes.add(ScoreChange(widget.player, points, goods: goods));
-    }
-    Navigator.pop(context, ScoreEvent(_label(points, goods), changes));
+    // Surowce dostaje gracz, który domknął miasto, a punkty – punktujący
+    // (i ewentualnie pozostali gracze z podziału).
+    final recipient = goods.isEmpty ? null : _goodsRecipient;
+    final totals = <Player, int>{...distribution};
+    if (recipient != null) totals.putIfAbsent(recipient, () => 0);
+    final changes = [
+      for (final e in totals.entries)
+        if (e.value != 0 || e.key == recipient)
+          ScoreChange(
+            e.key,
+            e.value,
+            goods: e.key == recipient ? goods : const {},
+          ),
+    ];
+    Navigator.pop(
+      context,
+      ScoreEvent(
+        _label(distribution, goods),
+        changes,
+        category: _type.displayName,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final color = widget.player.color;
-    final points = _points;
-    final canConfirm = points > 0 || _goodsToAdd.isNotEmpty;
+    final distribution = _distribution;
+    final points = distribution[widget.player] ?? 0;
+    final canConfirm =
+        distribution.values.any((v) => v > 0) || _goodsToAdd.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -165,12 +248,25 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             if (_type != ScoringType.goods)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  'Wynik: $points pkt',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Column(
+                  children: [
+                    Text(
+                      'Wynik: $points pkt',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (distribution.length > 1)
+                      Text(
+                        [
+                          for (final e in distribution.entries)
+                            if (e.key != widget.player)
+                              '${e.key.name} +${e.value}',
+                        ].join(' · '),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                  ],
                 ),
               ),
             Expanded(
@@ -179,9 +275,11 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                 child: Column(
                   children: [
                     ..._buildInputs(),
+                    if (_castleOk) ..._buildCastleMode(),
                     if (_showFairy) ..._buildFairy(),
-                    if (_showGoods) _buildGoods(),
                     if (_showRingmaster) ..._buildRingmaster(),
+                    if (_showSharing) _buildSharing(),
+                    if (_showGoods) _buildGoods(),
                     if (_usesKeypad) ...[
                       const SizedBox(height: 16),
                       NumberKeypad(onKey: _onKey),
@@ -302,23 +400,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           ),
         ];
 
-      case ScoringType.castle:
-        return [
-          _valueBoxes([
-            _valueBox(
-              'Punkty ukończonej budowli',
-              _tiles,
-              _Field.tiles,
-              hint:
-                  'Zamek punktuje raz: przy pierwszej ukończonej budowli '
-                  'sąsiadującej z zamkiem (jego dwie płytki oraz po dwie '
-                  'płytki z lewej i prawej). Wpisz tyle punktów, ile dostała '
-                  'ta budowla, a potem zdejmij ludka z zamku. '
-                  'Zamek na końcu gry nie daje punktów.',
-            ),
-          ]),
-        ];
-
       case ScoringType.ringmaster:
         return [
           _ringmasterTiles(),
@@ -343,6 +424,136 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         // mają osobne ekrany lub (surowce) tylko sekcję surowców.
         return const [];
     }
+  }
+
+  /// „Punkty jako zamek": nikt nie miał w budowli ludka, a zamek stoi przy
+  /// niej – punktujący dostaje punkty jako jego właściciel.
+  List<Widget> _buildCastleMode() {
+    return [
+      _check(
+        'Punkty jako zamek',
+        _scorerCastle,
+        (v) => _scorerCastle = v,
+        hint:
+            'Zaznacz, gdy nikt nie miał ludka w tej budowli, ale '
+            '${widget.player.name} ma przy niej zamek: dostaje punkty '
+            'ukończonej budowli (za każdy swój zamek).',
+      ),
+      if (_scorerCastle)
+        _stepperRow(
+          'Liczba zamków gracza ${widget.player.name}',
+          _scorerCastles,
+          (v) => _scorerCastles = v,
+          min: 1,
+          max: kMaxCastlesPerFeature,
+        ),
+    ];
+  }
+
+  /// Punkty wspólne (i zamki): wskazani gracze dostają te same punkty.
+  Widget _buildSharing() {
+    final castleOk = _castleOk;
+    final chosen = [
+      for (final e in _shares.entries)
+        castleOk && e.value.castle
+            ? '${e.key.name} (zamek ×${e.value.castles})'
+            : e.key.name,
+      if (_castleMode) '${widget.player.name} (zamek ×$_scorerCastles)',
+    ];
+
+    return ExpansionTile(
+      // Zwinięta domyślnie; wybrani gracze widać w podtytule.
+      initiallyExpanded: false,
+      shape: const Border(),
+      collapsedShape: const Border(),
+      tilePadding: EdgeInsets.zero,
+      title: LabelWithHint(
+        castleOk && _type.supportsCastle
+            ? 'Punkty wspólne / zamki'
+            : 'Punkty wspólne',
+        'Wskaż graczy, którzy dostają te same punkty (np. dzielą budowlę '
+            'przy remisie). Wróżka i dyrektor cyrku liczą się tylko '
+            'punktującemu.'
+            '${castleOk ? ' Dla gracza możesz wybrać „Zamek": dostaje wtedy '
+                'punkty budowli za każdy swój zamek przy niej, '
+                'a nie ze współdzielenia.' : ''}',
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(chosen.isEmpty ? 'brak' : chosen.join(' · ')),
+      children: [
+        if (castleOk) _scorerCastleRow(),
+        for (final p in _otherPlayers) _shareRow(p),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  /// Punktujący (ty) jako właściciel zamku – to samo co pole „Punkty jako zamek".
+  Widget _scorerCastleRow() {
+    return Column(
+      children: [
+        CheckboxListTile(
+          secondary: MeepleIcon(color: widget.player.color, size: 28),
+          title: Text('${widget.player.name} (punktujący): jako zamek'),
+          value: _scorerCastle,
+          onChanged: (v) => setState(() => _scorerCastle = v ?? false),
+        ),
+        if (_scorerCastle)
+          _stepperRow(
+            'Liczba zamków',
+            _scorerCastles,
+            (v) => _scorerCastles = v,
+            min: 1,
+            max: kMaxCastlesPerFeature,
+          ),
+      ],
+    );
+  }
+
+  Widget _shareRow(Player p) {
+    final share = _shares[p];
+    return Column(
+      children: [
+        CheckboxListTile(
+          secondary: MeepleIcon(color: p.color, size: 28),
+          title: Text(p.name),
+          value: share != null,
+          onChanged: (v) => setState(() {
+            if (v == true) {
+              _shares[p] = const PointsShare();
+            } else {
+              _shares.remove(p);
+            }
+          }),
+        ),
+        if (share != null && _castleOk)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(72, 0, 16, 4),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: SegmentedButton<bool>(
+                showSelectedIcon: false,
+                segments: const [
+                  ButtonSegment(value: false, label: Text('Współdzieli')),
+                  ButtonSegment(value: true, label: Text('Zamek')),
+                ],
+                selected: {share.castle},
+                onSelectionChanged: (s) => setState(
+                  () => _shares[p] = share.copyWith(castle: s.first),
+                ),
+              ),
+            ),
+          ),
+        if (share != null && _castleOk && share.castle)
+          _stepperRow(
+            'Liczba zamków gracza ${p.name}',
+            share.castles,
+            (v) => _shares[p] = share.copyWith(castles: v),
+            min: 1,
+            max: kMaxCastlesPerFeature,
+          ),
+      ],
+    );
   }
 
   List<Widget> _buildFairy() {
@@ -454,6 +665,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     String label,
     int value,
     ValueChanged<int> onChanged, {
+    int min = 0,
     int max = 99,
     String? hint,
   }) {
@@ -466,6 +678,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           ),
           CounterStepper(
             value: value,
+            min: min,
             max: max,
             onChanged: (v) => setState(() => onChanged(v)),
           ),

@@ -21,13 +21,17 @@ import '../widgets/player_dialog.dart';
 import 'add_points_screen.dart';
 import 'bazaar_screen.dart';
 import 'circus_screen.dart';
+import 'end_game_screen.dart';
 import 'flock_screen.dart';
+import 'history_screen.dart';
 import 'pyramid_screen.dart';
 import 'select_points_type_screen.dart';
 import 'settings_screen.dart';
 
 enum _MenuAction {
   undo,
+  history,
+  endGame,
   reset,
   settings,
   startTimer,
@@ -261,7 +265,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   void _scoreFairy(Player player) {
     final event = ScoreEvent('${player.name}: Wróżka +$kFairyTurnPoints', [
       ScoreChange(player, kFairyTurnPoints),
-    ]);
+    ], category: 'Wróżka');
     _applyEvent(event);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -353,6 +357,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
       confirmLabel: 'Resetuj',
     );
     if (!confirmed || !mounted) return;
+    _resetGame();
+  }
+
+  void _resetGame() {
     setState(() {
       for (final p in _players) {
         p.points = 0;
@@ -369,6 +377,38 @@ class _PlayersScreenState extends State<PlayersScreen> {
     _saveLog();
   }
 
+  Future<void> _openHistory() async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HistoryScreen(
+          entries: List<HistoryEntry>.of(_log),
+          onClear: () {
+            setState(() => _log.clear());
+            _saveLog();
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Zatrzymuje stoper i pokazuje podsumowanie; stamtąd można zacząć od nowa.
+  Future<void> _endGame() async {
+    if (_stopwatch.isRunning) _stopTimer();
+    final newGame = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EndGameScreen(
+          players: List<Player>.of(_players),
+          log: List<HistoryEntry>.of(_log),
+          showGoods: _has(Expansion.tradersBuilders),
+          elapsed: _stopwatch.elapsed,
+        ),
+      ),
+    );
+    if (newGame == true && mounted) _resetGame();
+  }
+
   Future<void> _openSettings() async {
     await Navigator.push<void>(
       context,
@@ -376,11 +416,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
         builder: (_) => SettingsScreen(
           expansions: _settings.expansions,
           keepScreenOn: _settings.keepScreenOn,
-          history: List<HistoryEntry>.of(_log),
-          onClearHistory: () {
-            setState(() => _log.clear());
-            _saveLog();
-          },
           onChanged: (enabled, keepScreenOn) {
             setState(() {
               _settings.expansions
@@ -400,6 +435,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
     switch (action) {
       case _MenuAction.undo:
         _undo();
+      case _MenuAction.history:
+        _openHistory();
+      case _MenuAction.endGame:
+        _endGame();
       case _MenuAction.reset:
         _onReset();
       case _MenuAction.settings:
@@ -424,6 +463,15 @@ class _PlayersScreenState extends State<PlayersScreen> {
         child: Text(
           last == null ? 'Cofnij ostatnie punkty' : 'Cofnij: ${last.label}',
         ),
+      ),
+      const PopupMenuItem(
+        value: _MenuAction.history,
+        child: Text('Historia punktów'),
+      ),
+      PopupMenuItem(
+        value: _MenuAction.endGame,
+        enabled: _players.isNotEmpty,
+        child: const Text('Zakończ grę'),
       ),
       const PopupMenuItem(
         value: _MenuAction.reset,

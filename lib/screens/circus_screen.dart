@@ -53,7 +53,12 @@ class _CircusScreenState extends State<CircusScreen> {
     ];
     Navigator.pop(
       context,
-      ScoreEvent('Cyrk (${animal.displayName})', changes, animal: animal),
+      ScoreEvent(
+        'Cyrk (${animal.displayName})',
+        changes,
+        animal: animal,
+        category: 'Cyrk',
+      ),
     );
   }
 
