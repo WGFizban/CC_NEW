@@ -14,8 +14,7 @@ import '../models/sharing.dart';
 import '../models/sheep.dart';
 import '../models/standings.dart';
 import '../theme/app_colors.dart';
-import '../widgets/auto_size_text.dart';
-import '../widgets/confirm_action.dart';
+import '../widgets/scoring_app_bar.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/game_icon.dart';
 import '../widgets/goods_widgets.dart';
@@ -313,15 +312,11 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         _goldToAdd.isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarTitle(
-          neutral
-              ? _type.title(l)
-              : '${widget.player.name} — ${_type.title(l)}',
-        ),
+      appBar: scoringAppBar(
+        context,
+        onConfirm: canConfirm ? _confirm : null,
         backgroundColor: neutral ? null : color,
         foregroundColor: neutral ? null : foregroundOn(color),
-        actions: [ConfirmAction(onPressed: canConfirm ? _confirm : null)],
       ),
       body: Container(
         decoration: neutral

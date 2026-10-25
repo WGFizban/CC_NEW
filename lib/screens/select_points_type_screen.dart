@@ -83,7 +83,10 @@ class SelectPointsTypeScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         toolbarHeight: 72,
         centerTitle: true,
-        title: AppBarTitle(l.addPointsTitle(player.name)),
+        title: AppBarTitle(
+          l.addPointsTitle(player.name),
+          textAlign: TextAlign.center,
+        ),
         backgroundColor: color,
         foregroundColor: foregroundOn(color),
       ),
