@@ -125,7 +125,8 @@ void main() {
     test('motyw i język przetrwają zapis i odczyt', () async {
       SharedPreferences.setMockInitialValues({});
       final storage = SettingsStorage();
-      final settings = await storage.load()
+      final settings = await storage.load();
+      settings
         ..themeMode = ThemeMode.dark
         ..language = AppLanguage.en;
       await storage.save(settings);
