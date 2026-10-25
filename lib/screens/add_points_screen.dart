@@ -338,7 +338,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         child: Column(
           children: [
             // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.
-            if (!neutral)
+            if (!neutral && _type != ScoringType.goods)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(

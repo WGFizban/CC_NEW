@@ -241,7 +241,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   /// Wróżka przy meplu gracza daje 1 pkt na początku jego tury, więc
-  /// dopisujemy go od razu, bez osobnego ekranu. Można go cofnąć z paska.
+  /// dopisujemy go od razu, bez osobnego ekranu (bez komunikatu). Cofniesz go z menu.
   void _scoreFairy(Player player) {
     final l = context.l10n;
     final event = ScoreEvent(
@@ -251,22 +251,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
       type: ScoringType.fairy,
     );
     _applyEvent(event);
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(l.fairySnack(player.name, kFairyTurnPoints)),
-          action: SnackBarAction(
-            label: l.undo,
-            onPressed: () {
-              // Cofamy tylko, jeśli to nadal ostatnie zdarzenie.
-              if (_history.isNotEmpty && identical(_history.last, event)) {
-                _undo();
-              }
-            },
-          ),
-        ),
-      );
   }
 
   Widget _scoringScreen(Player player, ScoringType type) {
