@@ -39,6 +39,18 @@ class CarcassonneCounterApp extends StatelessWidget {
             for (final l in AppLanguage.values) Locale(l.code),
           ],
           localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          // Na Androidzie z pełnoekranowym układem (edge-to-edge) dolne przyciski
+          // systemu zasłaniałyby treść. SafeArea odsuwa wszystkie ekrany od
+          // dolnego paska, a tło pod nim ma kolor motywu.
+          builder: (context, child) => ColoredBox(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: SafeArea(
+              top: false,
+              left: false,
+              right: false,
+              child: child ?? const SizedBox.shrink(),
+            ),
+          ),
           home: const PlayersScreen(),
         ),
       ),
