@@ -27,7 +27,7 @@ z obsługą wybranych dodatków.
   za surowce, złotem i czasem gry (jedyne wyjście to **Nowa gra**; jest też
   przycisk do historii punktów),
 - czas gry liczony w tle od rozpoczęcia do zakończenia (bez stopera na ekranie),
-- **skrót zasad** (ustawienia): krótkie zasady w sekcjach per dodatek,
+- **skrót zasad** (menu): krótkie zasady w sekcjach per dodatek,
 - podpowiedzi „?" otwierają okno, które zamykasz sam,
 - zapis graczy, punktów, surowców i ustawień w pamięci urządzenia,
 - ustawienia: **motyw** (systemowy, jasny, ciemny), **język** interfejsu
@@ -42,9 +42,9 @@ Na początku gra jest w fazie przygotowania: dodajesz graczy przyciskiem „+"
 pojawia się **Rozpocznij grę**. Od startu nie można dodawać, edytować ani
 usuwać graczy ani zmieniać dodatków. Na liście widać tylko punkty z planszy;
 premia za surowce i wartość złota są doliczane dopiero na ekranie końca gry.
-Kliknięcie gracza w trakcie gry otwiera wybór rodzaju punktacji. Dodatki włączasz w menu (**Ustawienia…**), ułożone według numeracji
+Kliknięcie gracza w trakcie gry otwiera wybór rodzaju punktacji. Dodatki włączasz w menu (**Dodatki**), ułożone według numeracji
 z instrukcji (mini dodatki na końcu); na starcie wszystkie są **wyłączone**. Po rozpoczęciu gry dodatków nie można zmieniać do jej
-końca; „Resetuj punkty" w menu wraca do przygotowania.
+końca; **Nowa gra** w menu wraca do przygotowania.
 
 ## Obsługiwane dodatki
 

@@ -69,3 +69,40 @@ Future<void> showGameStartedNote(BuildContext context) {
     ),
   );
 }
+
+/// Odpowiedź w oknie rozpoczęcia gry.
+enum StartChoice { start, cancel, expansions }
+
+/// Pytanie o rozpoczęcie gry z przyciskiem przejścia do wyboru dodatków.
+Future<StartChoice> askStartGame(
+  BuildContext context, {
+  required String expansionsList,
+}) async {
+  final l = context.l10n;
+  final result = await showDialog<StartChoice>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l.startGameQuestion),
+      content: SingleChildScrollView(
+        child: Text(l.startGameBody(expansionsList)),
+      ),
+      actionsOverflowAlignment: OverflowBarAlignment.end,
+      actions: [
+        TextButton.icon(
+          onPressed: () => Navigator.pop(ctx, StartChoice.expansions),
+          icon: const Icon(Icons.extension),
+          label: Text(l.enableExpansions),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, StartChoice.cancel),
+          child: Text(l.no),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx, StartChoice.start),
+          child: Text(l.yes),
+        ),
+      ],
+    ),
+  );
+  return result ?? StartChoice.cancel;
+}

@@ -1,39 +1,30 @@
 import 'package:flutter/material.dart';
 
-import 'rules_screen.dart';
 import '../l10n/app_language.dart';
 import '../l10n/l10n.dart';
 import '../l10n/labels.dart';
-import '../models/expansion.dart';
-import '../widgets/info_hint.dart';
 
 /// Zestaw ustawień zgłaszany przez [SettingsScreen].
 typedef SettingsValues = ({
-  Set<Expansion> expansions,
   bool keepScreenOn,
   ThemeMode themeMode,
   AppLanguage language,
 });
 
-/// Ustawienia aplikacji: wygląd, język, ekran i dodatki. Zmiany są zgłaszane
+/// Ustawienia aplikacji: wygląd, język, ekran. Zmiany są zgłaszane
 /// od razu przez [onChanged], a ekran tylko pokazuje przełączniki.
 class SettingsScreen extends StatefulWidget {
-  final Set<Expansion> expansions;
   final bool keepScreenOn;
   final ThemeMode themeMode;
   final AppLanguage language;
 
-  /// Gra trwa: dodatków nie można zmieniać do jej zakończenia.
-  final bool expansionsLocked;
   final void Function(SettingsValues values) onChanged;
 
   const SettingsScreen({
     super.key,
-    required this.expansions,
     required this.keepScreenOn,
     required this.themeMode,
     required this.language,
-    required this.expansionsLocked,
     required this.onChanged,
   });
 
@@ -42,15 +33,11 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late final Set<Expansion> _expansions = {...widget.expansions};
   late bool _keepScreenOn = widget.keepScreenOn;
   late ThemeMode _themeMode = widget.themeMode;
   late AppLanguage _language = widget.language;
 
-  bool get _allOn => _expansions.length == Expansion.values.length;
-
   void _notify() => widget.onChanged((
-    expansions: {..._expansions},
     keepScreenOn: _keepScreenOn,
     themeMode: _themeMode,
     language: _language,
@@ -70,29 +57,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _setExpansion(Expansion e, bool on) {
-    setState(() {
-      if (on) {
-        _expansions.add(e);
-      } else {
-        _expansions.remove(e);
-      }
-    });
-    _notify();
-  }
-
-  void _setAll(bool on) {
-    setState(() {
-      _expansions
-        ..clear()
-        ..addAll(on ? Expansion.values : const <Expansion>[]);
-    });
-    _notify();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final locked = widget.expansionsLocked;
     final l = context.l10n;
 
     return Scaffold(
@@ -165,45 +131,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _notify();
             },
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.menu_book_outlined),
-            title: Text(l.rulesTitle),
-            subtitle: Text(l.rulesMenuHint),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.push<void>(
-              context,
-              MaterialPageRoute(builder: (_) => const RulesScreen()),
-            ),
-          ),
-          const Divider(),
-          _header(l.expansionsSection),
-          if (locked)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Card(
-                color: Theme.of(context).colorScheme.secondaryContainer,
-                child: ListTile(
-                  leading: const Icon(Icons.lock_outline),
-                  title: Text(l.gameInProgress),
-                  subtitle: Text(l.expansionsLocked),
-                ),
-              ),
-            ),
-          SwitchListTile(
-            title: Text(
-              l.allExpansions,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            value: _allOn,
-            onChanged: locked ? null : _setAll,
-          ),
-          for (final e in Expansion.values)
-            SwitchListTile(
-              title: LabelWithHint(e.label(l), e.description(l)),
-              value: _expansions.contains(e),
-              onChanged: locked ? null : (on) => _setExpansion(e, on),
-            ),
         ],
       ),
     );

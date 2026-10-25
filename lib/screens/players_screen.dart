@@ -32,9 +32,11 @@ import 'history_screen.dart';
 import 'pyramid_screen.dart';
 import 'select_points_type_screen.dart';
 import 'tower_screen.dart';
+import 'expansions_screen.dart';
+import 'rules_screen.dart';
 import 'settings_screen.dart';
 
-enum _MenuAction { undo, history, reset, settings }
+enum _MenuAction { undo, history, newGame, expansions, rules, settings }
 
 class PlayersScreen extends StatefulWidget {
   const PlayersScreen({super.key});
@@ -338,7 +340,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final confirmed = await _confirm(
       title: context.l10n.newGameTitle,
       message: context.l10n.newGameMessage,
-      confirmLabel: context.l10n.reset,
+      confirmLabel: context.l10n.yes,
     );
     if (!confirmed || !mounted) return;
     _resetGame();
@@ -381,17 +383,25 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   Future<void> _onStartGame() async {
-    final l = context.l10n;
-    final names = [
-      for (final e in Expansion.values)
-        if (_has(e)) e.label(l),
-    ];
-    final ok = await askYesNo(
-      context,
-      title: l.startGameQuestion,
-      message: l.startGameBody(names.isEmpty ? l.noneCap : names.join(', ')),
-    );
-    if (!ok || !mounted) return;
+    while (true) {
+      final l = context.l10n;
+      final names = [
+        for (final e in Expansion.values)
+          if (_has(e)) e.label(l),
+      ];
+      final choice = await askStartGame(
+        context,
+        expansionsList: names.isEmpty ? l.noneCap : '\n${names.join('\n')}',
+      );
+      if (!mounted) return;
+      if (choice == StartChoice.expansions) {
+        await _openExpansions();
+        if (!mounted) return;
+        continue;
+      }
+      if (choice == StartChoice.cancel) return;
+      break;
+    }
     setState(() {
       _settings.startedAt = DateTime.now();
       _settings.endedAt = null;
@@ -430,21 +440,36 @@ class _PlayersScreenState extends State<PlayersScreen> {
     if (newGame == true && mounted) _resetGame();
   }
 
+  Future<void> _openExpansions() async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ExpansionsScreen(
+          expansions: _settings.expansions,
+          locked: !_inSetup,
+          onChanged: (values) {
+            setState(() {
+              _settings.expansions
+                ..clear()
+                ..addAll(values);
+            });
+            _saveSettings();
+          },
+        ),
+      ),
+    );
+  }
+
   Future<void> _openSettings() async {
     await Navigator.push<void>(
       context,
       MaterialPageRoute(
         builder: (_) => SettingsScreen(
-          expansions: _settings.expansions,
           keepScreenOn: _settings.keepScreenOn,
           themeMode: _settings.themeMode,
           language: _settings.language,
-          expansionsLocked: !_inSetup,
           onChanged: (values) {
             setState(() {
-              _settings.expansions
-                ..clear()
-                ..addAll(values.expansions);
               _settings.keepScreenOn = values.keepScreenOn;
               _settings.themeMode = values.themeMode;
               _settings.language = values.language;
@@ -465,14 +490,29 @@ class _PlayersScreenState extends State<PlayersScreen> {
         _undo();
       case _MenuAction.history:
         _openHistory();
-      case _MenuAction.reset:
+      case _MenuAction.newGame:
         _onReset();
+      case _MenuAction.expansions:
+        _openExpansions();
+      case _MenuAction.rules:
+        Navigator.push<void>(
+          context,
+          MaterialPageRoute(builder: (_) => const RulesScreen()),
+        );
       case _MenuAction.settings:
         _openSettings();
     }
   }
 
   // ------------------------------------------------------------- widoki
+
+  Widget _menuRow(IconData icon, String text) => Row(
+    children: [
+      Icon(icon, size: 22),
+      const SizedBox(width: 12),
+      Flexible(child: Text(text)),
+    ],
+  );
 
   List<PopupMenuEntry<_MenuAction>> _buildMenuItems() {
     final l = context.l10n;
@@ -481,21 +521,30 @@ class _PlayersScreenState extends State<PlayersScreen> {
       PopupMenuItem(
         value: _MenuAction.undo,
         enabled: last != null,
-        child: Text(
+        child: _menuRow(
+          Icons.undo,
           last == null ? l.menuUndoNone : l.menuUndo(last.label),
         ),
       ),
       PopupMenuItem(
         value: _MenuAction.history,
-        child: Text(l.menuHistory),
+        child: _menuRow(Icons.history, l.menuHistory),
       ),
       PopupMenuItem(
-        value: _MenuAction.reset,
-        child: Text(l.menuReset),
+        value: _MenuAction.newGame,
+        child: _menuRow(Icons.refresh, l.newGame),
+      ),
+      PopupMenuItem(
+        value: _MenuAction.expansions,
+        child: _menuRow(Icons.extension, l.expansionsSection),
+      ),
+      PopupMenuItem(
+        value: _MenuAction.rules,
+        child: _menuRow(Icons.menu_book_outlined, l.rulesTitle),
       ),
       PopupMenuItem(
         value: _MenuAction.settings,
-        child: Text(l.menuSettings),
+        child: _menuRow(Icons.settings, l.settings),
       ),
     ];
   }
