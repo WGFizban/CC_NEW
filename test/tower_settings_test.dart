@@ -10,6 +10,7 @@ import 'package:cc_new/l10n/app_localizations_pl.dart';
 import 'package:cc_new/l10n/labels.dart';
 import 'package:cc_new/models/circus.dart';
 import 'package:cc_new/models/expansion.dart';
+import 'package:cc_new/models/game_state.dart';
 import 'package:cc_new/models/goods.dart';
 import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
@@ -160,6 +161,25 @@ void main() {
 
       expect(restored.themeMode, ThemeMode.dark);
       expect(restored.language, AppLanguage.en);
+    });
+
+    test('etap i czas gry przetrwają zapis i odczyt', () async {
+      SharedPreferences.setMockInitialValues({});
+      final storage = SettingsStorage();
+      final settings = await storage.load();
+      expect(settings.stage, isNull);
+      final start = DateTime(2026, 1, 1, 12);
+      settings
+        ..stage = GameStage.finished
+        ..startedAt = start
+        ..endedAt = start.add(const Duration(minutes: 30));
+      await storage.save(settings);
+
+      final restored = await storage.load();
+
+      expect(restored.stage, GameStage.finished);
+      expect(restored.startedAt, start);
+      expect(restored.endedAt, start.add(const Duration(minutes: 30)));
     });
 
     test('uszkodzone wartości dają ustawienia domyślne', () async {

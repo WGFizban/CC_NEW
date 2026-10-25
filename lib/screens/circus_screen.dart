@@ -6,6 +6,7 @@ import '../models/circus.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
+import '../widgets/auto_size_text.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
@@ -74,7 +75,7 @@ class _CircusScreenState extends State<CircusScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.circusTitle),
+        title: AppBarTitle(l.circusTitle),
         actions: [
           ConfirmAction(onPressed: animal == null ? null : _confirm),
         ],

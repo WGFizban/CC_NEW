@@ -7,6 +7,7 @@ import '../models/player.dart';
 import '../models/scoring.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
+import '../widgets/auto_size_text.dart';
 import '../widgets/game_icon.dart';
 
 /// Wybór rodzaju punktacji. Zwraca wybrany [ScoringType] przez `Navigator.pop`.
@@ -79,12 +80,20 @@ class SelectPointsTypeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.addPointsTitle(player.name)),
+        automaticallyImplyLeading: false,
+        toolbarHeight: 72,
+        centerTitle: true,
+        title: AppBarTitle(l.addPointsTitle(player.name)),
         backgroundColor: color,
         foregroundColor: foregroundOn(color),
       ),
       body: Container(
-        decoration: BoxDecoration(border: Border.all(color: color, width: 4)),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: visibleOn(color, Theme.of(context).scaffoldBackgroundColor),
+            width: 4,
+          ),
+        ),
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -102,9 +111,21 @@ class SelectPointsTypeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l.cancel),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.tonal(
+                onPressed: () => Navigator.pop(context),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                  shape: const StadiumBorder(),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                child: Text(l.cancel),
+              ),
             ),
           ],
         ),

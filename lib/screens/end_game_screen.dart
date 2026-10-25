@@ -7,7 +7,9 @@ import '../models/goods.dart';
 import '../models/history_entry.dart';
 import '../models/player.dart';
 import '../models/standings.dart';
+import '../widgets/game_dialogs.dart';
 import '../widgets/meeple_icon.dart';
+import 'history_screen.dart';
 
 /// Podsumowanie gry: zwycięzca, ranking i rozbicie punktów. Zwraca `true`,
 /// gdy użytkownik chce od razu zacząć nową grę.
@@ -15,8 +17,8 @@ class EndGameScreen extends StatelessWidget {
   final List<Player> players;
   final List<HistoryEntry> log;
 
-  /// Czas gry, jeśli stoper był używany.
-  final Duration? elapsed;
+  /// Czas gry.
+  final Duration elapsed;
   final bool showGoods;
   final bool showGold;
 
@@ -26,7 +28,7 @@ class EndGameScreen extends StatelessWidget {
     required this.log,
     required this.showGoods,
     required this.showGold,
-    this.elapsed,
+    required this.elapsed,
   });
 
   /// Punkty gracza według rodzaju punktacji, z historii.
@@ -58,7 +60,7 @@ class EndGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final scores = {for (final p in players) p: totalScore(p, players)};
+    final scores = {for (final p in players) p: finalScore(p, players)};
     final ranking = [...players]
       ..sort((a, b) => scores[b]!.compareTo(scores[a]!));
     final best = ranking.isEmpty ? 0 : scores[ranking.first]!;
@@ -67,43 +69,63 @@ class EndGameScreen extends StatelessWidget {
         if (scores[p] == best) p,
     ];
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l.gameOver)),
-      body: players.isEmpty
-          ? Center(child: Text(l.noPlayersDot))
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _winnerBanner(context, winners, best),
-                if (elapsed != null && elapsed! > Duration.zero)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      l.gameTime(_duration(elapsed!)),
-                      textAlign: TextAlign.center,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(l.gameOver),
+          automaticallyImplyLeading: false,
+        ),
+        body: players.isEmpty
+            ? Center(child: Text(l.noPlayersDot))
+            : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  _winnerBanner(context, winners, best),
+                  const SizedBox(height: 16),
+                  for (var i = 0; i < ranking.length; i++)
+                    _playerCard(
+                      context,
+                      ranking[i],
+                      // Remis dzieli miejsce.
+                      1 +
+                          ranking.indexWhere(
+                            (p) => scores[p] == scores[ranking[i]],
+                          ),
+                      scores[ranking[i]]!,
                     ),
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => HistoryScreen(entries: log),
+                      ),
+                    ),
+                    icon: const Icon(Icons.history),
+                    label: Text(l.menuHistory),
                   ),
-                const SizedBox(height: 16),
-                for (var i = 0; i < ranking.length; i++)
-                  _playerCard(
-                    context,
-                    ranking[i],
-                    // Remis dzieli miejsce.
-                    1 + ranking.indexWhere((p) => scores[p] == scores[ranking[i]]),
-                    scores[ranking[i]]!,
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
+                    onPressed: () async {
+                      final ok = await askYesNo(
+                        context,
+                        title: l.newGameQuestion,
+                      );
+                      if (ok && context.mounted) Navigator.pop(context, true);
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: Text(l.newGame),
                   ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () => Navigator.pop(context, true),
-                  icon: const Icon(Icons.refresh),
-                  label: Text(l.newGame),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(l.backToGame),
-                ),
-              ],
-            ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l.gameTime(_duration(elapsed)),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
+      ),
     );
   }
 

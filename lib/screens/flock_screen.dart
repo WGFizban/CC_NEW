@@ -5,6 +5,7 @@ import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../models/sheep.dart';
+import '../widgets/auto_size_text.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/info_hint.dart';
@@ -59,7 +60,7 @@ class _FlockScreenState extends State<FlockScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.flockTitle(widget.player.name)),
+        title: AppBarTitle(l.flockTitle(widget.player.name)),
         backgroundColor: widget.player.color.withValues(alpha: 0.2),
         actions: [
           ConfirmAction(

@@ -5,6 +5,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_language.dart';
 import '../l10n/l10n.dart';
+import '../l10n/labels.dart';
 import '../models/circus.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
@@ -13,12 +14,12 @@ import '../models/history_entry.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
-import '../models/standings.dart';
 import '../services/history_storage.dart';
 import '../services/players_storage.dart';
 import '../services/settings_storage.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
+import '../widgets/game_dialogs.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/player_dialog.dart';
@@ -31,18 +32,11 @@ import 'history_screen.dart';
 import 'pyramid_screen.dart';
 import 'select_points_type_screen.dart';
 import 'tower_screen.dart';
+import 'expansions_screen.dart';
+import 'rules_screen.dart';
 import 'settings_screen.dart';
 
-enum _MenuAction {
-  undo,
-  history,
-  endGame,
-  reset,
-  settings,
-  startTimer,
-  stopTimer,
-  resetTimer,
-}
+enum _MenuAction { undo, history, newGame, expansions, rules, settings }
 
 class PlayersScreen extends StatefulWidget {
   const PlayersScreen({super.key});
@@ -66,11 +60,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
   final List<HistoryEntry> _log = [];
   final Map<ScoreEvent, int> _logIds = {};
 
-  // Stoper liczy czas z [Stopwatch], więc nie gubi sekund, gdy aplikacja
-  // jest w tle; [Timer] służy tylko do odświeżania widoku.
-  final Stopwatch _stopwatch = Stopwatch();
-  Timer? _ticker;
-
   /// Kolory podstawowe, które nie są jeszcze zajęte przez żadnego gracza.
   List<Color> get _availableColors => [
     for (final c in kPlayerColors)
@@ -78,6 +67,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
   ];
 
   bool _has(Expansion e) => _settings.expansions.contains(e);
+
+  GameStage _stage = GameStage.setup;
+
+  bool get _inSetup => _stage == GameStage.setup;
 
   @override
   void initState() {
@@ -87,7 +80,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
   @override
   void dispose() {
-    _ticker?.cancel();
     unawaited(WakelockPlus.disable().catchError((Object _) {}));
     super.dispose();
   }
@@ -109,9 +101,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
       _players
         ..clear()
         ..addAll(loaded);
+      _stage = settings.stage ?? inferLegacyStage(loaded);
       _sortPlayers();
     });
     _applyWakelock();
+    if (_stage == GameStage.finished) _showEndScreen();
   }
 
   /// Włącza lub wyłącza blokadę wygaszania ekranu zgodnie z ustawieniem.
@@ -129,44 +123,15 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
   void _saveLog() => unawaited(_historyStorage.save(_log));
 
-  /// Sortuje po wyniku na bieżąco, czyli z premią za surowce.
+  /// Sortuje po punktach z planszy (premia za surowce dopiero na koniec).
   void _sortPlayers() {
-    final scores = {for (final p in _players) p: totalScore(p, _players)};
-    _players.sort((a, b) => scores[b]!.compareTo(scores[a]!));
+    _players.sort((a, b) => b.points.compareTo(a.points));
   }
 
-  // --------------------------------------------------------------- stoper
-
-  void _startTimer() {
-    _ticker?.cancel();
-    _stopwatch.start();
-    _ticker = Timer.periodic(
-      const Duration(seconds: 1),
-      (_) => setState(() {}),
-    );
-    setState(() {});
-  }
-
-  void _stopTimer() {
-    _ticker?.cancel();
-    _stopwatch.stop();
-    setState(() {});
-  }
-
-  void _resetTimer() {
-    _ticker?.cancel();
-    _stopwatch
-      ..stop()
-      ..reset();
-    setState(() {});
-  }
-
-  String _formatDuration(Duration d) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final h = twoDigits(d.inHours);
-    final m = twoDigits(d.inMinutes.remainder(60));
-    final s = twoDigits(d.inSeconds.remainder(60));
-    return '$h:$m:$s';
+  void _setStage(GameStage stage) {
+    _stage = stage;
+    _settings.stage = stage;
+    _saveSettings();
   }
 
   // -------------------------------------------------------------- akcje
@@ -197,6 +162,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   Future<void> _onAddPlayer() async {
+    if (!_inSetup) return;
     final result = await showPlayerDialog(
       context,
       availableColors: _availableColors,
@@ -210,6 +176,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   Future<void> _onEditPlayer(Player player) async {
+    if (!_inSetup) return;
     final result = await showPlayerDialog(
       context,
       availableColors: _availableColors,
@@ -242,6 +209,12 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   Future<void> _onScorePlayer(Player player) async {
+    if (_stage != GameStage.playing) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(context.l10n.startFirst)));
+      return;
+    }
     final type = await Navigator.push<ScoringType>(
       context,
       MaterialPageRoute(
@@ -268,7 +241,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   /// Wróżka przy meplu gracza daje 1 pkt na początku jego tury, więc
-  /// dopisujemy go od razu, bez osobnego ekranu. Można go cofnąć z paska.
+  /// dopisujemy go od razu, bez osobnego ekranu (bez komunikatu). Cofniesz go z menu.
   void _scoreFairy(Player player) {
     final l = context.l10n;
     final event = ScoreEvent(
@@ -278,22 +251,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
       type: ScoringType.fairy,
     );
     _applyEvent(event);
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(l.fairySnack(player.name, kFairyTurnPoints)),
-          action: SnackBarAction(
-            label: l.undo,
-            onPressed: () {
-              // Cofamy tylko, jeśli to nadal ostatnie zdarzenie.
-              if (_history.isNotEmpty && identical(_history.last, event)) {
-                _undo();
-              }
-            },
-          ),
-        ),
-      );
   }
 
   Widget _scoringScreen(Player player, ScoringType type) {
@@ -324,7 +281,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       _history.add(event);
       final entry = HistoryEntry.fromEvent(
         event,
-        totals: {for (final p in _players) p: totalScore(p, _players)},
+        totals: {for (final p in _players) p: p.points},
       );
       _log.add(entry);
       _logIds[event] = entry.id;
@@ -367,7 +324,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final confirmed = await _confirm(
       title: context.l10n.newGameTitle,
       message: context.l10n.newGameMessage,
-      confirmLabel: context.l10n.reset,
+      confirmLabel: context.l10n.yes,
     );
     if (!confirmed || !mounted) return;
     _resetGame();
@@ -384,8 +341,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
       _logIds.clear();
       _log.clear();
       _settings.usedAnimals.clear();
+      _settings.startedAt = null;
+      _settings.endedAt = null;
+      _stage = GameStage.setup;
+      _settings.stage = GameStage.setup;
     });
-    _resetTimer();
     _save();
     _saveSettings();
     _saveLog();
@@ -406,9 +366,46 @@ class _PlayersScreenState extends State<PlayersScreen> {
     );
   }
 
-  /// Zatrzymuje stoper i pokazuje podsumowanie; stamtąd można zacząć od nowa.
-  Future<void> _endGame() async {
-    if (_stopwatch.isRunning) _stopTimer();
+  Future<void> _onStartGame() async {
+    while (true) {
+      final l = context.l10n;
+      final names = [
+        for (final e in Expansion.values)
+          if (_has(e)) e.label(l),
+      ];
+      final choice = await askStartGame(
+        context,
+        expansionsList: names.isEmpty ? l.noneCap : '\n${names.join('\n')}',
+      );
+      if (!mounted) return;
+      if (choice == StartChoice.expansions) {
+        await _openExpansions();
+        if (!mounted) return;
+        continue;
+      }
+      if (choice == StartChoice.cancel) return;
+      break;
+    }
+    setState(() {
+      _settings.startedAt = DateTime.now();
+      _settings.endedAt = null;
+      _setStage(GameStage.playing);
+    });
+    await showGameStartedNote(context);
+  }
+
+  Future<void> _onEndGame() async {
+    final ok = await askYesNo(context, title: context.l10n.endGameQuestion);
+    if (!ok || !mounted) return;
+    setState(() {
+      _settings.endedAt = DateTime.now();
+      _setStage(GameStage.finished);
+    });
+    await _showEndScreen();
+  }
+
+  /// Podsumowanie gry; jedyne wyjście to „Nowa gra".
+  Future<void> _showEndScreen() async {
     final newGame = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
@@ -417,11 +414,34 @@ class _PlayersScreenState extends State<PlayersScreen> {
           log: List<HistoryEntry>.of(_log),
           showGoods: _has(Expansion.tradersBuilders),
           showGold: _has(Expansion.goldMines),
-          elapsed: _stopwatch.elapsed,
+          elapsed: gameElapsed(
+            startedAt: _settings.startedAt,
+            endedAt: _settings.endedAt,
+          ),
         ),
       ),
     );
     if (newGame == true && mounted) _resetGame();
+  }
+
+  Future<void> _openExpansions() async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ExpansionsScreen(
+          expansions: _settings.expansions,
+          locked: !_inSetup,
+          onChanged: (values) {
+            setState(() {
+              _settings.expansions
+                ..clear()
+                ..addAll(values);
+            });
+            _saveSettings();
+          },
+        ),
+      ),
+    );
   }
 
   Future<void> _openSettings() async {
@@ -429,20 +449,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => SettingsScreen(
-          expansions: _settings.expansions,
           keepScreenOn: _settings.keepScreenOn,
           themeMode: _settings.themeMode,
           language: _settings.language,
-          expansionsLocked: isGameStarted(
-            timerRunning: _stopwatch.isRunning,
-            elapsed: _stopwatch.elapsed,
-            players: _players,
-          ),
           onChanged: (values) {
             setState(() {
-              _settings.expansions
-                ..clear()
-                ..addAll(values.expansions);
               _settings.keepScreenOn = values.keepScreenOn;
               _settings.themeMode = values.themeMode;
               _settings.language = values.language;
@@ -463,22 +474,29 @@ class _PlayersScreenState extends State<PlayersScreen> {
         _undo();
       case _MenuAction.history:
         _openHistory();
-      case _MenuAction.endGame:
-        _endGame();
-      case _MenuAction.reset:
+      case _MenuAction.newGame:
         _onReset();
+      case _MenuAction.expansions:
+        _openExpansions();
+      case _MenuAction.rules:
+        Navigator.push<void>(
+          context,
+          MaterialPageRoute(builder: (_) => const RulesScreen()),
+        );
       case _MenuAction.settings:
         _openSettings();
-      case _MenuAction.startTimer:
-        _startTimer();
-      case _MenuAction.stopTimer:
-        _stopTimer();
-      case _MenuAction.resetTimer:
-        _resetTimer();
     }
   }
 
   // ------------------------------------------------------------- widoki
+
+  Widget _menuRow(IconData icon, String text) => Row(
+    children: [
+      Icon(icon, size: 22),
+      const SizedBox(width: 12),
+      Flexible(child: Text(text)),
+    ],
+  );
 
   List<PopupMenuEntry<_MenuAction>> _buildMenuItems() {
     final l = context.l10n;
@@ -487,50 +505,38 @@ class _PlayersScreenState extends State<PlayersScreen> {
       PopupMenuItem(
         value: _MenuAction.undo,
         enabled: last != null,
-        child: Text(
+        child: _menuRow(
+          Icons.undo,
           last == null ? l.menuUndoNone : l.menuUndo(last.label),
         ),
       ),
       PopupMenuItem(
         value: _MenuAction.history,
-        child: Text(l.menuHistory),
+        child: _menuRow(Icons.history, l.menuHistory),
       ),
       PopupMenuItem(
-        value: _MenuAction.endGame,
-        enabled: _players.isNotEmpty,
-        child: Text(l.menuEndGame),
+        value: _MenuAction.newGame,
+        child: _menuRow(Icons.refresh, l.newGame),
       ),
       PopupMenuItem(
-        value: _MenuAction.reset,
-        child: Text(l.menuReset),
+        value: _MenuAction.expansions,
+        child: _menuRow(Icons.extension, l.expansionsSection),
+      ),
+      PopupMenuItem(
+        value: _MenuAction.rules,
+        child: _menuRow(Icons.menu_book_outlined, l.rulesTitle),
       ),
       PopupMenuItem(
         value: _MenuAction.settings,
-        child: Text(l.menuSettings),
-      ),
-      const PopupMenuDivider(),
-      PopupMenuItem(
-        value: _MenuAction.startTimer,
-        enabled: !_stopwatch.isRunning,
-        child: Text(l.menuStartTimer),
-      ),
-      PopupMenuItem(
-        value: _MenuAction.stopTimer,
-        enabled: _stopwatch.isRunning,
-        child: Text(l.menuStopTimer),
-      ),
-      PopupMenuItem(
-        value: _MenuAction.resetTimer,
-        enabled: !_stopwatch.isRunning && _stopwatch.elapsed > Duration.zero,
-        child: Text(l.menuResetTimer),
+        child: _menuRow(Icons.settings, l.settings),
       ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final showTimer =
-        _stopwatch.isRunning || _stopwatch.elapsed > Duration.zero;
+    final l = context.l10n;
+    final showStart = _inSetup && _players.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -542,44 +548,73 @@ class _PlayersScreenState extends State<PlayersScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onAddPlayer,
-        child: const Icon(Icons.add),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 32),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (showStart)
+                FloatingActionButton.extended(
+                  heroTag: 'start',
+                  onPressed: _onStartGame,
+                  icon: const Icon(Icons.play_arrow),
+                  label: Text(l.startGame),
+                )
+              else
+                const SizedBox.shrink(),
+              if (_inSetup)
+                FloatingActionButton(
+                  heroTag: 'add',
+                  onPressed: _onAddPlayer,
+                  child: const Icon(Icons.add),
+                )
+              else if (_stage == GameStage.playing)
+                FloatingActionButton(
+                  heroTag: 'end',
+                  tooltip: l.endGameTooltip,
+                  onPressed: _onEndGame,
+                  child: const Icon(kEndGameIcon),
+                )
+              else
+                const SizedBox.shrink(),
+            ],
+          ),
+        ),
       ),
-      body: Column(
-        children: [
-          if (showTimer)
-            Padding(
-              padding: const EdgeInsets.only(top: 8, bottom: 4),
-              child: Text(
-                context.l10n.gameTime(_formatDuration(_stopwatch.elapsed)),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+      body: _players.isEmpty
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(text: '${l.noPlayersHint} '),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: fabLookalike(context, Icons.add),
+                      ),
+                      TextSpan(text: '.\n\n${l.noPlayersHint2}'),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
                 ),
               ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.only(bottom: 88),
+              itemCount: _players.length,
+              itemBuilder: (context, index) =>
+                  _buildPlayerCard(_players[index]),
             ),
-          Expanded(
-            child: _players.isEmpty
-                ? Center(
-                    child: Text(
-                      context.l10n.noPlayers,
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: _players.length,
-                    itemBuilder: (context, index) =>
-                        _buildPlayerCard(_players[index]),
-                  ),
-          ),
-        ],
-      ),
     );
   }
 
   Widget _buildPlayerCard(Player p) {
-    final total = totalScore(p, _players);
+    final total = p.points;
     final hasGoods = _has(Expansion.tradersBuilders) && p.goodsTotal > 0;
     final hasGold = _has(Expansion.goldMines) && p.gold > 0;
 

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_language.dart';
 import '../models/circus.dart';
 import '../models/expansion.dart';
+import '../models/game_state.dart';
 
 /// Ustawienia i stan gry niezwiązany z konkretnym graczem.
 class GameSettings {
@@ -24,12 +25,21 @@ class GameSettings {
   /// Język interfejsu (domyślnie polski).
   AppLanguage language;
 
+  /// Etap gry oraz czas jej rozpoczęcia i zakończenia. Etap `null` oznacza
+  /// stary zapis bez etapu (patrz [inferLegacyStage]).
+  GameStage? stage;
+  DateTime? startedAt;
+  DateTime? endedAt;
+
   GameSettings({
     Set<Expansion>? expansions,
     Map<CircusAnimal, int>? usedAnimals,
     this.keepScreenOn = true,
     this.themeMode = ThemeMode.system,
     this.language = AppLanguage.pl,
+    this.stage,
+    this.startedAt,
+    this.endedAt,
   }) : expansions = expansions ?? <Expansion>{},
        usedAnimals = usedAnimals ?? {};
 
@@ -45,6 +55,9 @@ class SettingsStorage {
   static const _keepScreenOnKey = 'keep_screen_on';
   static const _themeKey = 'theme_mode';
   static const _languageKey = 'language';
+  static const _stageKey = 'game_stage';
+  static const _startedKey = 'game_started_at';
+  static const _endedKey = 'game_ended_at';
 
   /// Dodatki znane, zanim zaczęliśmy zapisywać listę „widzianych".
   static const _legacyExpansions = {
@@ -105,8 +118,16 @@ class SettingsStorage {
         orElse: () => ThemeMode.system,
       ),
       language: AppLanguage.fromCode(prefs.getString(_languageKey)),
+      stage: GameStage.values
+          .where((g) => g.name == prefs.getString(_stageKey))
+          .firstOrNull,
+      startedAt: _readTime(prefs.getString(_startedKey)),
+      endedAt: _readTime(prefs.getString(_endedKey)),
     );
   }
+
+  static DateTime? _readTime(String? raw) =>
+      raw == null ? null : DateTime.tryParse(raw);
 
   Future<void> save(GameSettings settings) async {
     final prefs = await SharedPreferences.getInstance();
@@ -119,11 +140,26 @@ class SettingsStorage {
     await prefs.setBool(_keepScreenOnKey, settings.keepScreenOn);
     await prefs.setString(_themeKey, settings.themeMode.name);
     await prefs.setString(_languageKey, settings.language.code);
+    await _writeString(prefs, _stageKey, settings.stage?.name);
+    await _writeString(prefs, _startedKey, settings.startedAt?.toIso8601String());
+    await _writeString(prefs, _endedKey, settings.endedAt?.toIso8601String());
     await prefs.setString(
       _usedAnimalsKey,
       json.encode({
         for (final e in settings.usedAnimals.entries) e.key.name: e.value,
       }),
     );
+  }
+
+  static Future<void> _writeString(
+    SharedPreferences prefs,
+    String key,
+    String? value,
+  ) async {
+    if (value == null) {
+      await prefs.remove(key);
+    } else {
+      await prefs.setString(key, value);
+    }
   }
 }
