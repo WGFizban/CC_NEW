@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
+import '../l10n/tr.dart';
 import '../models/player.dart';
 import '../theme/app_colors.dart';
 import 'meeple_icon.dart';
@@ -92,7 +93,7 @@ class _PlayerDialogState extends State<_PlayerDialog> {
     final picked = await showDialog<Color>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Wybierz kolor z palety'),
+        title: Text(tr('Wybierz kolor z palety', 'Pick a color from the palette')),
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: temp,
@@ -103,7 +104,7 @@ class _PlayerDialogState extends State<_PlayerDialog> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Anuluj'),
+            child: Text(tr('Anuluj', 'Cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, temp),
@@ -118,7 +119,11 @@ class _PlayerDialogState extends State<_PlayerDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(_isEditing ? 'Edytuj gracza' : 'Dodaj gracza'),
+      title: Text(
+        _isEditing
+            ? tr('Edytuj gracza', 'Edit player')
+            : tr('Dodaj gracza', 'Add player'),
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -128,8 +133,10 @@ class _PlayerDialogState extends State<_PlayerDialog> {
               autofocus: !_isEditing,
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
-                labelText: 'Imię',
-                errorText: _showError ? 'Podaj imię gracza' : null,
+                labelText: tr('Imię', 'Name'),
+                errorText: _showError
+                    ? tr('Podaj imię gracza', 'Enter the player name')
+                    : null,
               ),
               onChanged: (_) {
                 if (_showError) setState(() => _showError = false);
@@ -137,7 +144,11 @@ class _PlayerDialogState extends State<_PlayerDialog> {
               onSubmitted: (_) => _submit(),
             ),
             const SizedBox(height: 10),
-            Text(_isEditing ? 'Zmień kolor:' : 'Wybierz kolor:'),
+            Text(
+              _isEditing
+                  ? tr('Zmień kolor:', 'Change color:')
+                  : tr('Wybierz kolor:', 'Choose a color:'),
+            ),
             const SizedBox(height: 10),
             Wrap(
               spacing: 6,
@@ -173,15 +184,15 @@ class _PlayerDialogState extends State<_PlayerDialog> {
           TextButton(
             onPressed: () =>
                 Navigator.pop(context, const PlayerFormResult.delete()),
-            child: const Text('Usuń gracza'),
+            child: Text(tr('Usuń gracza', 'Delete player')),
           ),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Anuluj'),
+          child: Text(tr('Anuluj', 'Cancel')),
         ),
         ElevatedButton(
           onPressed: _submit,
-          child: Text(_isEditing ? 'Zapisz' : 'Dodaj'),
+          child: Text(_isEditing ? tr('Zapisz', 'Save') : tr('Dodaj', 'Add')),
         ),
       ],
     );

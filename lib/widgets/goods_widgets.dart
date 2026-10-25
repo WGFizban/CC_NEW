@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/tr.dart';
 import '../models/goods.dart';
 import '../models/player.dart';
 import '../models/standings.dart';
+import '../theme/app_theme.dart';
 import 'counter_stepper.dart';
 import 'game_icon.dart';
 
@@ -54,7 +56,7 @@ class GoodsCounters extends StatelessWidget {
                       Text(g.displayName, style: const TextStyle(fontSize: 16)),
                       if (maxFor != null)
                         Text(
-                          'w puli: ${maxFor!(g)} z ${g.supply}',
+                          '${tr('w puli', 'in supply')}: ${maxFor!(g)} / ${g.supply}',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                     ],
@@ -114,10 +116,12 @@ class _GoodsBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: leading ? goods.color.withValues(alpha: 0.25) : Colors.white54,
+        color: leading
+            ? goods.color.withValues(alpha: 0.25)
+            : badgeColor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: leading ? goods.color : Colors.black26,
+          color: leading ? goods.color : outlineSoft(context),
           width: leading ? 2 : 1,
         ),
       ),
@@ -147,9 +151,9 @@ class GoldBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.white54,
+        color: badgeColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black26),
+        border: Border.all(color: outlineSoft(context)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

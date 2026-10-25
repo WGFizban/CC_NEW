@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/tr.dart';
 import '../models/circus.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
@@ -54,10 +55,10 @@ class _CircusScreenState extends State<CircusScreen> {
     Navigator.pop(
       context,
       ScoreEvent(
-        'Cyrk (${animal.displayName})',
+        '${tr('Cyrk', 'Circus')} (${animal.displayName})',
         changes,
         animal: animal,
-        category: 'Cyrk',
+        category: tr('Cyrk', 'Circus'),
       ),
     );
   }
@@ -69,7 +70,7 @@ class _CircusScreenState extends State<CircusScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Punktacja cyrku'),
+        title: Text(tr('Punktacja cyrku', 'Circus scoring')),
         actions: [
           ConfirmAction(onPressed: animal == null ? null : _confirm),
         ],
@@ -77,9 +78,12 @@ class _CircusScreenState extends State<CircusScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text(
-            '1. Odkryj żeton zwierzęcia spod namiotu i wybierz go:',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Text(
+            tr(
+              '1. Odkryj żeton zwierzęcia spod namiotu i wybierz go:',
+              '1. Reveal the animal token from under the tent and pick it:',
+            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -89,7 +93,7 @@ class _CircusScreenState extends State<CircusScreen> {
               for (final a in CircusAnimal.values)
                 ChoiceChip(
                   label: Text(
-                    '${a.displayName} · ${a.value} pkt '
+                    '${a.displayName} · ${a.value} ${tr('pkt', 'pts')} '
                     '(${_remaining(a)}/${a.count})',
                   ),
                   selected: animal == a,
@@ -100,20 +104,33 @@ class _CircusScreenState extends State<CircusScreen> {
             ],
           ),
           if (allUsed)
-            const Padding(
-              padding: EdgeInsets.only(top: 8),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
               child: Text(
-                'Wszystkie żetony zwierząt zostały już zużyte. '
-                'Zeruje je reset punktów.',
+                tr(
+                  'Wszystkie żetony zwierząt zostały już zużyte. '
+                      'Zeruje je reset punktów.',
+                  'All animal tokens have been used. '
+                      'Resetting the points restores them.',
+                ),
               ),
             ),
           const SizedBox(height: 16),
-          const LabelWithHint(
-            '2. Ile mepli ma każdy gracz na płytce cyrku i ośmiu '
-            'sąsiednich?',
-            'Liczą się zwykłe meple, duże meple, opaci, wozy '
-                'i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, '
-                'pasterze ani stodoły. Punktujące meple zostają na planszy.',
+          LabelWithHint(
+            tr(
+              '2. Ile mepli ma każdy gracz na płytce cyrku i ośmiu '
+                  'sąsiednich?',
+              '2. How many meeples does each player have on the circus '
+                  'tile and the eight neighboring ones?',
+            ),
+            tr(
+              'Liczą się zwykłe meple, duże meple, opaci, wozy '
+                  'i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, '
+                  'pasterze ani stodoły. Punktujące meple zostają na planszy.',
+              'Normal meeples, big meeples, abbots, wagons and ringmasters '
+                  'count. Builders, pigs, shepherds and barns do not. '
+                  'Scoring meeples stay on the board.',
+            ),
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -122,7 +139,9 @@ class _CircusScreenState extends State<CircusScreen> {
               player: p,
               value: _meeples[p] ?? 0,
               max: 20,
-              caption: animal == null ? null : '= ${_pointsOf(p)} pkt',
+              caption: animal == null
+                  ? null
+                  : '= ${_pointsOf(p)} ${tr('pkt', 'pts')}',
               onChanged: (v) => setState(() => _meeples[p] = v),
             ),
         ],

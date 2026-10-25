@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/tr.dart';
 import '../models/gold.dart';
 import '../models/goods.dart';
 import '../models/history_entry.dart';
@@ -33,7 +34,7 @@ class EndGameScreen extends StatelessWidget {
     for (final e in log) {
       for (final c in e.changes) {
         if (c.player == p.name && c.points != 0) {
-          final key = e.category ?? 'Inne';
+          final key = e.category ?? tr('Inne', 'Other');
           result[key] = (result[key] ?? 0) + c.points;
         }
       }
@@ -41,7 +42,10 @@ class EndGameScreen extends StatelessWidget {
     // Punkty bez wpisu w historii (np. po jej wyczyszczeniu).
     final counted = result.values.fold<int>(0, (a, b) => a + b);
     final rest = p.points - counted;
-    if (rest != 0) result['Inne'] = (result['Inne'] ?? 0) + rest;
+    if (rest != 0) {
+      final other = tr('Inne', 'Other');
+      result[other] = (result[other] ?? 0) + rest;
+    }
     return result;
   }
 
@@ -63,9 +67,9 @@ class EndGameScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Koniec gry')),
+      appBar: AppBar(title: Text(tr('Koniec gry', 'Game over'))),
       body: players.isEmpty
-          ? const Center(child: Text('Brak graczy.'))
+          ? Center(child: Text(tr('Brak graczy.', 'No players.')))
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -74,7 +78,7 @@ class EndGameScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
-                      'Czas gry: ${_duration(elapsed!)}',
+                      '${tr('Czas gry', 'Game time')}: ${_duration(elapsed!)}',
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -91,11 +95,11 @@ class EndGameScreen extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => Navigator.pop(context, true),
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Nowa gra'),
+                  label: Text(tr('Nowa gra', 'New game')),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Wróć do gry'),
+                  child: Text(tr('Wróć do gry', 'Back to game')),
                 ),
               ],
             ),
@@ -103,7 +107,9 @@ class EndGameScreen extends StatelessWidget {
   }
 
   Widget _winnerBanner(BuildContext context, List<Player> winners, int best) {
-    final title = winners.length == 1 ? 'Zwycięzca' : 'Remis na czele';
+    final title = winners.length == 1
+        ? tr('Zwycięzca', 'Winner')
+        : tr('Remis na czele', 'Tied for the lead');
     return Card(
       color: Theme.of(context).colorScheme.primaryContainer,
       child: Padding(
@@ -119,7 +125,10 @@ class EndGameScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
-            Text('$best pkt', style: const TextStyle(fontSize: 20)),
+            Text(
+              '$best ${tr('pkt', 'pts')}',
+              style: const TextStyle(fontSize: 20),
+            ),
           ],
         ),
       ),
@@ -179,17 +188,20 @@ class EndGameScreen extends StatelessWidget {
               const Divider(height: 20),
             for (final e in categories.entries) _row(e.key, '${e.value}'),
             if (showGoods && bonus > 0)
-              _row('Premia za surowce', '+$bonus'),
+              _row(tr('Premia za surowce', 'Goods bonus'), '+$bonus'),
             if (showGold && p.gold > 0)
               _row(
-                'Złoto ×${p.gold} (po ${goldValuePerPiece(p.gold)} pkt)',
+                tr(
+                  'Złoto ×${p.gold} (po ${goldValuePerPiece(p.gold)} pkt)',
+                  'Gold ×${p.gold} (${goldValuePerPiece(p.gold)} pts each)',
+                ),
                 '+$gold',
               ),
             if (showGoods && goods.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  'Surowce: ${goods.join(', ')}',
+                  '${tr('Surowce', 'Goods')}: ${goods.join(', ')}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),

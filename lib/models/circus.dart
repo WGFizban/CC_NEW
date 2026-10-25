@@ -1,3 +1,5 @@
+import '../l10n/tr.dart';
+
 /// Punkty za akrobatę (przy podliczeniu piramidy i na koniec gry).
 const int kAcrobatPoints = 5;
 
@@ -16,16 +18,20 @@ const int kMaxRingmasterTiles = 9;
 /// [value] to punkty za każdego mepla na płytce cyrku i ośmiu sąsiednich,
 /// [count] to liczba takich żetonów w grze (razem 16).
 enum CircusAnimal {
-  elephant('Słoń', 7, 1),
-  lion('Lew', 6, 2),
-  bear('Niedźwiedź', 5, 3),
-  seal('Foka', 4, 5),
-  monkey('Małpka', 3, 4),
-  flea('Pchła', 1, 1);
+  elephant('Słoń', 'Elephant', 7, 1),
+  lion('Lew', 'Lion', 6, 2),
+  bear('Niedźwiedź', 'Bear', 5, 3),
+  seal('Foka', 'Seal', 4, 5),
+  monkey('Małpka', 'Monkey', 3, 4),
+  flea('Pchła', 'Flea', 1, 1);
 
-  const CircusAnimal(this.displayName, this.value, this.count);
+  const CircusAnimal(this._pl, this._en, this.value, this.count);
 
-  final String displayName;
+  final String _pl;
+  final String _en;
+
+  /// Nazwa zwierzęcia w aktualnym języku.
+  String get displayName => tr(_pl, _en);
   final int value;
   final int count;
 }
