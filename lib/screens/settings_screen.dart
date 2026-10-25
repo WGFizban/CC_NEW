@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_language.dart';
 import '../l10n/l10n.dart';
-import '../l10n/labels.dart';
 
 /// Zestaw ustawień zgłaszany przez [SettingsScreen].
 typedef SettingsValues = ({
