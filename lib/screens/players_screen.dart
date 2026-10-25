@@ -5,6 +5,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_language.dart';
 import '../l10n/l10n.dart';
+import '../l10n/labels.dart';
 import '../models/circus.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
