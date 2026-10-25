@@ -706,7 +706,7 @@
   "@startGameBody": {
     "placeholders": {
       "expansions": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
