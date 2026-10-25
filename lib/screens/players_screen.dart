@@ -28,7 +28,6 @@ import 'bazaar_screen.dart';
 import 'circus_screen.dart';
 import 'end_game_screen.dart';
 import 'flock_screen.dart';
-import 'history_screen.dart';
 import 'pyramid_screen.dart';
 import 'select_points_type_screen.dart';
 import 'tower_screen.dart';
@@ -36,7 +35,7 @@ import 'expansions_screen.dart';
 import 'rules_screen.dart';
 import 'settings_screen.dart';
 
-enum _MenuAction { undo, history, newGame, expansions, rules, settings }
+enum _MenuAction { undo, newGame, expansions, rules, settings }
 
 class PlayersScreen extends StatefulWidget {
   const PlayersScreen({super.key});
@@ -351,21 +350,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
     _saveLog();
   }
 
-  Future<void> _openHistory() async {
-    await Navigator.push<void>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => HistoryScreen(
-          entries: List<HistoryEntry>.of(_log),
-          onClear: () {
-            setState(() => _log.clear());
-            _saveLog();
-          },
-        ),
-      ),
-    );
-  }
-
   Future<void> _onStartGame() async {
     while (true) {
       final l = context.l10n;
@@ -412,8 +396,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         builder: (_) => EndGameScreen(
           players: List<Player>.of(_players),
           log: List<HistoryEntry>.of(_log),
-          showGoods: _has(Expansion.tradersBuilders),
-          showGold: _has(Expansion.goldMines),
+          expansions: Set<Expansion>.of(_settings.expansions),
           elapsed: gameElapsed(
             startedAt: _settings.startedAt,
             endedAt: _settings.endedAt,
@@ -472,8 +455,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
     switch (action) {
       case _MenuAction.undo:
         _undo();
-      case _MenuAction.history:
-        _openHistory();
       case _MenuAction.newGame:
         _onReset();
       case _MenuAction.expansions:
@@ -509,10 +490,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
           Icons.undo,
           last == null ? l.menuUndoNone : l.menuUndo(last.label),
         ),
-      ),
-      PopupMenuItem(
-        value: _MenuAction.history,
-        child: _menuRow(Icons.history, l.menuHistory),
       ),
       PopupMenuItem(
         value: _MenuAction.newGame,

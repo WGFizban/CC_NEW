@@ -9,6 +9,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auto_size_text.dart';
 import '../widgets/game_icon.dart';
+import '../widgets/scoring_app_bar.dart' show kCancelColor;
 
 /// Wybór rodzaju punktacji. Zwraca wybrany [ScoringType] przez `Navigator.pop`.
 class SelectPointsTypeScreen extends StatelessWidget {
@@ -117,9 +118,11 @@ class SelectPointsTypeScreen extends StatelessWidget {
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
-              child: FilledButton.tonal(
+              child: FilledButton(
                 onPressed: () => Navigator.pop(context),
                 style: FilledButton.styleFrom(
+                  backgroundColor: kCancelColor,
+                  foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(52),
                   shape: const StadiumBorder(),
                   textStyle: const TextStyle(

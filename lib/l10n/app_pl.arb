@@ -187,7 +187,7 @@
   "gameOver": "Koniec gry",
   "noPlayersDot": "Brak graczy.",
   "winner": "Zwycięzca",
-  "tiedLead": "Remis na czele",
+  "tiedLead": "Remis",
   "newGame": "Nowa gra",
   "goodsBonus": "Premia za surowce",
   "goldSummary": "Złoto ×{count} (po {value} pkt)",
@@ -736,5 +736,6 @@
   "rulesCircus": "• Cyrk: odkryj żeton zwierzęcia. Każdy mepel na płytce cyrku i ośmiu sąsiednich daje właścicielowi tyle punktów, ile wynosi zwierzę (słoń 7, lew 6, niedźwiedź 5, foka 4, małpka 3, pchła 1). Meple zostają.\n• Akrobaci: ukończona piramida (3 meple) – każdy akrobata 5 pkt i wraca do puli. Na koniec gry 5 pkt za każdego akrobatę na planszy.\n• Dyrektor cyrku: 2 pkt za każdą płytkę cyrku lub akrobatów obok niego, także na koniec gry.",
   "rulesGold": "• Złoto: 16 sztabek. Za ukończoną budowlę sztabki z jej płytek dostaje gracz z przewagą (rolnicy nie).\n• Na koniec gry sztabka jest warta: 1–3 sztabki po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.",
   "gameStartedTitle": "Gra została rozpoczęta!",
-  "noPlayersHint2": "Jeśli chcesz edytować gracza, przytrzymaj wiersz z jego imieniem."
+  "noPlayersHint2": "Jeśli chcesz edytować gracza, przytrzymaj wiersz z jego imieniem.",
+  "summaryTitle": "Podsumowanie"
 }

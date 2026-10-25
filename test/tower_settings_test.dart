@@ -16,6 +16,7 @@ import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/score_event.dart';
 import 'package:cc_new/models/scoring.dart';
+import 'package:cc_new/models/summary.dart';
 import 'package:cc_new/models/tower.dart';
 import 'package:cc_new/services/settings_storage.dart';
 
@@ -307,6 +308,29 @@ void main() {
       expect(restored.changes.single.color, isNull);
       expect(restored.changes.single.total, isNull);
       expect(restored.changes.single.points, 2);
+    });
+  });
+
+  group('podsumowanie: punkty według rodzaju', () {
+    test('sumuje punkty graczy osobno dla każdego rodzaju punktacji', () {
+      final ala = _player('Ala');
+      final bob = _player('Bob');
+      HistoryEntry e(ScoringType t, Player p, int pts) => HistoryEntry.fromEvent(
+        ScoreEvent('x', [ScoreChange(p, pts)], type: t),
+      );
+      final log = [
+        e(ScoringType.city, ala, 8),
+        e(ScoringType.city, ala, 4),
+        e(ScoringType.road, ala, 3),
+        e(ScoringType.city, bob, 6),
+      ];
+
+      final result = pointsByType(log);
+
+      expect(result['Ala']![ScoringType.city], 12);
+      expect(result['Ala']![ScoringType.road], 3);
+      expect(result['Bob']![ScoringType.city], 6);
+      expect(result['Bob']![ScoringType.road], isNull);
     });
   });
 }

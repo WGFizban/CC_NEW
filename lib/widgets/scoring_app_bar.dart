@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
 
+/// Czerwień przycisków „Anuluj".
+const Color kCancelColor = Color(0xFFC62828);
+
 /// Pasek ekranu punktowania: po lewej przycisk „Anuluj", po prawej
 /// „Zatwierdź" (wyszarzony, gdy [onConfirm] jest `null`), bez tytułu.
 AppBar scoringAppBar(
@@ -20,13 +23,11 @@ AppBar scoringAppBar(
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.only(left: 8),
-        child: OutlinedButton(
+        child: FilledButton(
           onPressed: () => Navigator.pop(context),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: foregroundColor,
-            side: BorderSide(
-              color: foregroundColor ?? Theme.of(context).colorScheme.outline,
-            ),
+          style: FilledButton.styleFrom(
+            backgroundColor: kCancelColor,
+            foregroundColor: Colors.white,
             shape: const StadiumBorder(),
           ),
           child: Text(l.cancel),
