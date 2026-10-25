@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/l10n.dart';
+import '../l10n/labels.dart';
 import '../models/goods.dart';
 import '../models/player.dart';
 import '../models/standings.dart';
@@ -53,10 +54,13 @@ class GoodsCounters extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(g.displayName, style: const TextStyle(fontSize: 16)),
+                      Text(
+                        g.title(context.l10n),
+                        style: const TextStyle(fontSize: 16),
+                      ),
                       if (maxFor != null)
                         Text(
-                          '${tr('w puli', 'in supply')}: ${maxFor!(g)} / ${g.supply}',
+                          context.l10n.goodsInSupply(maxFor!(g), g.supply),
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                     ],

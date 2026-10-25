@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/l10n.dart';
+import '../l10n/labels.dart';
 import '../models/circus.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
+import '../models/scoring.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
@@ -55,22 +57,24 @@ class _CircusScreenState extends State<CircusScreen> {
     Navigator.pop(
       context,
       ScoreEvent(
-        '${tr('Cyrk', 'Circus')} (${animal.displayName})',
+        context.l10n.circusEventLabel(animal.title(context.l10n)),
         changes,
         animal: animal,
-        category: tr('Cyrk', 'Circus'),
+        category: context.l10n.scCircus,
+        type: ScoringType.circus,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final animal = _animal;
     final allUsed = CircusAnimal.values.every((a) => _remaining(a) <= 0);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr('Punktacja cyrku', 'Circus scoring')),
+        title: Text(l.circusTitle),
         actions: [
           ConfirmAction(onPressed: animal == null ? null : _confirm),
         ],
@@ -79,10 +83,7 @@ class _CircusScreenState extends State<CircusScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            tr(
-              '1. Odkryj żeton zwierzęcia spod namiotu i wybierz go:',
-              '1. Reveal the animal token from under the tent and pick it:',
-            ),
+            l.circusStep1,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -93,8 +94,12 @@ class _CircusScreenState extends State<CircusScreen> {
               for (final a in CircusAnimal.values)
                 ChoiceChip(
                   label: Text(
-                    '${a.displayName} · ${a.value} ${tr('pkt', 'pts')} '
-                    '(${_remaining(a)}/${a.count})',
+                    l.animalChip(
+                      a.title(l),
+                      a.value,
+                      _remaining(a),
+                      a.count,
+                    ),
                   ),
                   selected: animal == a,
                   onSelected: _remaining(a) > 0
@@ -107,30 +112,13 @@ class _CircusScreenState extends State<CircusScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                tr(
-                  'Wszystkie żetony zwierząt zostały już zużyte. '
-                      'Zeruje je reset punktów.',
-                  'All animal tokens have been used. '
-                      'Resetting the points restores them.',
-                ),
+                l.circusAllUsed,
               ),
             ),
           const SizedBox(height: 16),
           LabelWithHint(
-            tr(
-              '2. Ile mepli ma każdy gracz na płytce cyrku i ośmiu '
-                  'sąsiednich?',
-              '2. How many meeples does each player have on the circus '
-                  'tile and the eight neighboring ones?',
-            ),
-            tr(
-              'Liczą się zwykłe meple, duże meple, opaci, wozy '
-                  'i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, '
-                  'pasterze ani stodoły. Punktujące meple zostają na planszy.',
-              'Normal meeples, big meeples, abbots, wagons and ringmasters '
-                  'count. Builders, pigs, shepherds and barns do not. '
-                  'Scoring meeples stay on the board.',
-            ),
+            l.circusStep2,
+            l.circusStep2Hint,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -139,9 +127,7 @@ class _CircusScreenState extends State<CircusScreen> {
               player: p,
               value: _meeples[p] ?? 0,
               max: 20,
-              caption: animal == null
-                  ? null
-                  : '= ${_pointsOf(p)} ${tr('pkt', 'pts')}',
+              caption: animal == null ? null : l.equalsPoints(_pointsOf(p)),
               onChanged: (v) => setState(() => _meeples[p] = v),
             ),
         ],

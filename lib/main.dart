@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'l10n/tr.dart';
+import 'l10n/app_language.dart';
+import 'l10n/l10n.dart';
 import 'screens/players_screen.dart';
 import 'services/settings_storage.dart';
 import 'theme/app_theme.dart';
@@ -35,10 +35,8 @@ class CarcassonneCounterApp extends StatelessWidget {
           darkTheme: buildTheme(Brightness.dark),
           themeMode: mode,
           locale: Locale(language.code),
-          supportedLocales: [
-            for (final l in AppLanguage.values) Locale(l.code),
-          ],
-          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           // Na Androidzie z pełnoekranowym układem (edge-to-edge) dolne przyciski
           // systemu zasłaniałyby treść. SafeArea odsuwa wszystkie ekrany od
           // dolnego paska, a tło pod nim ma kolor motywu.

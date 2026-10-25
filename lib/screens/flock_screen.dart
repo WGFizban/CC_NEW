@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/l10n.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
+import '../models/scoring.dart';
 import '../models/sheep.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/counter_stepper.dart';
@@ -43,23 +44,22 @@ class _FlockScreenState extends State<FlockScreen> {
     Navigator.pop(
       context,
       ScoreEvent(
-        '${tr('Owce', 'Sheep')}: $names +$sheep',
+        context.l10n.flockEventLabel(names, sheep),
         [for (final p in owners) ScoreChange(p, sheep)],
-        category: tr('Owce', 'Sheep'),
+        category: context.l10n.scSheep,
+        type: ScoringType.sheep,
       ),
     );
   }
 
-  String _sheepWord(int value) =>
-      value == 1 ? tr('owca', 'sheep') : tr('owce', 'sheep');
-
   @override
   Widget build(BuildContext context) {
     final sheep = _sheep;
+    final l = context.l10n;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.player.name} — ${tr('Owce', 'Sheep')}'),
+        title: Text(l.flockTitle(widget.player.name)),
         backgroundColor: widget.player.color.withValues(alpha: 0.2),
         actions: [
           ConfirmAction(
@@ -71,17 +71,8 @@ class _FlockScreenState extends State<FlockScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           LabelWithHint(
-            tr('Z ilu żetonów składa się stado?', 'How many tokens make up the flock?'),
-            tr(
-              'Liczbę żetonów każdego rodzaju ogranicza ich liczba w grze '
-                  '(4×1, 5×2, 5×3, 2×4), więc stado ma najwyżej $kMaxSheep owiec. '
-                  'Wilk rozpędza stado – wtedy nie dopisuj punktów. '
-                  'Owce na koniec gry nie punktują.',
-              'The number of tokens of each kind is limited by the game '
-                  '(4×1, 5×2, 5×3, 2×4), so a flock has at most $kMaxSheep sheep. '
-                  'A wolf scatters the flock – then do not add any points. '
-                  'Sheep do not score at the end of the game.',
-            ),
+            l.flockHowMany,
+            l.flockHint(kMaxSheep),
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -95,11 +86,11 @@ class _FlockScreenState extends State<FlockScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${tr('Żeton', 'Token')} ${entry.key} ${_sheepWord(entry.key)}',
+                          l.flockToken(entry.key, l.sheepWord(entry.key)),
                           style: const TextStyle(fontSize: 16),
                         ),
                         Text(
-                          '${tr('w grze', 'in game')}: ${entry.value} ${tr('szt.', 'pcs')}',
+                          l.tokensInGame(entry.value),
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
@@ -116,22 +107,14 @@ class _FlockScreenState extends State<FlockScreen> {
           const Divider(height: 24),
           Center(
             child: Text(
-              tr(
-                'Stado: $sheep / $kMaxSheep owiec '
-                    '($_tokenCount / $kSheepTokenCount żetonów)',
-                'Flock: $sheep / $kMaxSheep sheep '
-                    '($_tokenCount / $kSheepTokenCount tokens)',
-              ),
+              l.flockSummary(sheep, kMaxSheep, _tokenCount, kSheepTokenCount),
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(height: 16),
           LabelWithHint(
-            tr('Pasterze w tym polu', 'Shepherds on this farm'),
-            tr(
-              'Każdy pasterz w tym polu dostaje punkty za całe stado.',
-              'Every shepherd on this farm gets points for the whole flock.',
-            ),
+            l.shepherdsTitle,
+            l.shepherdsHint,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),

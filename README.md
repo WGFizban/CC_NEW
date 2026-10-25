@@ -18,7 +18,8 @@ z obsługą wybranych dodatków.
 - wybór rodzaju punktacji w siatce pogrupowanej według dodatków,
 - cofanie ostatniego zatwierdzenia (także tych dotyczących wielu graczy),
 - **historia punktów** jako tabela (menu → Historia punktów): czas (sama
-  godzina), gracz, zdarzenie, punkty, surowce i wynik łączny. Wiersz ma kolor
+  godzina), gracz, zdarzenie (jako ikona rodzaju punktacji, np. drogi albo
+  miasta; opis w podpowiedzi), punkty, surowce i wynik łączny. Wiersz ma kolor
   gracza (lekko przyciemniony, żeby tekst był czytelny) i jego mepla przy
   imieniu,
 - **Zakończ grę** (menu): zwycięzca, ranking i rozbicie punktów według rodzaju
@@ -49,7 +50,8 @@ zacznij nową albo zresetuj punkty.
 ### Kupcy i budowniczowie
 - W punktacji miasta liczniki **wina, żyta i sukna** – surowce dostaje gracz,
   który domknął miasto (nawet bez mepla w mieście).
-- Osobny kafelek **Surowce** do ręcznego dopisania żetonów.
+- Osobny kafelek **Surowce** do dopisania żetonów: neutralny ekran jak bazar,
+  bez imienia gracza, na którym wybierasz, kto dostaje surowce.
 - Liczniki pilnują limitów z gry: 9 wina, 6 żyta i 5 sukna (razem 20 żetonów).
 - **Premia 10 pkt** dla prowadzącego w każdym rodzaju surowca liczona na
   bieżąco: przy remisie każdy z remisujących dostaje pełne 10, a przy zerze
@@ -94,7 +96,8 @@ zacznij nową albo zresetuj punkty.
 
 ### Opactwo i burmistrz
 - **Opactwo** (kafelek w wyborze punktacji): punktuje jak klasztor, czyli 9 pkt
-  po ukończeniu, a na koniec gry 1 pkt za płytkę. Działają przy nim winnice,
+  po ukończeniu, a na koniec gry 1 pkt za płytkę. Jak w klasztorze, jest tylko
+  pole „Ukończone" (opis punktów w podpowiedzi „?"). Działają przy nim winnice,
   zamek, wróżka, dyrektor cyrku, punkty wspólne i sztabki złota.
 - **Stodoła**: w punktacji pól wybór sposobu punktowania. Zwykłe (także w chwili
   postawienia stodoły): 3 pkt za miasto. Połączone ze stodołą: 1 pkt za miasto,
@@ -134,7 +137,20 @@ zacznij nową albo zresetuj punkty.
 | `screens/` | lista graczy, wybór punktacji i osobne ekrany dodatków |
 | `widgets/` | mepel, liczniki, klawiatura, piramida, widżety surowców |
 | `theme/` | kolory aplikacji i graczy, motyw jasny/ciemny |
-| `l10n/` | przełączanie języka (`tr(pl, en)`) |
+| `l10n/` | tłumaczenia (`app_pl.arb`, `app_en.arb`), wybór języka i nazwy typów |
+
+## Tłumaczenia
+
+Teksty interfejsu są w plikach `lib/l10n/app_pl.arb` (wzorzec) i
+`lib/l10n/app_en.arb`. Z nich `flutter gen-l10n` (uruchamiany przez
+`flutter pub get`) generuje klasę `AppLocalizations`; w kodzie używasz
+`context.l10n.klucz`, a teksty z liczbami i nazwami to metody, np.
+`context.l10n.towerDesc(kupujący, 3, właściciel)`. Nazwy dodatków, rodzajów
+punktacji, surowców i zwierząt są w `lib/l10n/labels.dart`; modele nie mają
+żadnych tekstów. Nowy język to nowy plik `app_xx.arb` i wpis w `AppLanguage`.
+
+W historii punktów surowce są zapisywane kluczem, więc zmieniają język razem
+z aplikacją; opisy zdarzeń i kategorie zostają w języku, w którym je dodano.
 
 ## Uruchomienie
 

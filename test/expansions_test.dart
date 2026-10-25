@@ -734,7 +734,9 @@ void main() {
       );
 
       expect(entry.label, 'Miasto');
-      expect(entry.lines, ['Ala: +12 pkt, Wino ×1', 'Ola: -3 pkt']);
+      expect(entry.changes.map((c) => c.player), ['Ala', 'Ola']);
+      expect(entry.changes.map((c) => c.points), [12, -3]);
+      expect(entry.changes.first.goods, {'wine': 1});
     });
 
     test('historia przetrwa zapis i odczyt', () async {
@@ -756,7 +758,8 @@ void main() {
       expect(restored, hasLength(1));
       expect(restored.single.label, 'Test');
       expect(restored.single.category, 'Miasto');
-      expect(restored.single.lines, ['Ala: +1 pkt, Wino ×2']);
+      expect(restored.single.changes.single.points, 1);
+      expect(restored.single.changes.single.goods, {'Wino': 2});
       expect(restored.single.time, entry.time);
     });
 

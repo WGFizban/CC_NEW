@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/l10n.dart';
+import '../l10n/labels.dart';
 import '../models/circus.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
@@ -229,19 +230,24 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     Map<Goods, int> goods,
     Map<Player, int> gold,
   ) {
+    final l = context.l10n;
     final goldText = gold.entries
         .map((e) => '${e.key.name} ×${e.value}')
         .join(', ');
-    if (_type == ScoringType.gold) {
-      return '${tr('Złoto', 'Gold')}: $goldText';
+    if (_type == ScoringType.gold) return '${l.scGold}: $goldText';
+
+    final goodsText = [
+      for (final e in goods.entries) '${e.key.title(l)} ×${e.value}',
+    ];
+    // Ekran surowców jest neutralny: zdarzenie opisuje odbiorcę surowców.
+    if (_type == ScoringType.goods) {
+      return '${l.scGoods}: ${_goodsRecipient.name} ${goodsText.join(', ')}';
     }
 
     final parts = <String>[];
     final mine = distribution[widget.player] ?? 0;
     if (mine != 0) parts.add('+$mine');
-    for (final e in goods.entries) {
-      parts.add('${e.key.displayName} ×${e.value}');
-    }
+    parts.addAll(goodsText);
     final shared = <String>[];
     final castles = <String>[];
     for (final e in _shares.entries) {
@@ -252,18 +258,15 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       }
     }
     final scorer = _castleMode
-        ? '${widget.player.name} (${tr('zamek', 'castle')} ×$_scorerCastles)'
+        ? '${widget.player.name} (${l.wordCastle} ×$_scorerCastles)'
         : _scorerExtraCastles > 0
-        ? '${widget.player.name} (+ ${tr('zamek', 'castle')} '
-              '×$_scorerExtraCastles)'
+        ? '${widget.player.name} (+ ${l.wordCastle} ×$_scorerExtraCastles)'
         : widget.player.name;
     return [
-      '$scorer: ${_type.displayName} ${parts.join(', ')}',
-      if (shared.isNotEmpty)
-        '${tr('wspólnie', 'shared')}: ${shared.join(', ')}',
-      if (castles.isNotEmpty)
-        '${tr('zamki', 'castles')}: ${castles.join(', ')}',
-      if (goldText.isNotEmpty) '${tr('złoto', 'gold')}: $goldText',
+      '$scorer: ${_type.title(l)} ${parts.join(', ')}',
+      if (shared.isNotEmpty) '${l.wordShared}: ${shared.join(', ')}',
+      if (castles.isNotEmpty) '${l.wordCastles}: ${castles.join(', ')}',
+      if (goldText.isNotEmpty) '${l.wordGold}: $goldText',
     ].join(' · ');
   }
 
@@ -294,14 +297,19 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       ScoreEvent(
         _label(distribution, goods, gold),
         changes,
-        category: _type.displayName,
+        category: _type.title(context.l10n),
+        type: _type,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final color = widget.player.color;
+    // Surowce i złoto to zdarzenia wspólne (odbiorcę wybiera się na ekranie),
+    // więc ekran jest neutralny, jak bazar: bez imienia i koloru gracza.
+    final neutral = _type == ScoringType.goods || _type == ScoringType.gold;
     final distribution = _distribution;
     final points = distribution[widget.player] ?? 0;
     final canConfirm =
@@ -311,22 +319,28 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.player.name} — ${_type.displayName}'),
-        backgroundColor: color.withValues(alpha: 0.2),
+        title: Text(
+          neutral
+              ? _type.title(l)
+              : '${widget.player.name} — ${_type.title(l)}',
+        ),
+        backgroundColor: neutral ? null : color.withValues(alpha: 0.2),
         actions: [ConfirmAction(onPressed: canConfirm ? _confirm : null)],
       ),
       body: Container(
-        decoration: BoxDecoration(border: Border.all(color: color, width: 4)),
+        decoration: neutral
+            ? null
+            : BoxDecoration(border: Border.all(color: color, width: 4)),
         child: Column(
           children: [
             // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.
-            if (_type != ScoringType.goods && _type != ScoringType.gold)
+            if (!neutral)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(
                   children: [
                     Text(
-                      '${tr('Wynik', 'Score')}: $points ${tr('pkt', 'pts')}',
+                      l.scoreLabel(points),
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -400,7 +414,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(
-                        tooltip: tr('Zwiń klawiaturę', 'Collapse keypad'),
+                        tooltip: context.l10n.collapseKeypad,
                         visualDensity: VisualDensity.compact,
                         iconSize: 24,
                         icon: const Icon(Icons.keyboard_arrow_down),
@@ -418,16 +432,17 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   }
 
   List<Widget> _buildInputs() {
+    final l = context.l10n;
     switch (_type) {
       case ScoringType.city:
         return [
           _valueBoxes([
-            _valueBox(tr('Płytki', 'Tiles'), _tiles, _Field.tiles),
-            _valueBox(tr('Sztandary', 'Pennants'), _banners, _Field.banners),
+            _valueBox(l.tiles, _tiles, _Field.tiles),
+            _valueBox(l.pennants, _banners, _Field.banners),
           ]),
           if (_has(Expansion.innsCathedrals))
             _check(
-              tr('Katedra', 'Cathedral'),
+              l.cathedral,
               _bonus,
               (v) {
                 _bonus = v;
@@ -435,124 +450,76 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                 // takiego punktowania po prostu się nie dopisuje.
                 if (v) _completed = true;
               },
-              hint: tr(
-                'Miasto z katedrą: 3 pkt za płytkę i sztandar. '
-                    'Nieukończone miasto z katedrą nie daje punktów, '
-                    'więc nie ma czego dopisywać.',
-                'City with a cathedral: 3 pts per tile and pennant. '
-                    'An unfinished city with a cathedral scores nothing, '
-                    'so there is nothing to add.',
-              ),
+              hint: l.cathedralHint,
             ),
           if (!_bonus)
-            _check(
-              tr('Ukończone miasto', 'Completed city'),
-              _completed,
-              (v) => _completed = v,
-            ),
+            _check(l.completedCity, _completed, (v) => _completed = v),
         ];
 
       case ScoringType.road:
         return [
-          _valueBoxes([_valueBox(tr('Płytki', 'Tiles'), _tiles, _Field.tiles)]),
+          _valueBoxes([_valueBox(l.tiles, _tiles, _Field.tiles)]),
           // Bez karczmy ukończona i nieukończona droga liczą się tak samo,
           // a nieukończona z karczmą nie daje punktów (nie dopisujemy jej).
           if (_has(Expansion.innsCathedrals))
             _check(
-              tr('Karczma', 'Inn'),
+              l.inn,
               _bonus,
               (v) => _bonus = v,
-              hint: tr(
-                'Droga z karczmą: 2 pkt za płytkę. '
-                    'Nieukończona droga z karczmą nie daje punktów, '
-                    'więc nie ma czego dopisywać.',
-                'Road with an inn: 2 pts per tile. '
-                    'An unfinished road with an inn scores nothing, '
-                    'so there is nothing to add.',
-              ),
+              hint: l.innHint,
             ),
         ];
 
       case ScoringType.cloister:
       case ScoringType.abbey:
         final isAbbey = _type == ScoringType.abbey;
-        final noun = isAbbey
-            ? tr('opactwo', 'abbey')
-            : tr('klasztor', 'cloister');
-        final nounGen = isAbbey
-            ? tr('opactwa', 'abbey')
-            : tr('klasztoru', 'cloister');
         return [
+          // Jak „Ukończone miasto": zaznaczone = ukończony. Punkty za ukończony
+          // (9) i niedokończony (1 za płytkę) opisuje podpowiedź.
           _check(
-            tr(
-              'Niedokończone (punkty na koniec gry)',
-              'Unfinished (end-of-game points)',
-            ),
-            !_completed,
-            (v) => _completed = !v,
-            hint: tr(
-              'Na koniec gry niedokończone $noun daje 1 pkt za każdą '
-                  'płytkę: $noun i otaczające je płytki.',
-              'At the end of the game an unfinished $noun gives 1 pt per '
-                  'tile: the $noun and the tiles around it.',
-            ),
+            isAbbey ? l.completedAbbey : l.completedCloister,
+            _completed,
+            (v) => _completed = v,
+            hint: isAbbey ? l.abbeyHint : l.cloisterHint,
           ),
           if (_completed) ...[
-            Text(
-              tr('Ukończone $noun = 9 pkt', 'Completed $noun = 9 pts'),
-              style: const TextStyle(fontSize: 20),
-            ),
             if (_has(Expansion.hillsSheep))
               _stepperRow(
-                tr('Winnice wokół $nounGen', 'Vineyards around the $noun'),
+                isAbbey ? l.vineyardsAbbey : l.vineyardsCloister,
                 _vineyards,
                 (v) => _vineyards = v,
                 max: kMaxVineyards,
-                hint: tr(
-                  '$kVineyardPoints pkt za każdą winnicę na płytkach wokół '
-                      'ukończonego $nounGen (najwyżej $kMaxVineyards).',
-                  '$kVineyardPoints pts for each vineyard on the tiles '
-                      'around a completed $noun (at most $kMaxVineyards).',
-                ),
+                hint: isAbbey
+                    ? l.vineyardsAbbeyHint(kVineyardPoints, kMaxVineyards)
+                    : l.vineyardsCloisterHint(kVineyardPoints, kMaxVineyards),
               ),
           ] else
-            _valueBoxes([_valueBox(tr('Płytki', 'Tiles'), _tiles, _Field.tiles)]),
+            _valueBoxes([_valueBox(l.tiles, _tiles, _Field.tiles)]),
         ];
 
       case ScoringType.meadow:
         return [
           _valueBoxes([
-            _valueBox(
-              tr('Ukończone miasta', 'Completed cities'),
-              _tiles,
-              _Field.tiles,
-            ),
+            _valueBox(l.completedCities, _tiles, _Field.tiles),
           ]),
           if (_has(Expansion.bridgesCastlesBazaars))
             _stepperRow(
-              tr('Zamki przy polu', 'Castles next to the farm'),
+              l.castlesNearFarm,
               _castles,
               (v) => _castles = v,
               max: 12,
-              hint: tr(
-                'Zamek przy polu jest wart 4 pkt zamiast 3, '
-                    'a ze świnką 5 pkt, tak jak ukończone miasto.',
-                'A castle next to the farm is worth 4 pts instead of 3, '
-                    'or 5 with a pig, like a completed city.',
-              ),
+              hint: l.castlesNearFarmHint,
             ),
           if (_has(Expansion.abbeyMayor)) _buildBarnChoice(),
-          if (_farmActive != FarmScoring.barnOwner)
+          // Świnka należy do dodatku „Kupcy i budowniczowie"; właściciel
+          // stodoły na koniec gry liczy bez świnki.
+          if (_has(Expansion.tradersBuilders) &&
+              _farmActive != FarmScoring.barnOwner)
             _check(
-              tr('Świnka', 'Pig'),
+              l.pig,
               _bonus,
               (v) => _bonus = v,
-              hint: tr(
-                'Ze świnką każde ukończone miasto przy polu daje 4 pkt '
-                    '(przy polu połączonym ze stodołą 2 pkt zamiast 1).',
-                'With a pig each completed city next to the farm gives '
-                    '4 pts (2 pts instead of 1 on a farm joined to a barn).',
-              ),
+              hint: l.pigHint,
             ),
         ];
 
@@ -562,15 +529,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: LabelWithHint(
-              tr('Dyrektor punktuje zawsze', 'Ringmaster always scores'),
-              tr(
-                'Dyrektor cyrku dostaje punkty także wtedy, gdy nie masz '
-                    'większości w budowli, oraz na koniec gry na polu lub '
-                    'w nieukończonej budowli.',
-                'The ringmaster scores even when you do not have the '
-                    'majority in the feature, and at the end of the game on '
-                    'a farm or in an unfinished feature.',
-              ),
+              l.ringmasterAlways,
+              l.ringmasterAlwaysHint,
             ),
           ),
         ];
@@ -591,10 +551,11 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   /// Wybór sposobu punktowania pola przy stodole.
   Widget _buildBarnChoice() {
+    final l = context.l10n;
     final labels = {
-      FarmScoring.normal: tr('Zwykłe', 'Normal'),
-      FarmScoring.barnJoined: tr('Połączone ze stodołą', 'Joined to a barn'),
-      FarmScoring.barnOwner: tr('Właściciel stodoły', 'Barn owner'),
+      FarmScoring.normal: l.farmNormal,
+      FarmScoring.barnJoined: l.farmJoined,
+      FarmScoring.barnOwner: l.farmBarnOwner,
     };
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -607,23 +568,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: LabelWithHint(
-                  tr('Stodoła', 'Barn'),
-                  tr(
-                    'Zwykłe: punktowanie pola na koniec gry albo w chwili '
-                        'postawienia stodoły (3 pkt za miasto). Połączone ze '
-                        'stodołą: rolnicy na polu, które właśnie połączono z '
-                        'polem ze stodołą, dostają 1 pkt za miasto (2 ze '
-                        'świnką). Właściciel stodoły na koniec gry: 4 pkt za '
-                        'miasto i 5 za zamek, bez świnki; każda stodoła na '
-                        'połączonym polu dostaje pełną punktację.',
-                    'Normal: scoring the farm at the end of the game or when '
-                        'the barn is placed (3 pts per city). Joined to a '
-                        'barn: farmers on a farm that was just joined to the '
-                        'barn farm get 1 pt per city (2 with a pig). Barn '
-                        'owner at the end of the game: 4 pts per city and 5 '
-                        'per castle, no pig; each barn on the joined farm '
-                        'gets the full score.',
-                  ),
+                  l.barn,
+                  l.barnHint,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -653,6 +599,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   /// Sztabki złota z ukończonej budowli (minidodatek „Kopalnie złota").
   Widget _buildGold() {
+    final l = context.l10n;
     final chosen = [
       for (final e in _goldToAdd.entries) '${e.key.name} ×${e.value}',
     ];
@@ -664,28 +611,16 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       collapsedShape: const Border(),
       tilePadding: EdgeInsets.zero,
       title: LabelWithHint(
-        onlyGold
-            ? tr('Sztabki złota do dopisania', 'Gold bars to add')
-            : tr('Sztabki złota', 'Gold bars'),
-        tr(
-          'Sztabki z płytek ukończonej budowli dostaje gracz z przewagą; przy '
-              'remisie dzielą się nimi według kolejności. Rolnicy złota nie '
-              'dostają. Na koniec gry im więcej sztabek, tym więcej warta '
-              'każda: 1–3 po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.',
-          'Gold bars from the tiles of a completed feature go to the player '
-              'with the majority; on a tie they are shared in turn order. '
-              'Farmers get no gold. At the end of the game the more bars you '
-              'hold, the more each is worth: 1–3 bars 1 pt each, 4–6 2 pts, '
-              '7–9 3 pts, 10+ 4 pts.',
-        ),
+        onlyGold ? l.goldBarsToAdd : l.goldBars,
+        l.goldHint,
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
-      subtitle: Text(chosen.isEmpty ? tr('brak', 'none') : chosen.join(' · ')),
+      subtitle: Text(chosen.isEmpty ? l.none : chosen.join(' · ')),
       children: [
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            '${tr('W puli', 'In supply')}: ${goldRemaining(widget.players)} / $kGoldSupply',
+            l.inSupply(goldRemaining(widget.players), kGoldSupply),
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
@@ -719,26 +654,17 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   /// „Punkty jako zamek": nikt nie miał w budowli mepla, a zamek stoi przy
   /// niej – punktujący dostaje punkty jako jego właściciel.
   List<Widget> _buildCastleMode() {
+    final l = context.l10n;
     return [
       _check(
-        tr('Punkty jako zamek', 'Points as a castle'),
+        l.pointsAsCastle,
         _scorerCastle,
         (v) => _scorerCastle = v,
-        hint: tr(
-          'Zaznacz, gdy nikt nie miał mepla w tej budowli, ale '
-              '${widget.player.name} ma przy niej zamek: dostaje punkty '
-              'ukończonej budowli (za każdy swój zamek).',
-          'Check this when nobody had a meeple in this feature but '
-              '${widget.player.name} has a castle next to it: they get the '
-              'points of the completed feature (for each castle they own).',
-        ),
+        hint: l.pointsAsCastleHint(widget.player.name),
       ),
       if (_scorerCastle)
         _stepperRow(
-          tr(
-            'Liczba zamków gracza ${widget.player.name}',
-            '${widget.player.name}\'s castles',
-          ),
+          l.castlesOf(widget.player.name),
           _scorerCastles,
           (v) => _scorerCastles = v,
           min: 1,
@@ -749,23 +675,17 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   /// Punkty wspólne (i zamki): wskazani gracze dostają te same punkty.
   Widget _buildSharing() {
+    final l = context.l10n;
     final castleOk = _castleOk;
     final chosen = [
       for (final e in _shares.entries)
         castleOk && e.value.castle
-            ? '${e.key.name} (${tr('zamek', 'castle')} ×${e.value.castles})'
+            ? l.chosenCastle(e.key.name, e.value.castles)
             : e.key.name,
       if (_castleMode)
-        tr(
-          '${widget.player.name} (punktujący, jako zamek ×$_scorerCastles)',
-          '${widget.player.name} (scoring, as a castle ×$_scorerCastles)',
-        )
+        l.chosenScorerAsCastle(widget.player.name, _scorerCastles)
       else if (_scorerExtraCastles > 0)
-        tr(
-          '${widget.player.name} (punktujący, ma zamek ×$_scorerExtraCastles)',
-          '${widget.player.name} (scoring, has a castle '
-              '×$_scorerExtraCastles)',
-        ),
+        l.chosenScorerHasCastle(widget.player.name, _scorerExtraCastles),
     ];
 
     return ExpansionTile(
@@ -776,30 +696,12 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       tilePadding: EdgeInsets.zero,
       title: LabelWithHint(
         castleOk && _type.supportsCastle
-            ? tr('Punkty wspólne / zamki', 'Shared points / castles')
-            : tr('Punkty wspólne', 'Shared points'),
-        tr(
-          'Wskaż graczy, którzy dostają te same punkty (np. dzielą budowlę '
-              'przy remisie). Wróżka i dyrektor cyrku liczą się tylko '
-              'punktującemu.'
-              '${castleOk ? ' Dla gracza możesz wybrać „Zamek": dostaje wtedy '
-                  'punkty budowli za każdy swój zamek przy niej, '
-                  'a nie ze współdzielenia. Punktujący ma tu opcję „ma zamek": '
-                  'dostaje swoje punkty i dodatkowo punkty za zamek '
-                  '(punkty tylko jako zamek to pole „Punkty jako zamek").' : ''}',
-          'Pick the players who get the same points (e.g. who share the '
-              'feature on a tie). The fairy and the ringmaster count only '
-              'for the scoring player.'
-              '${castleOk ? ' For a player you can choose "Castle": they '
-                  'then get the feature points for each castle they own next '
-                  'to it, instead of sharing. The scoring player has the '
-                  '"has a castle" option here: they get their own points plus '
-                  'the castle points (points only as a castle are the '
-                  '"Points as a castle" box).' : ''}',
-        ),
+            ? l.sharedPointsCastles
+            : l.sharedPoints,
+        l.sharedHint + (castleOk ? l.sharedHintCastle : ''),
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
-      subtitle: Text(chosen.isEmpty ? tr('brak', 'none') : chosen.join(' · ')),
+      subtitle: Text(chosen.isEmpty ? l.none : chosen.join(' · ')),
       children: [
         if (castleOk && !_scorerCastle) _scorerCastleRow(),
         for (final p in _otherPlayers) _shareRow(p),
@@ -811,22 +713,18 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   /// Punktujący ma mepla w budowli i dodatkowo zamek przy niej: dostaje swoje
   /// punkty oraz punkty za zamek (inaczej niż „Punkty jako zamek").
   Widget _scorerCastleRow() {
+    final l = context.l10n;
     return Column(
       children: [
         CheckboxListTile(
           secondary: MeepleIcon(color: widget.player.color, size: 28),
-          title: Text(
-            tr(
-              '${widget.player.name} (punktujący) ma zamek',
-              '${widget.player.name} (scoring) has a castle',
-            ),
-          ),
+          title: Text(l.scorerHasCastle(widget.player.name)),
           value: _scorerHasCastle,
           onChanged: (v) => setState(() => _scorerHasCastle = v ?? false),
         ),
         if (_scorerHasCastle)
           _stepperRow(
-            tr('Liczba zamków', 'Number of castles'),
+            l.castlesCount,
             _scorerHasCastles,
             (v) => _scorerHasCastles = v,
             min: 1,
@@ -837,6 +735,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   }
 
   Widget _shareRow(Player p) {
+    final l = context.l10n;
     final share = _shares[p];
     return Column(
       children: [
@@ -860,14 +759,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               child: SegmentedButton<bool>(
                 showSelectedIcon: false,
                 segments: [
-                  ButtonSegment(
-                    value: false,
-                    label: Text(tr('Współdzieli', 'Shares')),
-                  ),
-                  ButtonSegment(
-                    value: true,
-                    label: Text(tr('Zamek', 'Castle')),
-                  ),
+                  ButtonSegment(value: false, label: Text(l.sharesSegment)),
+                  ButtonSegment(value: true, label: Text(l.castleSegment)),
                 ],
                 selected: {share.castle},
                 onSelectionChanged: (s) => setState(
@@ -878,7 +771,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           ),
         if (share != null && _castleOk && share.castle)
           _stepperRow(
-            tr('Liczba zamków gracza ${p.name}', '${p.name}\'s castles'),
+            l.castlesOf(p.name),
             share.castles,
             (v) => _shares[p] = share.copyWith(castles: v),
             min: 1,
@@ -889,73 +782,70 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   }
 
   List<Widget> _buildFairy() {
+    final l = context.l10n;
     return [
       _check(
-        tr(
-          'Wróżka przy meplu (+$kFairyFeaturePoints pkt)',
-          'Fairy next to a meeple (+$kFairyFeaturePoints pts)',
-        ),
+        l.fairyOption(kFairyFeaturePoints),
         _fairy,
         (v) => _fairy = v,
-        hint: tr(
-          'Jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, '
-              'droga, klasztor lub pole), jego właściciel dostaje '
-              '$kFairyFeaturePoints pkt niezależnie od zwykłej punktacji. '
-              'Dotyczy też punktowania na koniec gry.',
-          'If the fairy stands next to a meeple in the scored feature '
-              '(city, road, cloister or farm), its owner gets '
-              '$kFairyFeaturePoints pts regardless of the normal scoring. '
-              'This also applies to end-of-game scoring.',
-        ),
+        hint: l.fairyHint(kFairyFeaturePoints),
       ),
     ];
   }
 
-  /// Surowce w mieście. Sekcja jest zwijana, bo zajmuje dużo miejsca.
+  /// Surowce. W mieście to zwijana sekcja (surowce dostaje ten, kto domknął
+  /// miasto). Na osobnym ekranie surowców jest to zwykły, neutralny formularz
+  /// jak w bazarze: najpierw wybierasz, kto dostaje surowce, potem liczniki.
   Widget _buildGoods() {
+    final l = context.l10n;
     final isCity = _type == ScoringType.city;
     final chosen = [
-      for (final e in _goodsToAdd.entries)
-        '${e.key.displayName} ×${e.value}',
+      for (final e in _goodsToAdd.entries) '${e.key.title(l)} ×${e.value}',
     ];
+    final counters = GoodsCounters(
+      values: _goods,
+      maxFor: (g) => goodsRemaining(g, widget.players),
+      onChanged: (g, v) => setState(() => _goods[g] = v),
+    );
+
+    if (!isCity) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          LabelWithHint(
+            l.goodsWho,
+            l.goodsOtherHint,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          PlayerPicker(
+            players: widget.players,
+            selected: _goodsRecipient,
+            onSelected: (p) => setState(() => _goodsRecipient = p),
+          ),
+          const SizedBox(height: 16),
+          counters,
+        ],
+      );
+    }
 
     return ExpansionTile(
-      initiallyExpanded: !isCity,
+      initiallyExpanded: false,
       shape: const Border(),
       collapsedShape: const Border(),
       tilePadding: EdgeInsets.zero,
       title: LabelWithHint(
-        isCity
-            ? tr('Surowce w mieście', 'Goods in the city')
-            : tr('Surowce do dopisania', 'Goods to add'),
-        isCity
-            ? tr(
-                'Surowce dostaje gracz, który domknął miasto – '
-                    'nawet bez mepla w mieście.',
-                'The goods go to the player who completed the city – '
-                    'even without a meeple in the city.',
-              )
-            : tr(
-                'Surowce dostaje wskazany gracz.',
-                'The goods go to the chosen player.',
-              ),
+        l.goodsInCity,
+        l.goodsCityHint,
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
-      subtitle: Text(chosen.isEmpty ? tr('brak', 'none') : chosen.join(' · ')),
+      subtitle: Text(chosen.isEmpty ? l.none : chosen.join(' · ')),
       children: [
-        GoodsCounters(
-          values: _goods,
-          maxFor: (g) => goodsRemaining(g, widget.players),
-          onChanged: (g, v) => setState(() => _goods[g] = v),
-        ),
+        counters,
         const SizedBox(height: 8),
         Align(
           alignment: Alignment.centerLeft,
-          child: Text(
-            isCity
-                ? tr('Kupiec (domknął miasto):', 'Trader (completed the city):')
-                : tr('Surowce dla:', 'Goods for:'),
-          ),
+          child: Text(l.traderCompleted),
         ),
         const SizedBox(height: 4),
         Align(
@@ -972,39 +862,28 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   }
 
   List<Widget> _buildRingmaster() {
+    final l = context.l10n;
     return [
       _check(
-        tr('Dyrektor cyrku', 'Ringmaster'),
+        l.scRingmaster,
         _ringmaster,
         (v) => _ringmaster = v,
-        hint: tr(
-          'Dyrektor cyrku dodaje $kRingmasterPointsPerTile pkt za każdą '
-              'płytkę cyrku lub akrobatów, na której stoi lub która z nim '
-              'sąsiaduje.',
-          'The ringmaster adds $kRingmasterPointsPerTile pts for each '
-              'circus or acrobat tile he stands on or that is next to him.',
-        ),
+        hint: l.ringmasterHint(kRingmasterPointsPerTile),
       ),
       if (_ringmaster) _ringmasterTiles(),
     ];
   }
 
   Widget _ringmasterTiles() {
+    final l = context.l10n;
     return _stepperRow(
-      tr(
-        'Płytki cyrku i akrobatów wokół dyrektora',
-        'Circus and acrobat tiles around the ringmaster',
-      ),
+      l.ringmasterTiles,
       _circusTiles,
       (v) => _circusTiles = v,
       max: kMaxRingmasterTiles,
-      hint: tr(
-        '$kRingmasterPointsPerTile pkt za każdą płytkę cyrku lub '
-            'akrobatów pod dyrektorem i wokół niego (obszar 3×3, '
-            'najwyżej $kMaxRingmasterTiles).',
-        '$kRingmasterPointsPerTile pts for each circus or acrobat tile '
-            'under and around the ringmaster (a 3×3 area, at most '
-            '$kMaxRingmasterTiles).',
+      hint: l.ringmasterTilesHint(
+        kRingmasterPointsPerTile,
+        kMaxRingmasterTiles,
       ),
     );
   }

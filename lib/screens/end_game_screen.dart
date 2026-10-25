@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/l10n.dart';
+import '../l10n/labels.dart';
 import '../models/gold.dart';
 import '../models/goods.dart';
 import '../models/history_entry.dart';
@@ -29,12 +30,12 @@ class EndGameScreen extends StatelessWidget {
   });
 
   /// Punkty gracza według rodzaju punktacji, z historii.
-  Map<String, int> _categories(Player p) {
+  Map<String, int> _categories(Player p, AppLocalizations l) {
     final result = <String, int>{};
     for (final e in log) {
       for (final c in e.changes) {
         if (c.player == p.name && c.points != 0) {
-          final key = e.category ?? tr('Inne', 'Other');
+          final key = e.category ?? l.other;
           result[key] = (result[key] ?? 0) + c.points;
         }
       }
@@ -43,8 +44,7 @@ class EndGameScreen extends StatelessWidget {
     final counted = result.values.fold<int>(0, (a, b) => a + b);
     final rest = p.points - counted;
     if (rest != 0) {
-      final other = tr('Inne', 'Other');
-      result[other] = (result[other] ?? 0) + rest;
+      result[l.other] = (result[l.other] ?? 0) + rest;
     }
     return result;
   }
@@ -57,6 +57,7 @@ class EndGameScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final scores = {for (final p in players) p: totalScore(p, players)};
     final ranking = [...players]
       ..sort((a, b) => scores[b]!.compareTo(scores[a]!));
@@ -67,9 +68,9 @@ class EndGameScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(tr('Koniec gry', 'Game over'))),
+      appBar: AppBar(title: Text(l.gameOver)),
       body: players.isEmpty
-          ? Center(child: Text(tr('Brak graczy.', 'No players.')))
+          ? Center(child: Text(l.noPlayersDot))
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -78,7 +79,7 @@ class EndGameScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
-                      '${tr('Czas gry', 'Game time')}: ${_duration(elapsed!)}',
+                      l.gameTime(_duration(elapsed!)),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -95,11 +96,11 @@ class EndGameScreen extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => Navigator.pop(context, true),
                   icon: const Icon(Icons.refresh),
-                  label: Text(tr('Nowa gra', 'New game')),
+                  label: Text(l.newGame),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: Text(tr('Wróć do gry', 'Back to game')),
+                  child: Text(l.backToGame),
                 ),
               ],
             ),
@@ -107,9 +108,8 @@ class EndGameScreen extends StatelessWidget {
   }
 
   Widget _winnerBanner(BuildContext context, List<Player> winners, int best) {
-    final title = winners.length == 1
-        ? tr('Zwycięzca', 'Winner')
-        : tr('Remis na czele', 'Tied for the lead');
+    final l = context.l10n;
+    final title = winners.length == 1 ? l.winner : l.tiedLead;
     return Card(
       color: Theme.of(context).colorScheme.primaryContainer,
       child: Padding(
@@ -125,10 +125,7 @@ class EndGameScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
-            Text(
-              '$best ${tr('pkt', 'pts')}',
-              style: const TextStyle(fontSize: 20),
-            ),
+            Text(l.pointsValue(best), style: const TextStyle(fontSize: 20)),
           ],
         ),
       ),
@@ -136,12 +133,13 @@ class EndGameScreen extends StatelessWidget {
   }
 
   Widget _playerCard(BuildContext context, Player p, int place, int total) {
+    final l = context.l10n;
     final bonus = goodsBonus(p, players);
-    final categories = _categories(p);
+    final categories = _categories(p, l);
     final gold = goldPoints(p.gold);
     final goods = [
       for (final g in Goods.values)
-        if (p.goodsOf(g) > 0) '${g.displayName} ×${p.goodsOf(g)}',
+        if (p.goodsOf(g) > 0) '${g.title(l)} ×${p.goodsOf(g)}',
     ];
 
     return Card(
@@ -188,20 +186,17 @@ class EndGameScreen extends StatelessWidget {
               const Divider(height: 20),
             for (final e in categories.entries) _row(e.key, '${e.value}'),
             if (showGoods && bonus > 0)
-              _row(tr('Premia za surowce', 'Goods bonus'), '+$bonus'),
+              _row(l.goodsBonus, '+$bonus'),
             if (showGold && p.gold > 0)
               _row(
-                tr(
-                  'Złoto ×${p.gold} (po ${goldValuePerPiece(p.gold)} pkt)',
-                  'Gold ×${p.gold} (${goldValuePerPiece(p.gold)} pts each)',
-                ),
+                l.goldSummary(p.gold, goldValuePerPiece(p.gold)),
                 '+$gold',
               ),
             if (showGoods && goods.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  '${tr('Surowce', 'Goods')}: ${goods.join(', ')}',
+                  l.goodsList(goods.join(', ')),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),

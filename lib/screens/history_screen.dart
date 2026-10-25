@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/l10n.dart';
 import '../models/history_entry.dart';
+import '../widgets/game_icon.dart';
 import '../widgets/meeple_icon.dart';
 
 /// Historia zatwierdzonych punktów jako tabela, od najnowszych wpisów.
@@ -29,21 +30,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(tr('Wyczyścić historię?', 'Clear history?')),
-        content: Text(
-          tr(
-            'Punkty graczy zostaną bez zmian.',
-            'Players\' points will stay unchanged.',
-          ),
-        ),
+        title: Text(ctx.l10n.clearHistoryQuestion),
+        content: Text(ctx.l10n.clearHistoryBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(tr('Anuluj', 'Cancel')),
+            child: Text(ctx.l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(tr('Wyczyść', 'Clear')),
+            child: Text(ctx.l10n.clear),
           ),
         ],
       ),
@@ -51,6 +47,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
     if (ok != true) return;
     widget.onClear();
     setState(() => _entries = []);
+  }
+
+  /// Zdarzenie jako ikona rodzaju punktacji (opis w podpowiedzi); starsze
+  /// wpisy bez rodzaju pokazują tekst.
+  Widget _eventCell(HistoryEntry e) {
+    final text = e.category ?? e.label;
+    final type = e.scoringType;
+    if (type == null) return Text(text);
+    return Tooltip(
+      message: text,
+      triggerMode: TooltipTriggerMode.tap,
+      child: GameIcon(type.iconAsset, size: 28),
+    );
   }
 
   List<DataRow> _rows(BuildContext context) {
@@ -87,14 +96,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ],
                       ),
               ),
-              DataCell(Text(first ? e.category ?? e.label : '')),
+              DataCell(first ? _eventCell(e) : const Text('')),
               DataCell(
                 Text(
                   points,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-              DataCell(Text(c?.goodsText ?? '')),
+              DataCell(Text(c?.goodsText(context.l10n) ?? '')),
               DataCell(
                 Text(
                   c?.total == null ? '' : '${c!.total}',
@@ -111,19 +120,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr('Historia punktów', 'Points history')),
+        title: Text(l.historyTitle),
         actions: [
           IconButton(
-            tooltip: tr('Wyczyść historię', 'Clear history'),
+            tooltip: l.clearHistoryTooltip,
             onPressed: _entries.isEmpty ? null : _clear,
             icon: const Icon(Icons.delete_outline),
           ),
         ],
       ),
       body: _entries.isEmpty
-          ? Center(child: Text(tr('Historia jest pusta.', 'History is empty.')))
+          ? Center(child: Text(l.historyEmpty))
           : SingleChildScrollView(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -132,16 +142,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   dataRowMinHeight: 36,
                   dataRowMaxHeight: 48,
                   columns: [
-                    DataColumn(label: Text(tr('Czas', 'Time'))),
-                    DataColumn(label: Text(tr('Gracz', 'Player'))),
-                    DataColumn(label: Text(tr('Zdarzenie', 'Event'))),
+                    DataColumn(label: Text(l.colTime)),
+                    DataColumn(label: Text(l.colPlayer)),
+                    DataColumn(label: Text(l.colEvent)),
                     DataColumn(
-                      label: Text(tr('Punkty', 'Points')),
+                      label: Text(l.colPoints),
                       numeric: true,
                     ),
-                    DataColumn(label: Text(tr('Surowce', 'Goods'))),
+                    DataColumn(label: Text(l.colGoods)),
                     DataColumn(
-                      label: Text(tr('Łącznie', 'Total')),
+                      label: Text(l.colTotal),
                       numeric: true,
                     ),
                   ],

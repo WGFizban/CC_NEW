@@ -1,5 +1,8 @@
-import '../l10n/tr.dart';
+import '../l10n/app_localizations.dart';
+import '../l10n/labels.dart';
+import 'goods.dart';
 import 'player.dart';
+import 'scoring.dart';
 import 'score_event.dart';
 
 /// Zmiana wyniku jednego gracza w historii.
@@ -7,7 +10,9 @@ class HistoryChange {
   final String player;
   final int points;
 
-  /// Surowce według nazw (np. „Wino": 1).
+  /// Surowce według kluczy (nazwa wartości [Goods], np. „wine"). Starsze
+  /// wpisy mają tu zapisane polskie nazwy (np. „Wino"), które pokazujemy
+  /// bez zmian.
   final Map<String, int> goods;
 
   /// Sztabki złota.
@@ -29,11 +34,19 @@ class HistoryChange {
     this.total,
   });
 
-  /// Surowce i złoto jako tekst, np. „Wino ×1, Sukno ×2, Złoto ×3".
-  String get goodsText => [
-    for (final e in goods.entries) '${e.key} ×${e.value}',
-    if (gold != 0) '${tr('Złoto', 'Gold')} ×$gold',
+  /// Surowce i złoto jako tekst w aktualnym języku, np. „Wino ×1, Złoto ×3".
+  String goodsText(AppLocalizations l) => [
+    for (final e in goods.entries)
+      '${_goodsName(e.key, l)} ×${e.value}',
+    if (gold != 0) l.goldTimes(gold),
   ].join(', ');
+
+  static String _goodsName(String key, AppLocalizations l) {
+    for (final g in Goods.values) {
+      if (g.name == key) return g.title(l);
+    }
+    return key;
+  }
 
   Map<String, dynamic> toJson() => {
     'player': player,
@@ -66,13 +79,26 @@ class HistoryEntry {
 
   /// Rodzaj punktacji (np. „Miasto") albo `null` dla starszych wpisów.
   final String? category;
+
+  /// Rodzaj punktacji (nazwa wartości [ScoringType]) albo `null` dla starszych
+  /// wpisów; po nim historia wybiera ikonę zdarzenia.
+  final String? type;
   final List<HistoryChange> changes;
+
+  /// Rodzaj punktacji tego wpisu (do ikony) albo `null`, gdy nieznany.
+  ScoringType? get scoringType {
+    for (final t in ScoringType.values) {
+      if (t.name == type) return t;
+    }
+    return null;
+  }
 
   const HistoryEntry({
     required this.id,
     required this.time,
     required this.label,
     this.category,
+    this.type,
     this.changes = const [],
   });
 
@@ -88,12 +114,13 @@ class HistoryEntry {
       time: time,
       label: event.label,
       category: event.category,
+      type: event.type?.name,
       changes: [
         for (final c in event.changes)
           HistoryChange(
             player: c.player.name,
             points: c.points,
-            goods: {for (final g in c.goods.entries) g.key.displayName: g.value},
+            goods: {for (final g in c.goods.entries) g.key.name: g.value},
             gold: c.gold,
             color: c.player.color.toARGB32(),
             total: totals?[c.player],
@@ -102,21 +129,12 @@ class HistoryEntry {
     );
   }
 
-  /// Opis zmian po graczach, np. „Ala: +12 pkt, Wino ×1".
-  List<String> get lines => [
-    for (final c in changes)
-      '${c.player}: ${[
-        if (c.points != 0)
-          '${c.points > 0 ? '+' : ''}${c.points} ${tr('pkt', 'pts')}',
-        if (c.goodsText.isNotEmpty) c.goodsText,
-      ].join(', ')}',
-  ];
-
   Map<String, dynamic> toJson() => {
     'id': id,
     'time': time.millisecondsSinceEpoch,
     'label': label,
     'category': category,
+    'type': type,
     'changes': [for (final c in changes) c.toJson()],
   };
 
@@ -125,6 +143,7 @@ class HistoryEntry {
     time: DateTime.fromMillisecondsSinceEpoch(json['time'] as int),
     label: json['label'] as String,
     category: json['category'] as String?,
+    type: json['type'] as String?,
     changes: [
       for (final c in (json['changes'] as List? ?? const []))
         HistoryChange.fromJson(c as Map<String, dynamic>),
