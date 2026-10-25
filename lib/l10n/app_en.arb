@@ -213,7 +213,7 @@
   "fairyOption": "Fairy next to a meeple (+{points} pts)",
   "fairyHint": "Check it if the fairy stands next to a meeple in the scored feature (city, road, cloister or farm): its owner gets {points} pts regardless of the normal scoring. This also applies to end-of-game scoring.",
   "goodsInCity": "Goods in the city",
-  "goodsCityHint": "Expand the section to add the goods from this city. They go to the player who picked the tile.",
+  "goodsCityHint": "Expand the section to add the goods from this city and pick the player who completed it – they get the goods, even without a meeple in the city.",
   "ringmasterHint": "Check it if the ringmaster scores: he adds {points} pts for each circus or acrobat tile he stands on or that is next to him.",
   "ringmasterTiles": "Circus and acrobat tiles around the ringmaster",
   "ringmasterTilesHint": "Set the number of circus or acrobat tiles under and around the ringmaster (a 3×3 area, at most {max}): {points} pts each.",
@@ -254,5 +254,6 @@
   "noPlayersHint2": "To edit a player, press and hold their row.",
   "summaryTitle": "Summary",
   "modifyExpansions": "Modify expansions",
-  "backToEdit": "Back to editing players"
+  "backToEdit": "Back to editing players",
+  "traderCompleted": "Who completed the city (gets the goods)?"
 }

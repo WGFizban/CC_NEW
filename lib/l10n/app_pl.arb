@@ -674,7 +674,7 @@
     }
   },
   "goodsInCity": "Surowce w mieście",
-  "goodsCityHint": "Rozwiń sekcję, aby dodać surowce z tego miasta. Dostaje je gracz, który wybrał płytkę.",
+  "goodsCityHint": "Rozwiń sekcję, aby dodać surowce z tego miasta i wskazać gracza, który je domknął – to on dostaje surowce, nawet bez mepla w mieście.",
   "ringmasterHint": "Zaznacz, jeśli dyrektor cyrku punktuje: dodaje {points} pkt za każdą płytkę cyrku lub akrobatów, na której stoi lub która z nim sąsiaduje.",
   "@ringmasterHint": {
     "placeholders": {
@@ -739,5 +739,6 @@
   "noPlayersHint2": "Jeśli chcesz edytować gracza, przytrzymaj wiersz z jego imieniem.",
   "summaryTitle": "Podsumowanie",
   "modifyExpansions": "Modyfikuj dodatki",
-  "backToEdit": "Wróć do edycji graczy"
+  "backToEdit": "Wróć do edycji graczy",
+  "traderCompleted": "Kto domknął miasto (dostaje surowce)?"
 }
