@@ -9,11 +9,26 @@ class MeepleIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
+    // Obrys w kolorze kontrastowym (biały dla ciemnych mepli, czarny dla
+    // jasnych), żeby mepel nie zlewał się z tłem.
+    final outline = ThemeData.estimateBrightnessForColor(color) ==
+            Brightness.dark
+        ? Colors.white
+        : Colors.black;
+    SvgPicture meeple(Color c, double scale) => SvgPicture.asset(
       'assets/icons/meeple.svg',
+      width: size * scale,
+      height: size * scale,
+      colorFilter: ColorFilter.mode(c, BlendMode.srcIn),
+    );
+    return SizedBox(
       width: size,
       height: size,
-      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [meeple(outline, 1.08), meeple(color, 0.94)],
+      ),
     );
   }
 }

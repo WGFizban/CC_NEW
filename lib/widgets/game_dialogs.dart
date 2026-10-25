@@ -32,6 +32,16 @@ Future<bool> askYesNo(
   return result ?? false;
 }
 
+/// Kwadratowy przycisk z ikoną, wyglądający jak przycisk na ekranie gry.
+Widget fabLookalike(BuildContext context, IconData icon) => Container(
+  padding: const EdgeInsets.all(4),
+  decoration: BoxDecoration(
+    color: Theme.of(context).colorScheme.primaryContainer,
+    borderRadius: BorderRadius.circular(8),
+  ),
+  child: Icon(icon, size: 22),
+);
+
 /// Komunikat o rozpoczęciu gry z grafiką przycisku kończącego grę.
 Future<void> showGameStartedNote(BuildContext context) {
   final l = context.l10n;
@@ -39,6 +49,7 @@ Future<void> showGameStartedNote(BuildContext context) {
     context: context,
     barrierDismissible: false,
     builder: (ctx) => AlertDialog(
+      title: Text(l.gameStartedTitle, textAlign: TextAlign.center),
       content: SingleChildScrollView(
         child: Text.rich(
           TextSpan(
@@ -46,14 +57,7 @@ Future<void> showGameStartedNote(BuildContext context) {
               TextSpan(text: '${l.gameStartedBefore} '),
               WidgetSpan(
                 alignment: PlaceholderAlignment.middle,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Theme.of(ctx).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(kEndGameIcon, size: 22),
-                ),
+                child: fabLookalike(ctx, kEndGameIcon),
               ),
               TextSpan(text: '\n\n${l.gameStartedAfter}'),
             ],

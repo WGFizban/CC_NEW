@@ -88,7 +88,12 @@ class SelectPointsTypeScreen extends StatelessWidget {
         foregroundColor: foregroundOn(color),
       ),
       body: Container(
-        decoration: BoxDecoration(border: Border.all(color: color, width: 4)),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: visibleOn(color, Theme.of(context).scaffoldBackgroundColor),
+            width: 4,
+          ),
+        ),
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [

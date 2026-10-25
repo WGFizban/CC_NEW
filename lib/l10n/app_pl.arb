@@ -212,7 +212,7 @@
   "bazaarTitle": "Bazar – licytacja",
   "whoPickedTile": "Kto wybierał płytkę?",
   "auctionSettledQ": "Jak rozliczono licytację?",
-  "auctionHint": "Kupuje: wybierający płaci najwyżej licytującemu. Sprzedaje: najwyżej licytujący płaci wybierającemu. Jedyny: licytował tylko wybierający – płaci, a nikt nie zyskuje. Wynik może spaść poniżej zera.",
+  "auctionHint": "Wybierz, jak skończyła się licytacja. Kupuje: wybierający płaci najwyżej licytującemu. Sprzedaje: najwyżej licytujący płaci wybierającemu. Jedyny: licytował tylko wybierający – płaci, a nikt nie zyskuje. Wynik może spaść poniżej zera.",
   "dealBuys": "Kupuje",
   "dealSells": "Sprzedaje",
   "dealSole": "Jedyny",
@@ -387,7 +387,7 @@
   },
   "circusAllUsed": "Wszystkie żetony zwierząt zostały już zużyte. Zeruje je reset punktów.",
   "circusStep2": "2. Ile mepli ma każdy gracz na płytce cyrku i ośmiu sąsiednich?",
-  "circusStep2Hint": "Liczą się zwykłe meple, duże meple, opaci, wozy i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, pasterze ani stodoły. Punktujące meple zostają na planszy.",
+  "circusStep2Hint": "Wskaż, czyje meple stoją na płytce cyrku i wokół niej. Liczą się zwykłe meple, duże meple, opaci, wozy i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, pasterze ani stodoły. Punktujące meple zostają na planszy.",
   "circusEventLabel": "Cyrk ({animal})",
   "@circusEventLabel": {
     "placeholders": {
@@ -400,7 +400,7 @@
   "pyramidEndOfGame": "Koniec gry",
   "pyramidWhoseThree": "Czyje są trzy meple w piramidzie?",
   "acrobatsHowMany": "Ilu akrobatów ma każdy gracz?",
-  "pyramidHint": "Każdy akrobata w ukończonej piramidzie daje właścicielowi {points} pkt i wraca do puli. Piramidę możesz podliczyć, nawet jeśli nie masz w niej akrobaty.",
+  "pyramidHint": "Wskaż właścicieli akrobatów w ukończonej piramidzie: każdy akrobata daje właścicielowi {points} pkt i wraca do puli. Piramidę możesz podliczyć, nawet jeśli nie masz w niej akrobaty.",
   "@pyramidHint": {
     "placeholders": {
       "points": {
@@ -408,7 +408,7 @@
       }
     }
   },
-  "acrobatsEndHint": "Na koniec gry każdy akrobata na planszy daje {points} pkt, także w niedokończonej piramidzie.",
+  "acrobatsEndHint": "Ustaw liczbę akrobatów na planszy: na koniec gry każdy daje {points} pkt, także w niedokończonej piramidzie.",
   "@acrobatsEndHint": {
     "placeholders": {
       "points": {
@@ -438,7 +438,7 @@
     }
   },
   "flockHowMany": "Z ilu żetonów składa się stado?",
-  "flockHint": "Liczbę żetonów każdego rodzaju ogranicza ich liczba w grze (4×1, 5×2, 5×3, 2×4), więc stado ma najwyżej {max} owiec. Wilk rozpędza stado – wtedy nie dopisuj punktów. Owce na koniec gry nie punktują.",
+  "flockHint": "Ustaw liczbę żetonów każdego rodzaju. Ogranicza ją liczba w grze (4×1, 5×2, 5×3, 2×4), więc stado ma najwyżej {max} owiec. Wilk rozpędza stado – wtedy nie dopisuj punktów. Owce na koniec gry nie punktują.",
   "@flockHint": {
     "placeholders": {
       "max": {
@@ -491,7 +491,7 @@
     }
   },
   "shepherdsTitle": "Pasterze w tym polu",
-  "shepherdsHint": "Każdy pasterz w tym polu dostaje punkty za całe stado.",
+  "shepherdsHint": "Wskaż pasterzy z tego pola: każdy dostaje punkty za całe stado.",
   "flockEventLabel": "Owce: {names} +{sheep}",
   "@flockEventLabel": {
     "placeholders": {
@@ -523,17 +523,17 @@
   "tiles": "Płytki",
   "pennants": "Sztandary",
   "cathedral": "Czy zawiera katedrę",
-  "cathedralHint": "Miasto z katedrą: 3 pkt za płytkę i sztandar. Nieukończone miasto z katedrą nie daje punktów, więc nie ma czego dopisywać.",
+  "cathedralHint": "Zaznacz, jeśli ukończone miasto zawiera katedrę: wtedy dostaje 3 pkt za płytkę i sztandar zamiast 2.",
   "completedCity": "Czy ukończone",
   "inn": "Czy zawiera karczmę",
-  "innHint": "Droga z karczmą: 2 pkt za płytkę. Nieukończona droga z karczmą nie daje punktów, więc nie ma czego dopisywać.",
+  "innHint": "Zaznacz, jeśli ukończona droga prowadzi przez karczmę: wtedy dostaje 2 pkt za płytkę zamiast 1.",
   "completedCloister": "Czy ukończony",
   "completedAbbey": "Czy ukończone",
-  "cloisterHint": "Ukończony klasztor daje 9 pkt. Niedokończony daje na koniec gry 1 pkt za każdą płytkę: klasztor i otaczające go płytki.",
-  "abbeyHint": "Ukończone opactwo daje 9 pkt. Niedokończone daje na koniec gry 1 pkt za każdą płytkę: opactwo i otaczające je płytki.",
+  "cloisterHint": "Zaznacz, jeśli klasztor jest ukończony (otoczony ośmioma płytkami): daje 9 pkt. Odznacz, jeśli punktujesz go na koniec gry – wtedy 1 pkt za każdą płytkę: klasztor i otaczające go płytki.",
+  "abbeyHint": "Zaznacz, jeśli opactwo jest ukończone (otoczone ośmioma płytkami): daje 9 pkt. Odznacz, jeśli punktujesz je na koniec gry – wtedy 1 pkt za każdą płytkę: opactwo i otaczające je płytki.",
   "vineyardsCloister": "Winnice wokół klasztoru",
   "vineyardsAbbey": "Winnice wokół opactwa",
-  "vineyardsCloisterHint": "{points} pkt za każdą winnicę na płytkach wokół ukończonego klasztoru (najwyżej {max}).",
+  "vineyardsCloisterHint": "Ustaw liczbę winnic na płytkach wokół ukończonego klasztoru: {points} pkt za każdą (najwyżej {max}).",
   "@vineyardsCloisterHint": {
     "placeholders": {
       "points": {
@@ -544,7 +544,7 @@
       }
     }
   },
-  "vineyardsAbbeyHint": "{points} pkt za każdą winnicę na płytkach wokół ukończonego opactwa (najwyżej {max}).",
+  "vineyardsAbbeyHint": "Ustaw liczbę winnic na płytkach wokół ukończonego opactwa: {points} pkt za każdą (najwyżej {max}).",
   "@vineyardsAbbeyHint": {
     "placeholders": {
       "points": {
@@ -557,19 +557,19 @@
   },
   "completedCities": "Ukończone miasta",
   "castlesNearFarm": "Zamki przy polu",
-  "castlesNearFarmHint": "Zamek przy polu jest wart 4 pkt zamiast 3, a ze świnką 5 pkt, tak jak ukończone miasto.",
+  "castlesNearFarmHint": "Ustaw liczbę zamków przy polu. Zamek przy polu jest wart 4 pkt zamiast 3, a ze świnką 5 pkt, tak jak ukończone miasto.",
   "pig": "Czy zawiera świnkę",
-  "pigHint": "Ze świnką każde ukończone miasto przy polu daje 4 pkt (przy polu połączonym ze stodołą 2 pkt zamiast 1).",
+  "pigHint": "Zaznacz, jeśli masz na polu świnkę: każde ukończone miasto przy polu daje wtedy 4 pkt (przy polu połączonym ze stodołą 2 pkt zamiast 1).",
   "ringmasterAlways": "Dyrektor punktuje zawsze",
-  "ringmasterAlwaysHint": "Dyrektor cyrku dostaje punkty także wtedy, gdy nie masz większości w budowli, oraz na koniec gry na polu lub w nieukończonej budowli.",
+  "ringmasterAlwaysHint": "Zaznacz, jeśli dyrektor cyrku ma dostać punkty także wtedy, gdy nie masz większości w budowli – oraz na koniec gry na polu lub w nieukończonej budowli.",
   "farmNormal": "Zwykłe",
   "farmJoined": "Połączone ze stodołą",
   "farmBarnOwner": "Właściciel stodoły",
   "barn": "Stodoła",
-  "barnHint": "Zwykłe: punktowanie pola na koniec gry albo w chwili postawienia stodoły (3 pkt za miasto). Połączone ze stodołą: rolnicy na polu, które właśnie połączono z polem ze stodołą, dostają 1 pkt za miasto (2 ze świnką). Właściciel stodoły na koniec gry: 4 pkt za miasto i 5 za zamek, bez świnki; każda stodoła na połączonym polu dostaje pełną punktację.",
+  "barnHint": "Wybierz sposób punktowania pola ze stodołą. Zwykłe: punktowanie pola na koniec gry albo w chwili postawienia stodoły (3 pkt za miasto). Połączone ze stodołą: rolnicy na polu, które właśnie połączono z polem ze stodołą, dostają 1 pkt za miasto (2 ze świnką). Właściciel stodoły na koniec gry: 4 pkt za miasto i 5 za zamek, bez świnki; każda stodoła na połączonym polu dostaje pełną punktację.",
   "goldBarsToAdd": "Sztabki złota do dopisania",
   "goldBars": "Sztabki złota",
-  "goldHint": "Sztabki z płytek ukończonej budowli dostaje gracz z przewagą; przy remisie dzielą się nimi według kolejności. Rolnicy złota nie dostają. Na koniec gry im więcej sztabek, tym więcej warta każda: 1–3 po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.",
+  "goldHint": "Rozwiń sekcję, aby dopisać sztabki złota. Sztabki z płytek ukończonej budowli dostaje gracz z przewagą; przy remisie dzielą się nimi według kolejności. Rolnicy złota nie dostają. Na koniec gry im więcej sztabek, tym więcej warta każda: 1–3 po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.",
   "inSupply": "W puli: {count} / {total}",
   "@inSupply": {
     "placeholders": {
@@ -612,7 +612,7 @@
   "castlesCount": "Liczba zamków",
   "sharedPointsCastles": "Punkty wspólne / zamki",
   "sharedPoints": "Punkty wspólne",
-  "sharedHint": "Wskaż graczy, którzy dostają te same punkty (np. dzielą budowlę przy remisie). Wróżka i dyrektor cyrku liczą się tylko punktującemu.",
+  "sharedHint": "Rozwiń sekcję, aby wskazać graczy, którzy dostają te same punkty (np. dzielą budowlę przy remisie). Wróżka i dyrektor cyrku liczą się tylko punktującemu.",
   "sharedHintCastle": " Dla gracza możesz wybrać „Zamek\": dostaje wtedy punkty budowli za każdy swój zamek przy niej, a nie ze współdzielenia. Punktujący ma tu opcję „ma zamek\": dostaje swoje punkty i dodatkowo punkty za zamek (punkty tylko jako zamek to pole „Punkty jako zamek\").",
   "chosenCastle": "{name} (zamek ×{count})",
   "@chosenCastle": {
@@ -665,7 +665,7 @@
       }
     }
   },
-  "fairyHint": "Jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, droga, klasztor lub pole), jego właściciel dostaje {points} pkt niezależnie od zwykłej punktacji. Dotyczy też punktowania na koniec gry.",
+  "fairyHint": "Zaznacz, jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, droga, klasztor lub pole): jego właściciel dostaje {points} pkt niezależnie od zwykłej punktacji. Dotyczy też punktowania na koniec gry.",
   "@fairyHint": {
     "placeholders": {
       "points": {
@@ -674,8 +674,8 @@
     }
   },
   "goodsInCity": "Surowce w mieście",
-  "goodsCityHint": "Surowce dostaje gracz, który domknął miasto – nawet bez mepla w mieście.",
-  "ringmasterHint": "Dyrektor cyrku dodaje {points} pkt za każdą płytkę cyrku lub akrobatów, na której stoi lub która z nim sąsiaduje.",
+  "goodsCityHint": "Rozwiń sekcję, aby dodać surowce z tego miasta. Dostaje je gracz, który wybrał płytkę.",
+  "ringmasterHint": "Zaznacz, jeśli dyrektor cyrku punktuje: dodaje {points} pkt za każdą płytkę cyrku lub akrobatów, na której stoi lub która z nim sąsiaduje.",
   "@ringmasterHint": {
     "placeholders": {
       "points": {
@@ -684,13 +684,13 @@
     }
   },
   "ringmasterTiles": "Płytki cyrku i akrobatów wokół dyrektora",
-  "ringmasterTilesHint": "{points} pkt za każdą płytkę cyrku lub akrobatów pod dyrektorem i wokół niego (obszar 3×3, najwyżej {max}).",
+  "ringmasterTilesHint": "Ustaw liczbę płytek cyrku lub akrobatów pod dyrektorem i wokół niego (obszar 3×3, najwyżej {max}): {points} pkt za każdą.",
   "@ringmasterTilesHint": {
     "placeholders": {
-      "points": {
+      "max": {
         "type": "int"
       },
-      "max": {
+      "points": {
         "type": "int"
       }
     }
@@ -699,7 +699,7 @@
   "wordShared": "wspólnie",
   "wordCastles": "zamki",
   "wordGold": "złoto",
-  "noPlayersHint": "Brak graczy — dodaj nowego przyciskiem „+\".\nJeśli chcesz edytować gracza, przytrzymaj wiersz z jego imieniem.",
+  "noPlayersHint": "Brak graczy — dodaj nowego przyciskiem",
   "startGame": "Rozpocznij grę",
   "startGameQuestion": "Czy chcesz rozpocząć grę?",
   "startGameBody": "Włączone dodatki: {expansions}\n\nOd teraz nie będzie można dodawać kolejnych graczy, edytować obecnych i zmieniać dodatków.",
@@ -715,7 +715,7 @@
   "no": "Nie",
   "ok": "OK",
   "close": "Zamknij",
-  "gameStartedBefore": "Gra została rozpoczęta. Aby dodawać punkty, kliknij na wiersz ze swoimi punktami i wybierz punktujące elementy. Aby zakończyć grę, wybierz przycisk",
+  "gameStartedBefore": "Aby dodawać punkty, kliknij na wiersz ze swoimi punktami i wybierz punktujące elementy. Aby zakończyć grę, wybierz przycisk",
   "gameStartedAfter": "Życzę miłej rozgrywki!",
   "endGameQuestion": "Czy chcesz zakończyć grę?",
   "endGameTooltip": "Zakończ grę",
@@ -734,5 +734,7 @@
   "rulesBridges": "• Zamek: jego właściciel dostaje punkty ukończonego miasta, drogi lub klasztoru, przy którym stoi. Zamek na końcu gry nie punktuje.\n• Zamek na polu jest wart 4 pkt zamiast 3 (5 ze świnką).\n• Bazar: wybierający płytkę kupuje ją od najwyżej licytującego (płaci mu cenę) albo mu ją sprzedaje (dostaje cenę). Gdy licytował tylko on, płaci cenę i nikt nie zyskuje.\n• Mosty nie zmieniają punktacji.",
   "rulesHills": "• Winnice: ukończony klasztor dostaje 3 pkt za każdą winnicę na płytkach wokół.\n• Owce: stado z żetonów 1–4 owce, wszyscy pasterze w polu dostają punkty za całe stado. Wilk rozpędza stado. Owce nie punktują na koniec gry.",
   "rulesCircus": "• Cyrk: odkryj żeton zwierzęcia. Każdy mepel na płytce cyrku i ośmiu sąsiednich daje właścicielowi tyle punktów, ile wynosi zwierzę (słoń 7, lew 6, niedźwiedź 5, foka 4, małpka 3, pchła 1). Meple zostają.\n• Akrobaci: ukończona piramida (3 meple) – każdy akrobata 5 pkt i wraca do puli. Na koniec gry 5 pkt za każdego akrobatę na planszy.\n• Dyrektor cyrku: 2 pkt za każdą płytkę cyrku lub akrobatów obok niego, także na koniec gry.",
-  "rulesGold": "• Złoto: 16 sztabek. Za ukończoną budowlę sztabki z jej płytek dostaje gracz z przewagą (rolnicy nie).\n• Na koniec gry sztabka jest warta: 1–3 sztabki po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4."
+  "rulesGold": "• Złoto: 16 sztabek. Za ukończoną budowlę sztabki z jej płytek dostaje gracz z przewagą (rolnicy nie).\n• Na koniec gry sztabka jest warta: 1–3 sztabki po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.",
+  "gameStartedTitle": "Gra została rozpoczęta!",
+  "noPlayersHint2": "Jeśli chcesz edytować gracza, przytrzymaj wiersz z jego imieniem."
 }

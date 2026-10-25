@@ -17,6 +17,14 @@ const List<Color> kPlayerColors = [
   Color(0xFF7E7777), // szary
 ];
 
+/// Kolor ramki gracza widoczny na tle [background]: gdy kolor gracza jest
+/// zbyt podobny do tła (np. biały na białym, czarny na ciemnym), zwraca
+/// kontrastowy szary.
+Color visibleOn(Color color, Color background) {
+  final diff = (color.computeLuminance() - background.computeLuminance()).abs();
+  return diff < 0.2 ? foregroundOn(background).withValues(alpha: 0.6) : color;
+}
+
 /// Kolor tekstu/ikon czytelny na podanym tle (jasne tło → czarny, ciemne → biały).
 Color foregroundOn(Color background) =>
     ThemeData.estimateBrightnessForColor(background) == Brightness.dark

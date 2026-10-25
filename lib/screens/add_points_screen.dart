@@ -13,6 +13,7 @@ import '../models/scoring.dart';
 import '../models/sharing.dart';
 import '../models/sheep.dart';
 import '../models/standings.dart';
+import '../theme/app_colors.dart';
 import '../widgets/auto_size_text.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/counter_stepper.dart';
@@ -318,13 +319,22 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               ? _type.title(l)
               : '${widget.player.name} — ${_type.title(l)}',
         ),
-        backgroundColor: neutral ? null : color.withValues(alpha: 0.2),
+        backgroundColor: neutral ? null : color,
+        foregroundColor: neutral ? null : foregroundOn(color),
         actions: [ConfirmAction(onPressed: canConfirm ? _confirm : null)],
       ),
       body: Container(
         decoration: neutral
             ? null
-            : BoxDecoration(border: Border.all(color: color, width: 4)),
+            : BoxDecoration(
+                border: Border.all(
+                  color: visibleOn(
+                    color,
+                    Theme.of(context).scaffoldBackgroundColor,
+                  ),
+                  width: 4,
+                ),
+              ),
         child: Column(
           children: [
             // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.

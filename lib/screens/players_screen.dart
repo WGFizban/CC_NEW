@@ -604,8 +604,17 @@ class _PlayersScreenState extends State<PlayersScreen> {
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text(
-                  l.noPlayersHint,
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(text: '${l.noPlayersHint} '),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: fabLookalike(context, Icons.add),
+                      ),
+                      TextSpan(text: '.\n\n${l.noPlayersHint2}'),
+                    ],
+                  ),
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 18),
                 ),

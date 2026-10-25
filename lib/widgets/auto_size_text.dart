@@ -63,11 +63,11 @@ class AppBarTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(context).appBarTheme.titleTextStyle ??
-        Theme.of(context).textTheme.titleLarge;
+    // Kolor bierzemy z paska (DefaultTextStyle), żeby tekst był czytelny na
+    // tle w dowolnym kolorze; ustawiamy tylko rozmiar i grubość.
     return AutoSizeText(
       text,
-      style: style?.copyWith(fontSize: 20),
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
       maxLines: maxLines,
       minFontSize: 12,
     );
