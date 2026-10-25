@@ -113,8 +113,8 @@ void main() {
 
       expect(goodsBonus(a, all), 20); // wino (remis) + żyto
       expect(goodsBonus(b, all), 20); // wino (remis) + sukno
-      expect(totalScore(a, all), 25);
-      expect(totalScore(c, all), 0);
+      expect(finalScore(a, all), 25);
+      expect(finalScore(c, all), 0);
     });
 
     test('lider zmienia się, gdy ktoś go przegoni', () {
@@ -518,10 +518,10 @@ void main() {
       expect(goldPoints(7), 21);
     });
 
-    test('złoto wlicza się do wyniku na bieżąco', () {
+    test('złoto wlicza się do wyniku końcowego', () {
       final a = _player('A', points: 102)..gold = 7;
 
-      expect(totalScore(a, [a]), 123);
+      expect(finalScore(a, [a]), 123);
     });
 
     test('w puli zostaje reszta z 16 sztabek', () {
@@ -558,62 +558,50 @@ void main() {
     });
   });
 
-  group('rozpoczęcie gry', () {
-    test('świeża gra nie jest rozpoczęta', () {
+  group('etapy gry', () {
+    test('świeża gra bez punktów jest w przygotowaniu', () {
       expect(
-        isGameStarted(
-          timerRunning: false,
-          elapsed: Duration.zero,
-          players: [_player('A'), _player('B')],
-        ),
-        isFalse,
+        inferLegacyStage([_player('A'), _player('B')]),
+        GameStage.setup,
       );
     });
 
-    test('gra rozpoczyna się po ruszeniu licznika', () {
+    test('stary zapis z punktami, surowcami lub złotem to gra w toku', () {
+      expect(inferLegacyStage([_player('A', points: 2)]), GameStage.playing);
       expect(
-        isGameStarted(
-          timerRunning: true,
-          elapsed: Duration.zero,
-          players: [_player('A')],
-        ),
-        isTrue,
+        inferLegacyStage([_player('A', goods: {Goods.wine: 1})]),
+        GameStage.playing,
+      );
+      expect(inferLegacyStage([_player('A')..gold = 1]), GameStage.playing);
+    });
+
+    test('czas gry liczy się od startu do końca', () {
+      final start = DateTime(2026, 1, 1, 12);
+      expect(
+        gameElapsed(startedAt: null, endedAt: null),
+        Duration.zero,
       );
       expect(
-        isGameStarted(
-          timerRunning: false,
-          elapsed: const Duration(seconds: 5),
-          players: [_player('A')],
+        gameElapsed(
+          startedAt: start,
+          endedAt: start.add(const Duration(minutes: 45)),
         ),
-        isTrue,
+        const Duration(minutes: 45),
+      );
+      expect(
+        gameElapsed(
+          startedAt: start,
+          endedAt: null,
+          now: start.add(const Duration(seconds: 90)),
+        ),
+        const Duration(seconds: 90),
       );
     });
 
-    test('gra rozpoczyna się po dodaniu punktów, surowców lub złota', () {
-      expect(
-        isGameStarted(
-          timerRunning: false,
-          elapsed: Duration.zero,
-          players: [_player('A', points: 2)],
-        ),
-        isTrue,
-      );
-      expect(
-        isGameStarted(
-          timerRunning: false,
-          elapsed: Duration.zero,
-          players: [_player('A', goods: {Goods.wine: 1})],
-        ),
-        isTrue,
-      );
-      expect(
-        isGameStarted(
-          timerRunning: false,
-          elapsed: Duration.zero,
-          players: [_player('A')..gold = 1],
-        ),
-        isTrue,
-      );
+    test('edycja możliwa tylko w przygotowaniu', () {
+      expect(isSetup(GameStage.setup), isTrue);
+      expect(isSetup(GameStage.playing), isFalse);
+      expect(isSetup(GameStage.finished), isFalse);
     });
   });
 

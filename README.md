@@ -17,14 +17,18 @@ z obsługą wybranych dodatków.
   w której wskazujesz graczy dostających te same punkty (remis o większość),
 - wybór rodzaju punktacji w siatce pogrupowanej według dodatków,
 - cofanie ostatniego zatwierdzenia (także tych dotyczących wielu graczy),
-- **historia punktów** jako tabela (menu → Historia punktów): czas (sama
-  godzina), gracz, zdarzenie (jako ikona rodzaju punktacji, np. drogi albo
+- **historia punktów** jako tabela (menu → Historia punktów): gracz, zdarzenie (jako ikona rodzaju punktacji, np. drogi albo
   miasta; opis w podpowiedzi), punkty, surowce i wynik łączny. Wiersz ma kolor
   gracza (lekko przyciemniony, żeby tekst był czytelny) i jego mepla przy
   imieniu,
-- **Zakończ grę** (menu): zwycięzca, ranking i rozbicie punktów według rodzaju
-  punktacji, z opcją nowej gry,
-- stoper czasu gry,
+- **przebieg gry**: przygotowanie (dodawanie graczy, wybór dodatków) → przycisk
+  **Rozpocznij grę** → rozgrywka (przycisk „+" zamienia się w przycisk
+  kończący grę) → **ekran końca gry** z rankingiem, rozbiciem punktów, premią
+  za surowce, złotem i czasem gry (jedyne wyjście to **Nowa gra**; jest też
+  przycisk do historii punktów),
+- czas gry liczony w tle od rozpoczęcia do zakończenia (bez stopera na ekranie),
+- **skrót zasad** (ustawienia): krótkie zasady w sekcjach per dodatek,
+- podpowiedzi „?" otwierają okno, które zamykasz sam,
 - zapis graczy, punktów, surowców i ustawień w pamięci urządzenia,
 - ustawienia: **motyw** (systemowy, jasny, ciemny), **język** interfejsu
   (polski, angielski), nie wygaszaj ekranu podczas gry (domyślnie włączone),
@@ -33,11 +37,14 @@ z obsługą wybranych dodatków.
   (ostatnie 500 wpisów; cofnięcie usuwa też wpis, „Resetuj punkty" czyści),
 - jeden spójny zestaw ikon (`assets/icons/game/`).
 
-Kliknięcie gracza otwiera wybór rodzaju punktacji, a przytrzymanie – edycję
-lub usunięcie. Dodatki włączasz w menu (**Ustawienia…**), ułożone według numeracji
-z instrukcji (mini dodatki na końcu); na starcie wszystkie są **wyłączone**. Gdy gra trwa (ruszył licznik albo ktoś ma już punkty,
-surowce lub złoto), dodatków nie można zmieniać do końca gry – zakończ ją i
-zacznij nową albo zresetuj punkty.
+Na początku gra jest w fazie przygotowania: dodajesz graczy przyciskiem „+"
+(przytrzymanie wiersza – edycja lub usunięcie), a po dodaniu co najmniej jednego
+pojawia się **Rozpocznij grę**. Od startu nie można dodawać, edytować ani
+usuwać graczy ani zmieniać dodatków. Na liście widać tylko punkty z planszy;
+premia za surowce i wartość złota są doliczane dopiero na ekranie końca gry.
+Kliknięcie gracza w trakcie gry otwiera wybór rodzaju punktacji. Dodatki włączasz w menu (**Ustawienia…**), ułożone według numeracji
+z instrukcji (mini dodatki na końcu); na starcie wszystkie są **wyłączone**. Po rozpoczęciu gry dodatków nie można zmieniać do jej
+końca; „Resetuj punkty" w menu wraca do przygotowania.
 
 ## Obsługiwane dodatki
 
@@ -50,8 +57,8 @@ zacznij nową albo zresetuj punkty.
 ### Kupcy i budowniczowie
 - W punktacji miasta liczniki **wina, żyta i sukna** – surowce dostaje gracz,
   który domknął miasto (nawet bez mepla w mieście).
-- Osobny kafelek **Surowce** do dopisania żetonów: neutralny ekran jak bazar,
-  bez imienia gracza, na którym wybierasz, kto dostaje surowce.
+- Osobny kafelek **Surowce** do dopisania żetonów dla gracza, który wybrał
+  płytkę.
 - Liczniki pilnują limitów z gry: 9 wina, 6 żyta i 5 sukna (razem 20 żetonów).
 - **Premia 10 pkt** dla prowadzącego w każdym rodzaju surowca liczona na
   bieżąco: przy remisie każdy z remisujących dostaje pełne 10, a przy zerze

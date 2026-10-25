@@ -4,6 +4,7 @@ import '../l10n/l10n.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
+import '../widgets/auto_size_text.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/number_keypad.dart';
@@ -86,7 +87,7 @@ class _BazaarScreenState extends State<BazaarScreen> {
     final l = context.l10n;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.bazaarTitle),
+        title: AppBarTitle(l.bazaarTitle),
         actions: [ConfirmAction(onPressed: _canConfirm ? _confirm : null)],
       ),
       body: ListView(

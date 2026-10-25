@@ -1,21 +1,40 @@
 import 'package:flutter/material.dart';
 
-/// Mała ikona „?" z podpowiedzią. Na telefonie podpowiedź pokazuje się po
-/// dotknięciu, a na komputerze także po najechaniu myszą.
+import '../l10n/l10n.dart';
+
+/// Pokazuje podpowiedź jako okno nad ekranem, które użytkownik zamyka sam.
+Future<void> showHintDialog(
+  BuildContext context, {
+  required String message,
+  String? title,
+}) {
+  return showDialog<void>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: title == null ? null : Text(title),
+      content: SingleChildScrollView(child: Text(message)),
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: Text(ctx.l10n.close),
+        ),
+      ],
+    ),
+  );
+}
+
+/// Mała ikona „?" otwierająca okno z podpowiedzią.
 class InfoHint extends StatelessWidget {
   final String message;
+  final String? title;
 
-  const InfoHint(this.message, {super.key});
+  const InfoHint(this.message, {super.key, this.title});
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: message,
-      triggerMode: TooltipTriggerMode.tap,
-      showDuration: const Duration(seconds: 8),
-      waitDuration: const Duration(milliseconds: 300),
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(12),
+    return InkResponse(
+      onTap: () => showHintDialog(context, message: message, title: title),
+      radius: 20,
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Icon(
@@ -46,7 +65,7 @@ class LabelWithHint extends StatelessWidget {
           TextSpan(text: label),
           WidgetSpan(
             alignment: PlaceholderAlignment.middle,
-            child: InfoHint(hint),
+            child: InfoHint(hint, title: label),
           ),
         ],
       ),

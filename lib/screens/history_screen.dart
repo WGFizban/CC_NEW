@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 import '../models/history_entry.dart';
 import '../widgets/game_icon.dart';
+import '../widgets/info_hint.dart';
 import '../widgets/meeple_icon.dart';
 
 /// Historia zatwierdzonych punktów jako tabela, od najnowszych wpisów.
-/// Każda zmiana gracza to osobny wiersz w kolorze tego gracza; czas i zdarzenie
-/// są przy pierwszym wierszu danego wpisu. Kolumny: czas, gracz, zdarzenie,
-/// punkty, surowce, łącznie.
+/// Każda zmiana gracza to osobny wiersz w kolorze tego gracza; zdarzenie jest
+/// przy pierwszym wierszu danego wpisu. Kolumny: gracz, zdarzenie, punkty,
+/// surowce, łącznie.
 class HistoryScreen extends StatefulWidget {
   final List<HistoryEntry> entries;
-  final VoidCallback onClear;
+  /// Czyszczenie historii; `null` ukrywa przycisk (np. po zakończeniu gry).
+  final VoidCallback? onClear;
 
-  const HistoryScreen({super.key, required this.entries, required this.onClear});
+  const HistoryScreen({super.key, required this.entries, this.onClear});
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -21,10 +23,6 @@ class HistoryScreen extends StatefulWidget {
 
 class _HistoryScreenState extends State<HistoryScreen> {
   late List<HistoryEntry> _entries = List.of(widget.entries);
-
-  static String _two(int n) => n.toString().padLeft(2, '0');
-
-  static String _format(DateTime t) => '${_two(t.hour)}:${_two(t.minute)}';
 
   Future<void> _clear() async {
     final ok = await showDialog<bool>(
@@ -45,19 +43,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
     );
     if (ok != true) return;
-    widget.onClear();
+    widget.onClear?.call();
     setState(() => _entries = []);
   }
 
   /// Zdarzenie jako ikona rodzaju punktacji (opis w podpowiedzi); starsze
   /// wpisy bez rodzaju pokazują tekst.
-  Widget _eventCell(HistoryEntry e) {
+  Widget _eventCell(BuildContext context, HistoryEntry e) {
     final text = e.category ?? e.label;
     final type = e.scoringType;
     if (type == null) return Text(text);
-    return Tooltip(
-      message: text,
-      triggerMode: TooltipTriggerMode.tap,
+    return GestureDetector(
+      onTap: () => showHintDialog(context, message: text),
       child: GameIcon(type.iconAsset, size: 28),
     );
   }
@@ -81,7 +78,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ? null
                 : WidgetStatePropertyAll(color.withValues(alpha: 0.22)),
             cells: [
-              DataCell(Text(first ? _format(e.time) : '')),
               DataCell(
                 c == null
                     ? const Text('')
@@ -96,7 +92,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ],
                       ),
               ),
-              DataCell(first ? _eventCell(e) : const Text('')),
+              DataCell(first ? _eventCell(context, e) : const Text('')),
               DataCell(
                 Text(
                   points,
@@ -125,11 +121,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
       appBar: AppBar(
         title: Text(l.historyTitle),
         actions: [
-          IconButton(
-            tooltip: l.clearHistoryTooltip,
-            onPressed: _entries.isEmpty ? null : _clear,
-            icon: const Icon(Icons.delete_outline),
-          ),
+          if (widget.onClear != null)
+            IconButton(
+              tooltip: l.clearHistoryTooltip,
+              onPressed: _entries.isEmpty ? null : _clear,
+              icon: const Icon(Icons.delete_outline),
+            ),
         ],
       ),
       body: _entries.isEmpty
@@ -142,7 +139,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   dataRowMinHeight: 36,
                   dataRowMaxHeight: 48,
                   columns: [
-                    DataColumn(label: Text(l.colTime)),
                     DataColumn(label: Text(l.colPlayer)),
                     DataColumn(label: Text(l.colEvent)),
                     DataColumn(

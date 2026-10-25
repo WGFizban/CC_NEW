@@ -49,7 +49,8 @@ int goldRemaining(List<Player> players) {
   return math.max(0, kGoldSupply - held);
 }
 
-/// Wynik gracza na bieżąco: punkty z planszy plus premia za surowce oraz
-/// wartość zebranego złota.
-int totalScore(Player player, List<Player> players) =>
+/// Wynik końcowy gracza: punkty z planszy plus premia za surowce oraz
+/// wartość zebranego złota. Liczony dopiero w podsumowaniu gry; w trakcie gry
+/// pokazujemy tylko punkty z planszy (`player.points`).
+int finalScore(Player player, List<Player> players) =>
     player.points + goodsBonus(player, players) + goldPoints(player.gold);

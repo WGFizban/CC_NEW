@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'rules_screen.dart';
 import '../l10n/app_language.dart';
 import '../l10n/l10n.dart';
 import '../l10n/labels.dart';
@@ -163,6 +164,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() => _keepScreenOn = on);
               _notify();
             },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.menu_book_outlined),
+            title: Text(l.rulesTitle),
+            subtitle: Text(l.rulesMenuHint),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(builder: (_) => const RulesScreen()),
+            ),
           ),
           const Divider(),
           _header(l.expansionsSection),
