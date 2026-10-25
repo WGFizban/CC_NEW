@@ -53,11 +53,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final text = e.category ?? e.label;
     final type = e.scoringType;
     if (type == null) return Text(text);
-    return Builder(
-      builder: (ctx) => GestureDetector(
-        onTap: () => showHintBubble(ctx, message: text),
-        child: GameIcon(type.iconAsset, size: 28),
-      ),
+    return GestureDetector(
+      onTap: () => showHintDialog(context, message: text),
+      child: GameIcon(type.iconAsset, size: 28),
     );
   }
 
