@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/tr.dart';
 import '../models/history_entry.dart';
+import '../widgets/meeple_icon.dart';
 
 /// Historia zatwierdzonych punktów jako tabela, od najnowszych wpisów.
-/// Każda zmiana gracza to osobny wiersz; czas i zdarzenie są przy pierwszym
-/// wierszu danego wpisu.
+/// Każda zmiana gracza to osobny wiersz w kolorze tego gracza; czas i zdarzenie
+/// są przy pierwszym wierszu danego wpisu. Kolumny: czas, gracz, zdarzenie,
+/// punkty, surowce, łącznie.
 class HistoryScreen extends StatefulWidget {
   final List<HistoryEntry> entries;
   final VoidCallback onClear;
@@ -20,23 +23,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   static String _two(int n) => n.toString().padLeft(2, '0');
 
-  static String _format(DateTime t) =>
-      '${_two(t.day)}.${_two(t.month)} ${_two(t.hour)}:${_two(t.minute)}';
+  static String _format(DateTime t) => '${_two(t.hour)}:${_two(t.minute)}';
 
   Future<void> _clear() async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Wyczyścić historię?'),
-        content: const Text('Punkty graczy zostaną bez zmian.'),
+        title: Text(tr('Wyczyścić historię?', 'Clear history?')),
+        content: Text(
+          tr(
+            'Punkty graczy zostaną bez zmian.',
+            'Players\' points will stay unchanged.',
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Anuluj'),
+            child: Text(tr('Anuluj', 'Cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Wyczyść'),
+            child: Text(tr('Wyczyść', 'Clear')),
           ),
         ],
       ),
@@ -46,7 +53,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     setState(() => _entries = []);
   }
 
-  List<DataRow> _rows() {
+  List<DataRow> _rows(BuildContext context) {
     final rows = <DataRow>[];
     for (final e in _entries.reversed) {
       final changes = e.changes;
@@ -54,21 +61,46 @@ class _HistoryScreenState extends State<HistoryScreen> {
       for (var i = 0; i < count; i++) {
         final c = changes.isEmpty ? null : changes[i];
         final first = i == 0;
+        final color = c?.color == null ? null : Color(c!.color!);
+        final points = c == null || c.points == 0
+            ? ''
+            : '${c.points > 0 ? '+' : ''}${c.points}';
         rows.add(
           DataRow(
+            // Wiersz w kolorze gracza (przyciemniony, żeby tekst był czytelny).
+            color: color == null
+                ? null
+                : WidgetStatePropertyAll(color.withValues(alpha: 0.22)),
             cells: [
               DataCell(Text(first ? _format(e.time) : '')),
+              DataCell(
+                c == null
+                    ? const Text('')
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (color != null) ...[
+                            MeepleIcon(color: color, size: 22),
+                            const SizedBox(width: 6),
+                          ],
+                          Text(c.player),
+                        ],
+                      ),
+              ),
               DataCell(Text(first ? e.category ?? e.label : '')),
-              DataCell(Text(c?.player ?? '')),
               DataCell(
                 Text(
-                  c == null || c.points == 0
-                      ? ''
-                      : '${c.points > 0 ? '+' : ''}${c.points}',
+                  points,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               DataCell(Text(c?.goodsText ?? '')),
+              DataCell(
+                Text(
+                  c?.total == null ? '' : '${c!.total}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
             ],
           ),
         );
@@ -81,17 +113,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Historia punktów'),
+        title: Text(tr('Historia punktów', 'Points history')),
         actions: [
           IconButton(
-            tooltip: 'Wyczyść historię',
+            tooltip: tr('Wyczyść historię', 'Clear history'),
             onPressed: _entries.isEmpty ? null : _clear,
             icon: const Icon(Icons.delete_outline),
           ),
         ],
       ),
       body: _entries.isEmpty
-          ? const Center(child: Text('Historia jest pusta.'))
+          ? Center(child: Text(tr('Historia jest pusta.', 'History is empty.')))
           : SingleChildScrollView(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -99,14 +131,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   columnSpacing: 20,
                   dataRowMinHeight: 36,
                   dataRowMaxHeight: 48,
-                  columns: const [
-                    DataColumn(label: Text('Czas')),
-                    DataColumn(label: Text('Zdarzenie')),
-                    DataColumn(label: Text('Gracz')),
-                    DataColumn(label: Text('Punkty'), numeric: true),
-                    DataColumn(label: Text('Surowce')),
+                  columns: [
+                    DataColumn(label: Text(tr('Czas', 'Time'))),
+                    DataColumn(label: Text(tr('Gracz', 'Player'))),
+                    DataColumn(label: Text(tr('Zdarzenie', 'Event'))),
+                    DataColumn(
+                      label: Text(tr('Punkty', 'Points')),
+                      numeric: true,
+                    ),
+                    DataColumn(label: Text(tr('Surowce', 'Goods'))),
+                    DataColumn(
+                      label: Text(tr('Łącznie', 'Total')),
+                      numeric: true,
+                    ),
                   ],
-                  rows: _rows(),
+                  rows: _rows(context),
                 ),
               ),
             ),

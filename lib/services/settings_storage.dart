@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart' show ThemeMode;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../l10n/tr.dart';
 import '../models/circus.dart';
 import '../models/expansion.dart';
 
@@ -16,10 +18,18 @@ class GameSettings {
   /// Czy nie wygaszać ekranu, gdy aplikacja jest otwarta.
   bool keepScreenOn;
 
+  /// Motyw aplikacji (domyślnie zgodny z systemem).
+  ThemeMode themeMode;
+
+  /// Język interfejsu (domyślnie polski).
+  AppLanguage language;
+
   GameSettings({
     Set<Expansion>? expansions,
     Map<CircusAnimal, int>? usedAnimals,
     this.keepScreenOn = true,
+    this.themeMode = ThemeMode.system,
+    this.language = AppLanguage.pl,
   }) : expansions = expansions ?? <Expansion>{},
        usedAnimals = usedAnimals ?? {};
 
@@ -33,6 +43,8 @@ class SettingsStorage {
   static const _seenKey = 'expansions_seen';
   static const _usedAnimalsKey = 'circus_used';
   static const _keepScreenOnKey = 'keep_screen_on';
+  static const _themeKey = 'theme_mode';
+  static const _languageKey = 'language';
 
   /// Dodatki znane, zanim zaczęliśmy zapisywać listę „widzianych".
   static const _legacyExpansions = {
@@ -88,6 +100,11 @@ class SettingsStorage {
       expansions: expansions,
       usedAnimals: used,
       keepScreenOn: prefs.getBool(_keepScreenOnKey) ?? true,
+      themeMode: ThemeMode.values.firstWhere(
+        (m) => m.name == prefs.getString(_themeKey),
+        orElse: () => ThemeMode.system,
+      ),
+      language: AppLanguage.fromCode(prefs.getString(_languageKey)),
     );
   }
 
@@ -100,6 +117,8 @@ class SettingsStorage {
       for (final e in Expansion.values) e.name,
     ]);
     await prefs.setBool(_keepScreenOnKey, settings.keepScreenOn);
+    await prefs.setString(_themeKey, settings.themeMode.name);
+    await prefs.setString(_languageKey, settings.language.code);
     await prefs.setString(
       _usedAnimalsKey,
       json.encode({

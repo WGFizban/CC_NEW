@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/tr.dart';
 import '../models/circus.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
@@ -81,9 +82,11 @@ class _PyramidScreenState extends State<PyramidScreen> {
     Navigator.pop(
       context,
       ScoreEvent(
-        _isCompleted ? 'Piramida akrobatów' : 'Akrobaci (koniec gry)',
+        _isCompleted
+            ? tr('Piramida akrobatów', 'Acrobat pyramid')
+            : tr('Akrobaci (koniec gry)', 'Acrobats (end of game)'),
         changes,
-        category: 'Akrobaci',
+        category: tr('Akrobaci', 'Acrobats'),
       ),
     );
   }
@@ -92,21 +95,21 @@ class _PyramidScreenState extends State<PyramidScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Akrobaci'),
+        title: Text(tr('Akrobaci', 'Acrobats')),
         actions: [ConfirmAction(onPressed: _canConfirm ? _confirm : null)],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           SegmentedButton<_PyramidMode>(
-            segments: const [
+            segments: [
               ButtonSegment(
                 value: _PyramidMode.completed,
-                label: Text('Ukończona piramida'),
+                label: Text(tr('Ukończona piramida', 'Completed pyramid')),
               ),
               ButtonSegment(
                 value: _PyramidMode.endGame,
-                label: Text('Koniec gry'),
+                label: Text(tr('Koniec gry', 'End of game')),
               ),
             ],
             selected: {_mode},
@@ -115,14 +118,29 @@ class _PyramidScreenState extends State<PyramidScreen> {
           const SizedBox(height: 12),
           LabelWithHint(
             _isCompleted
-                ? 'Czyje są trzy meple w piramidzie?'
-                : 'Ilu akrobatów ma każdy gracz?',
+                ? tr(
+                    'Czyje są trzy meple w piramidzie?',
+                    'Whose are the three meeples in the pyramid?',
+                  )
+                : tr(
+                    'Ilu akrobatów ma każdy gracz?',
+                    'How many acrobats does each player have?',
+                  ),
             _isCompleted
-                ? 'Każdy akrobata w ukończonej piramidzie daje właścicielowi '
-                      '$kAcrobatPoints pkt i wraca do puli. Piramidę możesz '
-                      'podliczyć, nawet jeśli nie masz w niej akrobaty.'
-                : 'Na koniec gry każdy akrobata na planszy daje '
-                      '$kAcrobatPoints pkt, także w niedokończonej piramidzie.',
+                ? tr(
+                    'Każdy akrobata w ukończonej piramidzie daje właścicielowi '
+                        '$kAcrobatPoints pkt i wraca do puli. Piramidę możesz '
+                        'podliczyć, nawet jeśli nie masz w niej akrobaty.',
+                    'Each acrobat in a completed pyramid gives its owner '
+                        '$kAcrobatPoints pts and returns to the supply. You '
+                        'can score the pyramid even without an acrobat in it.',
+                  )
+                : tr(
+                    'Na koniec gry każdy akrobata na planszy daje '
+                        '$kAcrobatPoints pkt, także w niedokończonej piramidzie.',
+                    'At the end of the game each acrobat on the board gives '
+                        '$kAcrobatPoints pts, even in an unfinished pyramid.',
+                  ),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           if (_isCompleted) ...[
@@ -135,14 +153,15 @@ class _PyramidScreenState extends State<PyramidScreen> {
               player: p,
               value: _acrobats[p] ?? 0,
               max: _maxFor(p),
-              caption: '= ${acrobatPoints(_acrobats[p] ?? 0)} pkt',
+              caption: '= ${acrobatPoints(_acrobats[p] ?? 0)} ${tr('pkt', 'pts')}',
               onChanged: (v) => setState(() => _acrobats[p] = v),
             ),
           if (_isCompleted)
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                'Meple w piramidzie: $_total / $kPyramidSize',
+                '${tr('Meple w piramidzie', 'Meeples in the pyramid')}: '
+                '$_total / $kPyramidSize',
                 textAlign: TextAlign.center,
               ),
             ),

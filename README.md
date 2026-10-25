@@ -17,19 +17,24 @@ z obsługą wybranych dodatków.
   w której wskazujesz graczy dostających te same punkty (remis o większość),
 - wybór rodzaju punktacji w siatce pogrupowanej według dodatków,
 - cofanie ostatniego zatwierdzenia (także tych dotyczących wielu graczy),
-- **historia punktów** jako tabela (menu → Historia punktów),
+- **historia punktów** jako tabela (menu → Historia punktów): czas (sama
+  godzina), gracz, zdarzenie, punkty, surowce i wynik łączny. Wiersz ma kolor
+  gracza (lekko przyciemniony, żeby tekst był czytelny) i jego mepla przy
+  imieniu,
 - **Zakończ grę** (menu): zwycięzca, ranking i rozbicie punktów według rodzaju
   punktacji, z opcją nowej gry,
 - stoper czasu gry,
 - zapis graczy, punktów, surowców i ustawień w pamięci urządzenia,
-- ustawienia: nie wygaszaj ekranu podczas gry (domyślnie włączone),
-  wybór dodatków. Historia punktów jest zapamiętywana między uruchomieniami
+- ustawienia: **motyw** (systemowy, jasny, ciemny), **język** interfejsu
+  (polski, angielski), nie wygaszaj ekranu podczas gry (domyślnie włączone),
+  wybór dodatków (przełącznik **Wszystkie dodatki** i osobne przełączniki
+  z numerami z instrukcji oraz podpowiedzią „?" zamiast opisu). Historia punktów jest zapamiętywana między uruchomieniami
   (ostatnie 500 wpisów; cofnięcie usuwa też wpis, „Resetuj punkty" czyści),
 - jeden spójny zestaw ikon (`assets/icons/game/`).
 
 Kliknięcie gracza otwiera wybór rodzaju punktacji, a przytrzymanie – edycję
-lub usunięcie. Dodatki włączasz w menu (**Ustawienia…**); na starcie wszystkie
-są **wyłączone**. Gdy gra trwa (ruszył licznik albo ktoś ma już punkty,
+lub usunięcie. Dodatki włączasz w menu (**Ustawienia…**), ułożone według numeracji
+z instrukcji (mini dodatki na końcu); na starcie wszystkie są **wyłączone**. Gdy gra trwa (ruszył licznik albo ktoś ma już punkty,
 surowce lub złoto), dodatków nie można zmieniać do końca gry – zakończ ją i
 zacznij nową albo zresetuj punkty.
 
@@ -75,6 +80,18 @@ zacznij nową albo zresetuj punkty.
   sprzedaż jemu albo zapłata, gdy licytował tylko wybierający. Wynik może
   spaść poniżej zera.
 
+### Wieża
+- Kafelek **Wieża**: wykup uwięzionego mepla. Wybierasz, kto wykupuje (domyślnie
+  gracz, którego kafelek otworzyłeś) i od kogo; wykupujący płaci **3 pkt**,
+  a właściciel jeńca je dostaje (okup za dużego mepla nie jest podwajany).
+- Wykupić można zwykłego mepla, dużego mepla, wóz i burmistrza; budowniczego
+  i świni nie da się uwięzić. Wykup jest raz na turę (dokonujesz go w swojej
+  turze). Opis jest w podpowiedzi „?" przy wyborze właściciela jeńca.
+- Wykupu **nie zatwierdzisz**, gdy wykupujący ma mniej niż 3 pkt na planszy
+  (aplikacja pokazuje, ile mu brakuje).
+- Wymiana mepel za mepel (dwaj gracze trzymają sobie nawzajem jeńców) dzieje się
+  automatycznie, bez aplikacji.
+
 ### Opactwo i burmistrz
 - **Opactwo** (kafelek w wyborze punktacji): punktuje jak klasztor, czyli 9 pkt
   po ukończeniu, a na koniec gry 1 pkt za płytkę. Działają przy nim winnice,
@@ -102,7 +119,7 @@ zacznij nową albo zresetuj punkty.
 - **Dyrektor cyrku**: 2 pkt za każdą płytkę cyrku lub akrobatów wokół niego,
   jako opcja przy mieście, drodze, klasztorze i polach albo osobny kafelek.
 
-### Wzgórza i owce
+### Owce i wzgórza
 - **Winnice**: przy ukończonym klasztorze 3 pkt za każdą winnicę (do 8).
 - **Owce**: stado składa się z żetonów 1–4 owce w limitach z gry
   (4×1, 5×2, 5×3, 2×4), czyli najwyżej 37 owiec. Można wskazać kilku
@@ -116,7 +133,8 @@ zacznij nową albo zresetuj punkty.
 | `services/` | zapis graczy i ustawień (`shared_preferences`) |
 | `screens/` | lista graczy, wybór punktacji i osobne ekrany dodatków |
 | `widgets/` | mepel, liczniki, klawiatura, piramida, widżety surowców |
-| `theme/` | kolory aplikacji i graczy |
+| `theme/` | kolory aplikacji i graczy, motyw jasny/ciemny |
+| `l10n/` | przełączanie języka (`tr(pl, en)`) |
 
 ## Uruchomienie
 

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../l10n/tr.dart';
 import '../models/circus.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
@@ -16,6 +17,7 @@ import '../services/history_storage.dart';
 import '../services/players_storage.dart';
 import '../services/settings_storage.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_theme.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/player_dialog.dart';
@@ -27,6 +29,7 @@ import 'flock_screen.dart';
 import 'history_screen.dart';
 import 'pyramid_screen.dart';
 import 'select_points_type_screen.dart';
+import 'tower_screen.dart';
 import 'settings_screen.dart';
 
 enum _MenuAction {
@@ -97,6 +100,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
     if (!mounted) return;
     setState(() {
       _settings = settings;
+      appThemeMode.value = settings.themeMode;
+      appLanguage.value = settings.language;
       _log
         ..clear()
         ..addAll(log);
@@ -178,7 +183,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Anuluj'),
+            child: Text(tr('Anuluj', 'Cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -213,9 +218,12 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
     if (result.delete) {
       final confirmed = await _confirm(
-        title: 'Usunąć gracza?',
-        message: '${player.name} zostanie usunięty razem z punktami.',
-        confirmLabel: 'Usuń',
+        title: tr('Usunąć gracza?', 'Delete player?'),
+        message: tr(
+          '${player.name} zostanie usunięty razem z punktami.',
+          '${player.name} will be deleted along with their points.',
+        ),
+        confirmLabel: tr('Usuń', 'Delete'),
       );
       if (!confirmed) return;
       setState(() {
@@ -264,17 +272,22 @@ class _PlayersScreenState extends State<PlayersScreen> {
   /// Wróżka przy meplu gracza daje 1 pkt na początku jego tury, więc
   /// dopisujemy go od razu, bez osobnego ekranu. Można go cofnąć z paska.
   void _scoreFairy(Player player) {
-    final event = ScoreEvent('${player.name}: Wróżka +$kFairyTurnPoints', [
-      ScoreChange(player, kFairyTurnPoints),
-    ], category: 'Wróżka');
+    final event = ScoreEvent(
+      '${player.name}: ${tr('Wróżka', 'Fairy')} +$kFairyTurnPoints',
+      [ScoreChange(player, kFairyTurnPoints)],
+      category: tr('Wróżka', 'Fairy'),
+    );
     _applyEvent(event);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text('Wróżka: ${player.name} +$kFairyTurnPoints pkt'),
+          content: Text(
+            '${tr('Wróżka', 'Fairy')}: ${player.name} '
+            '+$kFairyTurnPoints ${tr('pkt', 'pts')}',
+          ),
           action: SnackBarAction(
-            label: 'Cofnij',
+            label: tr('Cofnij', 'Undo'),
             onPressed: () {
               // Cofamy tylko, jeśli to nadal ostatnie zdarzenie.
               if (_history.isNotEmpty && identical(_history.last, event)) {
@@ -291,6 +304,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     return switch (type) {
       ScoringType.sheep => FlockScreen(player: player, players: players),
       ScoringType.bazaar => BazaarScreen(player: player, players: players),
+      ScoringType.tower => TowerScreen(player: player, players: players),
       ScoringType.pyramid => PyramidScreen(players: players),
       ScoringType.circus => CircusScreen(
         player: player,
@@ -311,7 +325,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
     setState(() {
       event.apply();
       _history.add(event);
-      final entry = HistoryEntry.fromEvent(event);
+      final entry = HistoryEntry.fromEvent(
+        event,
+        totals: {for (final p in _players) p: totalScore(p, _players)},
+      );
       _log.add(entry);
       _logIds[event] = entry.id;
       final animal = event.animal;
@@ -351,11 +368,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
   Future<void> _onReset() async {
     final confirmed = await _confirm(
-      title: 'Nowa gra?',
-      message:
-          'Punkty, surowce i zużyte żetony cyrku zostaną wyzerowane, '
-          'a stoper zatrzymany.',
-      confirmLabel: 'Resetuj',
+      title: tr('Nowa gra?', 'New game?'),
+      message: tr(
+        'Punkty, surowce i zużyte żetony cyrku zostaną wyzerowane, '
+            'a stoper zatrzymany.',
+        'Points, goods and used circus tokens will be reset, '
+            'and the timer stopped.',
+      ),
+      confirmLabel: tr('Resetuj', 'Reset'),
     );
     if (!confirmed || !mounted) return;
     _resetGame();
@@ -419,18 +439,24 @@ class _PlayersScreenState extends State<PlayersScreen> {
         builder: (_) => SettingsScreen(
           expansions: _settings.expansions,
           keepScreenOn: _settings.keepScreenOn,
+          themeMode: _settings.themeMode,
+          language: _settings.language,
           expansionsLocked: isGameStarted(
             timerRunning: _stopwatch.isRunning,
             elapsed: _stopwatch.elapsed,
             players: _players,
           ),
-          onChanged: (enabled, keepScreenOn) {
+          onChanged: (values) {
             setState(() {
               _settings.expansions
                 ..clear()
-                ..addAll(enabled);
-              _settings.keepScreenOn = keepScreenOn;
+                ..addAll(values.expansions);
+              _settings.keepScreenOn = values.keepScreenOn;
+              _settings.themeMode = values.themeMode;
+              _settings.language = values.language;
             });
+            appThemeMode.value = values.themeMode;
+            appLanguage.value = values.language;
             _applyWakelock();
             _saveSettings();
           },
@@ -469,41 +495,43 @@ class _PlayersScreenState extends State<PlayersScreen> {
         value: _MenuAction.undo,
         enabled: last != null,
         child: Text(
-          last == null ? 'Cofnij ostatnie punkty' : 'Cofnij: ${last.label}',
+          last == null
+              ? tr('Cofnij ostatnie punkty', 'Undo last points')
+              : '${tr('Cofnij', 'Undo')}: ${last.label}',
         ),
       ),
-      const PopupMenuItem(
+      PopupMenuItem(
         value: _MenuAction.history,
-        child: Text('Historia punktów'),
+        child: Text(tr('Historia punktów', 'Points history')),
       ),
       PopupMenuItem(
         value: _MenuAction.endGame,
         enabled: _players.isNotEmpty,
-        child: const Text('Zakończ grę'),
+        child: Text(tr('Zakończ grę', 'End game')),
       ),
-      const PopupMenuItem(
+      PopupMenuItem(
         value: _MenuAction.reset,
-        child: Text('Resetuj punkty'),
+        child: Text(tr('Resetuj punkty', 'Reset points')),
       ),
-      const PopupMenuItem(
+      PopupMenuItem(
         value: _MenuAction.settings,
-        child: Text('Ustawienia…'),
+        child: Text(tr('Ustawienia…', 'Settings…')),
       ),
       const PopupMenuDivider(),
       PopupMenuItem(
         value: _MenuAction.startTimer,
         enabled: !_stopwatch.isRunning,
-        child: const Text('Start licznika'),
+        child: Text(tr('Start licznika', 'Start timer')),
       ),
       PopupMenuItem(
         value: _MenuAction.stopTimer,
         enabled: _stopwatch.isRunning,
-        child: const Text('Stop licznika'),
+        child: Text(tr('Stop licznika', 'Stop timer')),
       ),
       PopupMenuItem(
         value: _MenuAction.resetTimer,
         enabled: !_stopwatch.isRunning && _stopwatch.elapsed > Duration.zero,
-        child: const Text('Reset licznika'),
+        child: Text(tr('Reset licznika', 'Reset timer')),
       ),
     ];
   }
@@ -533,20 +561,23 @@ class _PlayersScreenState extends State<PlayersScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 8, bottom: 4),
               child: Text(
-                'Czas gry: ${_formatDuration(_stopwatch.elapsed)}',
+                '${tr('Czas gry', 'Game time')}: '
+                '${_formatDuration(_stopwatch.elapsed)}',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
                 ),
               ),
             ),
           Expanded(
             child: _players.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
-                      'Brak graczy — dodaj nowego!',
-                      style: TextStyle(fontSize: 18),
+                      tr(
+                        'Brak graczy — dodaj nowego!',
+                        'No players — add a new one!',
+                      ),
+                      style: const TextStyle(fontSize: 18),
                     ),
                   )
                 : ListView.builder(
@@ -566,7 +597,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final hasGold = _has(Expansion.goldMines) && p.gold > 0;
 
     return Card(
-      color: kBrandColor.withValues(alpha: 180 / 255),
+      color: playerCardColor(context),
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       child: ListTile(
         onTap: () => _onScorePlayer(p),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/tr.dart';
+import '../models/expansion.dart';
 import '../models/player.dart';
 import '../models/scoring.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_theme.dart';
 import '../widgets/game_icon.dart';
 
 /// Wybór rodzaju punktacji. Zwraca wybrany [ScoringType] przez `Navigator.pop`.
@@ -18,13 +21,23 @@ class SelectPointsTypeScreen extends StatelessWidget {
     required this.types,
   });
 
-  /// Typy pogrupowane według dodatku (gra podstawowa jest pierwsza).
+  /// Typy pogrupowane według dodatku: gra podstawowa pierwsza, potem dodatki
+  /// według numeracji, a mini dodatki na końcu.
   List<(String, List<ScoringType>)> _groups() {
-    final groups = <String, List<ScoringType>>{};
+    final groups = <Expansion?, List<ScoringType>>{};
     for (final t in types) {
-      (groups[t.expansion?.displayName ?? 'Gra podstawowa'] ??= []).add(t);
+      (groups[t.expansion] ??= []).add(t);
     }
-    return [for (final e in groups.entries) (e.key, e.value)];
+    final keys = groups.keys.toList()
+      ..sort((a, b) {
+        if (a == null || b == null) return a == null ? (b == null ? 0 : -1) : 1;
+        if (a.mini != b.mini) return a.mini ? 1 : -1;
+        return a.number.compareTo(b.number);
+      });
+    return [
+      for (final k in keys)
+        (k?.displayName ?? tr('Gra podstawowa', 'Base game'), groups[k]!),
+    ];
   }
 
   List<Widget> _buildGroup(
@@ -64,7 +77,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dodaj punkty: ${player.name}'),
+        title: Text('${tr('Dodaj punkty', 'Add points')}: ${player.name}'),
         backgroundColor: color,
         foregroundColor: foregroundOn(color),
       ),
@@ -74,9 +87,9 @@ class SelectPointsTypeScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 8),
-            const Text(
-              'Wybierz rodzaj punktacji:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              tr('Wybierz rodzaj punktacji:', 'Choose what to score:'),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -89,7 +102,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Anuluj'),
+              child: Text(tr('Anuluj', 'Cancel')),
             ),
           ],
         ),
@@ -111,8 +124,8 @@ class _TypeButton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black26, width: 2),
-          color: Colors.white,
+          border: Border.all(color: outlineSoft(context), width: 2),
+          color: tileSurfaceColor(context),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
