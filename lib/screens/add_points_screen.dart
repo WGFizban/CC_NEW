@@ -14,14 +14,14 @@ import '../models/sharing.dart';
 import '../models/sheep.dart';
 import '../models/standings.dart';
 import '../theme/app_colors.dart';
-import '../widgets/auto_size_text.dart';
-import '../widgets/confirm_action.dart';
+import '../widgets/scoring_app_bar.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/game_icon.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/number_keypad.dart';
+import '../widgets/player_picker.dart';
 
 enum _Field { tiles, banners }
 
@@ -82,6 +82,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool _keypadOpen = true;
 
   final Map<Goods, int> _goods = {for (final g in Goods.values) g: 0};
+
+  /// Kto dostaje surowce z miasta: ten, kto je domknął (domyślnie punktujący).
+  late Player _goodsRecipient = widget.player;
 
   ScoringType get _type => widget.type;
 
@@ -242,7 +245,13 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final parts = <String>[];
     final mine = distribution[widget.player] ?? 0;
     if (mine != 0) parts.add('+$mine');
-    parts.addAll(goodsText);
+    if (goodsText.isNotEmpty) {
+      parts.add(
+        _goodsRecipient == widget.player
+            ? goodsText.join(', ')
+            : '${_goodsRecipient.name}: ${goodsText.join(', ')}',
+      );
+    }
     final shared = <String>[];
     final castles = <String>[];
     for (final e in _shares.entries) {
@@ -271,7 +280,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final gold = _goldToAdd;
     // Surowce dostaje gracz, który wybrał płytkę; punkty – punktujący
     // (i ewentualnie pozostali gracze z podziału). Złoto dostają wskazani gracze.
-    final recipient = goods.isEmpty ? null : widget.player;
+    final recipient = goods.isEmpty ? null : _goodsRecipient;
     final totals = <Player, int>{...distribution};
     if (recipient != null) totals.putIfAbsent(recipient, () => 0);
     for (final p in gold.keys) {
@@ -313,15 +322,11 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         _goldToAdd.isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarTitle(
-          neutral
-              ? _type.title(l)
-              : '${widget.player.name} — ${_type.title(l)}',
-        ),
+      appBar: scoringAppBar(
+        context,
+        onConfirm: canConfirm ? _confirm : null,
         backgroundColor: neutral ? null : color,
         foregroundColor: neutral ? null : foregroundOn(color),
-        actions: [ConfirmAction(onPressed: canConfirm ? _confirm : null)],
       ),
       body: Container(
         decoration: neutral
@@ -798,7 +803,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   }
 
   /// Surowce. W mieście to zwijana sekcja; na osobnym ekranie zwykły
-  /// formularz. Surowce dostaje gracz, który wybrał płytkę.
+  /// formularz (surowce dostaje gracz punktujący). W mieście można wskazać
+  /// innego gracza, który domknął miasto.
   Widget _buildGoods() {
     final l = context.l10n;
     final isCity = _type == ScoringType.city;
@@ -824,7 +830,24 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(chosen.isEmpty ? l.none : chosen.join(' · ')),
-      children: [counters, const SizedBox(height: 8)],
+      children: [
+        counters,
+        const SizedBox(height: 8),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(l.traderCompleted),
+        ),
+        const SizedBox(height: 4),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: PlayerPicker(
+            players: widget.players,
+            selected: _goodsRecipient,
+            onSelected: (p) => setState(() => _goodsRecipient = p),
+          ),
+        ),
+        const SizedBox(height: 8),
+      ],
     );
   }
 

@@ -5,8 +5,7 @@ import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../models/tower.dart';
-import '../widgets/auto_size_text.dart';
-import '../widgets/confirm_action.dart';
+import '../widgets/scoring_app_bar.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/player_picker.dart';
 
@@ -56,9 +55,9 @@ class _TowerScreenState extends State<TowerScreen> {
     final holderName = _holder?.name ?? l.towerHolderDefault;
 
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarTitle(l.towerTitle),
-        actions: [ConfirmAction(onPressed: _canConfirm ? _confirm : null)],
+      appBar: scoringAppBar(
+        context,
+        onConfirm: _canConfirm ? _confirm : null,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

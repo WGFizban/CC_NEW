@@ -6,8 +6,7 @@ import '../models/circus.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
-import '../widgets/auto_size_text.dart';
-import '../widgets/confirm_action.dart';
+import '../widgets/scoring_app_bar.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
 
@@ -74,11 +73,9 @@ class _CircusScreenState extends State<CircusScreen> {
     final allUsed = CircusAnimal.values.every((a) => _remaining(a) <= 0);
 
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarTitle(l.circusTitle),
-        actions: [
-          ConfirmAction(onPressed: animal == null ? null : _confirm),
-        ],
+      appBar: scoringAppBar(
+        context,
+        onConfirm: animal == null ? null : _confirm,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import 'meeple_icon.dart';
 
 /// Ikona kończąca grę (ta sama na przycisku i w komunikacie o starcie).
 const IconData kEndGameIcon = Icons.sports_score;
@@ -95,15 +96,19 @@ Future<StartChoice> askStartGame(
         TextButton.icon(
           onPressed: () => Navigator.pop(ctx, StartChoice.expansions),
           icon: const Icon(Icons.extension),
-          label: Text(l.enableExpansions),
+          label: Text(l.modifyExpansions),
         ),
-        TextButton(
+        TextButton.icon(
           onPressed: () => Navigator.pop(ctx, StartChoice.cancel),
-          child: Text(l.no),
+          icon: MeepleIcon(
+            color: Theme.of(ctx).colorScheme.primary,
+            size: 22,
+          ),
+          label: Text(l.backToEdit),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(ctx, StartChoice.start),
-          child: Text(l.yes),
+          child: Text(l.startGame),
         ),
       ],
     ),

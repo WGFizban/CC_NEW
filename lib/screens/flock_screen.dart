@@ -5,8 +5,8 @@ import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../models/sheep.dart';
-import '../widgets/auto_size_text.dart';
-import '../widgets/confirm_action.dart';
+import '../theme/app_colors.dart';
+import '../widgets/scoring_app_bar.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/meeple_icon.dart';
@@ -59,14 +59,11 @@ class _FlockScreenState extends State<FlockScreen> {
     final l = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(
-        title: AppBarTitle(l.flockTitle(widget.player.name)),
-        backgroundColor: widget.player.color.withValues(alpha: 0.2),
-        actions: [
-          ConfirmAction(
-            onPressed: sheep > 0 && _shepherds.isNotEmpty ? _confirm : null,
-          ),
-        ],
+      appBar: scoringAppBar(
+        context,
+        onConfirm: sheep > 0 && _shepherds.isNotEmpty ? _confirm : null,
+        backgroundColor: widget.player.color,
+        foregroundColor: foregroundOn(widget.player.color),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

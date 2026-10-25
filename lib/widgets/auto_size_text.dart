@@ -59,7 +59,14 @@ class AppBarTitle extends StatelessWidget {
   final String text;
   final int maxLines;
 
-  const AppBarTitle(this.text, {super.key, this.maxLines = 2});
+  final TextAlign? textAlign;
+
+  const AppBarTitle(
+    this.text, {
+    super.key,
+    this.maxLines = 2,
+    this.textAlign,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +77,7 @@ class AppBarTitle extends StatelessWidget {
       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
       maxLines: maxLines,
       minFontSize: 12,
+      textAlign: textAlign,
     );
   }
 }

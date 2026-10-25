@@ -98,7 +98,7 @@
   "gameOver": "Game over",
   "noPlayersDot": "No players.",
   "winner": "Winner",
-  "tiedLead": "Tied for the lead",
+  "tiedLead": "Tie",
   "newGame": "New game",
   "goodsBonus": "Goods bonus",
   "goldSummary": "Gold ×{count} ({value} pts each)",
@@ -213,7 +213,7 @@
   "fairyOption": "Fairy next to a meeple (+{points} pts)",
   "fairyHint": "Check it if the fairy stands next to a meeple in the scored feature (city, road, cloister or farm): its owner gets {points} pts regardless of the normal scoring. This also applies to end-of-game scoring.",
   "goodsInCity": "Goods in the city",
-  "goodsCityHint": "Expand the section to add the goods from this city. They go to the player who picked the tile.",
+  "goodsCityHint": "Expand the section to add the goods from this city and pick the player who completed it – they get the goods, even without a meeple in the city.",
   "ringmasterHint": "Check it if the ringmaster scores: he adds {points} pts for each circus or acrobat tile he stands on or that is next to him.",
   "ringmasterTiles": "Circus and acrobat tiles around the ringmaster",
   "ringmasterTilesHint": "Set the number of circus or acrobat tiles under and around the ringmaster (a 3×3 area, at most {max}): {points} pts each.",
@@ -224,7 +224,7 @@
   "noPlayersHint": "No players — add one with the button",
   "startGame": "Start game",
   "startGameQuestion": "Do you want to start the game?",
-  "startGameBody": "Enabled expansions: {expansions}\n\nFrom now on you will not be able to add players, edit the existing ones or change expansions.",
+  "startGameBody": "Enabled expansions: {expansions}\n\nDo you want to add more players, edit the existing ones or change expansions? Once the game starts this will no longer be possible.",
   "noneCap": "None",
   "yes": "Yes",
   "no": "No",
@@ -251,5 +251,9 @@
   "rulesCircus": "• Circus: reveal an animal token. Every meeple on the circus tile and the eight neighboring ones gives its owner as many points as the animal is worth (elephant 7, lion 6, bear 5, seal 4, monkey 3, flea 1). The meeples stay.\n• Acrobats: a completed pyramid (3 meeples) – each acrobat 5 pts and returns to the supply. At the end of the game 5 pts for each acrobat on the board.\n• Ringmaster: 2 pts for each circus or acrobat tile next to him, also at the end of the game.",
   "rulesGold": "• Gold: 16 bars. For a completed feature the bars on its tiles go to the player with the majority (not to farmers).\n• At the end of the game a bar is worth: 1–3 bars 1 pt each, 4–6 2 pts, 7–9 3 pts, 10+ 4 pts.",
   "gameStartedTitle": "The game has started!",
-  "noPlayersHint2": "To edit a player, press and hold their row."
+  "noPlayersHint2": "To edit a player, press and hold their row.",
+  "summaryTitle": "Summary",
+  "modifyExpansions": "Modify expansions",
+  "backToEdit": "Back to editing players",
+  "traderCompleted": "Who completed the city (gets the goods)?"
 }
