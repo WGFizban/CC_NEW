@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/app_language.dart';
+import '../l10n/l10n.dart';
+import '../l10n/labels.dart';
 import '../models/expansion.dart';
 import '../widgets/info_hint.dart';
 
@@ -90,18 +92,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final locked = widget.expansionsLocked;
+    final l = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: Text(tr('Ustawienia', 'Settings'))),
+      appBar: AppBar(title: Text(l.settings)),
       body: ListView(
         children: [
-          _header(tr('Wygląd', 'Appearance')),
+          _header(l.appearance),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(tr('Motyw', 'Theme')),
+                Text(l.theme),
                 const SizedBox(height: 8),
                 SizedBox(
                   width: double.infinity,
@@ -110,17 +113,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ButtonSegment(
                         value: ThemeMode.system,
                         icon: const Icon(Icons.brightness_auto),
-                        label: Text(tr('Systemowy', 'System')),
+                        label: Text(l.themeSystem),
                       ),
                       ButtonSegment(
                         value: ThemeMode.light,
                         icon: const Icon(Icons.light_mode),
-                        label: Text(tr('Jasny', 'Light')),
+                        label: Text(l.themeLight),
                       ),
                       ButtonSegment(
                         value: ThemeMode.dark,
                         icon: const Icon(Icons.dark_mode),
-                        label: Text(tr('Ciemny', 'Dark')),
+                        label: Text(l.themeDark),
                       ),
                     ],
                     selected: {_themeMode},
@@ -131,7 +134,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(tr('Język', 'Language')),
+                Text(l.language),
                 const SizedBox(height: 8),
                 SizedBox(
                   width: double.infinity,
@@ -151,15 +154,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const Divider(),
-          _header(tr('Ekran', 'Screen')),
+          _header(l.screenSection),
           SwitchListTile(
-            title: Text(tr('Nie wygaszaj ekranu', 'Keep the screen on')),
-            subtitle: Text(
-              tr(
-                'Ekran nie zgaśnie, dopóki aplikacja jest otwarta.',
-                'The screen stays on while the app is open.',
-              ),
-            ),
+            title: Text(l.keepScreenOn),
+            subtitle: Text(l.keepScreenOnHint),
             value: _keepScreenOn,
             onChanged: (on) {
               setState(() => _keepScreenOn = on);
@@ -167,7 +165,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           const Divider(),
-          _header(tr('Dodatki', 'Expansions')),
+          _header(l.expansionsSection),
           if (locked)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -175,22 +173,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 color: Theme.of(context).colorScheme.secondaryContainer,
                 child: ListTile(
                   leading: const Icon(Icons.lock_outline),
-                  title: Text(tr('Gra trwa', 'Game in progress')),
-                  subtitle: Text(
-                    tr(
-                      'Dodatków nie można zmienić do końca gry. Zakończ grę '
-                          'i zacznij nową albo zresetuj punkty w menu.',
-                      'Expansions cannot be changed until the game ends. '
-                          'End the game and start a new one, or reset the '
-                          'points in the menu.',
-                    ),
-                  ),
+                  title: Text(l.gameInProgress),
+                  subtitle: Text(l.expansionsLocked),
                 ),
               ),
             ),
           SwitchListTile(
             title: Text(
-              tr('Wszystkie dodatki', 'All expansions'),
+              l.allExpansions,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             value: _allOn,
@@ -198,7 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           for (final e in Expansion.values)
             SwitchListTile(
-              title: LabelWithHint(e.label, e.description),
+              title: LabelWithHint(e.label(l), e.description(l)),
               value: _expansions.contains(e),
               onChanged: locked ? null : (on) => _setExpansion(e, on),
             ),

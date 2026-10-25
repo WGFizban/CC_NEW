@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/l10n.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../widgets/confirm_action.dart';
@@ -37,25 +37,19 @@ class _BazaarScreenState extends State<BazaarScreen> {
       _price > 0 && (!_needsBidder || (_bidder != null && _bidder != _chooser));
 
   String get _description {
-    final bidder = _bidder?.name ?? tr('licytujący', 'the bidder');
+    final l = context.l10n;
+    final bidder = _bidder?.name ?? l.theBidder;
     return switch (_deal) {
-      _Deal.buy => tr(
-        '${_chooser.name} płaci $_price pkt, a $bidder je dostaje.',
-        '${_chooser.name} pays $_price pts and $bidder receives them.',
-      ),
-      _Deal.sell => tr(
-        '${_chooser.name} dostaje $_price pkt, a $bidder je płaci.',
-        '${_chooser.name} receives $_price pts and $bidder pays them.',
-      ),
-      _Deal.solo => tr(
-        '${_chooser.name} płaci $_price pkt, nikt nie zyskuje.',
-        '${_chooser.name} pays $_price pts, nobody gains.',
-      ),
+      _Deal.buy => l.bazaarBuyDesc(_chooser.name, _price, bidder),
+      _Deal.sell => l.bazaarSellDesc(_chooser.name, _price, bidder),
+      _Deal.solo => l.bazaarSoleDesc(_chooser.name, _price),
     };
   }
 
   void _confirm() {
+    final l = context.l10n;
     final bidder = _bidder;
+    final bidderName = bidder?.name ?? '';
     final List<ScoreChange> changes;
     final String label;
     switch (_deal) {
@@ -64,41 +58,33 @@ class _BazaarScreenState extends State<BazaarScreen> {
           ScoreChange(_chooser, -_price),
           if (bidder != null) ScoreChange(bidder, _price),
         ];
-        label = tr(
-          'Bazar: ${_chooser.name} kupuje od ${bidder?.name} za $_price',
-          'Bazaar: ${_chooser.name} buys from ${bidder?.name} for $_price',
-        );
+        label = l.bazaarBuyLabel(_chooser.name, bidderName, _price);
       case _Deal.sell:
         changes = [
           ScoreChange(_chooser, _price),
           if (bidder != null) ScoreChange(bidder, -_price),
         ];
-        label = tr(
-          'Bazar: ${_chooser.name} sprzedaje ${bidder?.name} za $_price',
-          'Bazaar: ${_chooser.name} sells to ${bidder?.name} for $_price',
-        );
+        label = l.bazaarSellLabel(_chooser.name, bidderName, _price);
       case _Deal.solo:
         changes = [ScoreChange(_chooser, -_price)];
-        label = tr(
-          'Bazar: ${_chooser.name} płaci $_price (jedyny licytujący)',
-          'Bazaar: ${_chooser.name} pays $_price (sole bidder)',
-        );
+        label = l.bazaarSoleLabel(_chooser.name, _price);
     }
-    Navigator.pop(context, ScoreEvent(label, changes, category: tr('Bazar', 'Bazaar')));
+    Navigator.pop(context, ScoreEvent(label, changes, category: l.scBazaar));
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr('Bazar – licytacja', 'Bazaar – auction')),
+        title: Text(l.bazaarTitle),
         actions: [ConfirmAction(onPressed: _canConfirm ? _confirm : null)],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            tr('Kto wybierał płytkę?', 'Who picked the tile?'),
+            l.whoPickedTile,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -112,17 +98,8 @@ class _BazaarScreenState extends State<BazaarScreen> {
           ),
           const SizedBox(height: 16),
           LabelWithHint(
-            tr('Jak rozliczono licytację?', 'How was the auction settled?'),
-            tr(
-              'Kupuje: wybierający płaci najwyżej licytującemu. '
-                  'Sprzedaje: najwyżej licytujący płaci wybierającemu. '
-                  'Jedyny: licytował tylko wybierający – płaci, a nikt nie '
-                  'zyskuje. Wynik może spaść poniżej zera.',
-              'Buys: the chooser pays the highest bidder. '
-                  'Sells: the highest bidder pays the chooser. '
-                  'Sole: only the chooser bid – they pay and nobody gains. '
-                  'The score can drop below zero.',
-            ),
+            l.auctionSettledQ,
+            l.auctionHint,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -130,15 +107,15 @@ class _BazaarScreenState extends State<BazaarScreen> {
             segments: [
               ButtonSegment(
                 value: _Deal.buy,
-                label: Text(tr('Kupuje', 'Buys')),
+                label: Text(l.dealBuys),
               ),
               ButtonSegment(
                 value: _Deal.sell,
-                label: Text(tr('Sprzedaje', 'Sells')),
+                label: Text(l.dealSells),
               ),
               ButtonSegment(
                 value: _Deal.solo,
-                label: Text(tr('Jedyny', 'Sole')),
+                label: Text(l.dealSole),
               ),
             ],
             selected: {_deal},
@@ -147,7 +124,7 @@ class _BazaarScreenState extends State<BazaarScreen> {
           if (_needsBidder) ...[
             const SizedBox(height: 16),
             Text(
-              tr('Kto zaoferował najwyższą cenę?', 'Who offered the highest price?'),
+              l.whoOfferedHighest,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -161,7 +138,7 @@ class _BazaarScreenState extends State<BazaarScreen> {
           const SizedBox(height: 16),
           Center(
             child: Text(
-              '${tr('Cena', 'Price')}: $_price ${tr('pkt', 'pts')}',
+              l.priceValue(_price),
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),

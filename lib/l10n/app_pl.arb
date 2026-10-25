@@ -1,0 +1,712 @@
+{
+  "@@locale": "pl",
+  "cancel": "Anuluj",
+  "confirm": "Zatwierdź",
+  "delete": "Usuń",
+  "save": "Zapisz",
+  "add": "Dodaj",
+  "clear": "Wyczyść",
+  "undo": "Cofnij",
+  "none": "brak",
+  "other": "Inne",
+  "equalsPoints": "= {points} pkt",
+  "@equalsPoints": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "pointsValue": "{points} pkt",
+  "@pointsValue": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "gameTime": "Czas gry: {time}",
+  "@gameTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "deletePlayerTitle": "Usunąć gracza?",
+  "deletePlayerMessage": "{name} zostanie usunięty razem z punktami.",
+  "@deletePlayerMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fairyEventLabel": "{name}: Wróżka +{points}",
+  "@fairyEventLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "fairySnack": "Wróżka: {name} +{points} pkt",
+  "@fairySnack": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "newGameTitle": "Nowa gra?",
+  "newGameMessage": "Punkty, surowce i zużyte żetony cyrku zostaną wyzerowane, a stoper zatrzymany.",
+  "reset": "Resetuj",
+  "menuUndoNone": "Cofnij ostatnie punkty",
+  "menuUndo": "Cofnij: {label}",
+  "@menuUndo": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "menuHistory": "Historia punktów",
+  "menuEndGame": "Zakończ grę",
+  "menuReset": "Resetuj punkty",
+  "menuSettings": "Ustawienia…",
+  "menuStartTimer": "Start licznika",
+  "menuStopTimer": "Stop licznika",
+  "menuResetTimer": "Reset licznika",
+  "noPlayers": "Brak graczy — dodaj nowego!",
+  "settings": "Ustawienia",
+  "appearance": "Wygląd",
+  "theme": "Motyw",
+  "themeSystem": "Systemowy",
+  "themeLight": "Jasny",
+  "themeDark": "Ciemny",
+  "language": "Język",
+  "screenSection": "Ekran",
+  "keepScreenOn": "Nie wygaszaj ekranu",
+  "keepScreenOnHint": "Ekran nie zgaśnie, dopóki aplikacja jest otwarta.",
+  "expansionsSection": "Dodatki",
+  "gameInProgress": "Gra trwa",
+  "expansionsLocked": "Dodatków nie można zmienić do końca gry. Zakończ grę i zacznij nową albo zresetuj punkty w menu.",
+  "allExpansions": "Wszystkie dodatki",
+  "expansionLabel": "{number}. {name}",
+  "@expansionLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expansionMiniLabel": "{name} (Mini dodatek {number})",
+  "@expansionMiniLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "expInns": "Karczmy i katedry",
+  "expInnsDesc": "Katedra w mieście (3 pkt za płytkę) i karczma przy drodze (2 pkt za płytkę). Nieukończone budowle z nimi nie dają punktów.",
+  "expTraders": "Kupcy i budowniczowie",
+  "expTradersDesc": "Surowce (wino, żyto, sukno) i premia 10 pkt dla prowadzącego, liczona na bieżąco.",
+  "expPrincess": "Księżniczka i smok",
+  "expPrincessDesc": "Wróżka: 1 pkt na początku tury i 3 pkt przy punktowaniu budowli z jej meplem.",
+  "expTower": "Wieża",
+  "expTowerDesc": "Wykup uwięzionego mepla: płacisz 3 pkt temu, kto go trzyma. Wymiana mepel za mepel odbywa się bez aplikacji.",
+  "expAbbey": "Opactwo i burmistrz",
+  "expAbbeyDesc": "Opactwo (punktuje jak klasztor) i stodoła na polach.",
+  "expBridges": "Mosty, zamki i bazary",
+  "expBridgesDesc": "Punktacja zamków, zamki na polach i licytacje na bazarach.",
+  "expHills": "Owce i wzgórza",
+  "expHillsDesc": "Stada owiec z żetonów 1–4 owce, w granicach limitów z gry.",
+  "expCircus": "Cyrk objazdowy",
+  "expCircusDesc": "Punktacja cyrku (żetony zwierząt), piramidy akrobatów i dyrektor cyrku.",
+  "expGold": "Kopalnie złota",
+  "expGoldDesc": "Sztabki złota za ukończone budowle; na koniec gry im więcej sztabek, tym więcej warta każda (1–4 pkt).",
+  "scCity": "Miasto",
+  "scRoad": "Droga",
+  "scCloister": "Klasztor",
+  "scFarms": "Pola",
+  "scFairy": "Wróżka",
+  "scSheep": "Owce",
+  "scGoods": "Surowce",
+  "scBazaar": "Bazar",
+  "scCircus": "Cyrk",
+  "scAcrobats": "Akrobaci",
+  "scRingmaster": "Dyrektor cyrku",
+  "scAbbey": "Opactwo",
+  "scGold": "Złoto",
+  "scTower": "Wieża",
+  "goodsWine": "Wino",
+  "goodsGrain": "Żyto",
+  "goodsCloth": "Sukno",
+  "animalElephant": "Słoń",
+  "animalLion": "Lew",
+  "animalBear": "Niedźwiedź",
+  "animalSeal": "Foka",
+  "animalMonkey": "Małpka",
+  "animalFlea": "Pchła",
+  "baseGame": "Gra podstawowa",
+  "addPointsTitle": "Dodaj punkty: {name}",
+  "@addPointsTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseScoring": "Wybierz rodzaj punktacji:",
+  "historyTitle": "Historia punktów",
+  "clearHistoryQuestion": "Wyczyścić historię?",
+  "clearHistoryBody": "Punkty graczy zostaną bez zmian.",
+  "clearHistoryTooltip": "Wyczyść historię",
+  "historyEmpty": "Historia jest pusta.",
+  "colTime": "Czas",
+  "colPlayer": "Gracz",
+  "colEvent": "Zdarzenie",
+  "colPoints": "Punkty",
+  "colGoods": "Surowce",
+  "colTotal": "Łącznie",
+  "goldTimes": "Złoto ×{count}",
+  "@goldTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "gameOver": "Koniec gry",
+  "noPlayersDot": "Brak graczy.",
+  "winner": "Zwycięzca",
+  "tiedLead": "Remis na czele",
+  "newGame": "Nowa gra",
+  "backToGame": "Wróć do gry",
+  "goodsBonus": "Premia za surowce",
+  "goldSummary": "Złoto ×{count} (po {value} pkt)",
+  "@goldSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "goodsList": "Surowce: {list}",
+  "@goodsList": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "bazaarTitle": "Bazar – licytacja",
+  "whoPickedTile": "Kto wybierał płytkę?",
+  "auctionSettledQ": "Jak rozliczono licytację?",
+  "auctionHint": "Kupuje: wybierający płaci najwyżej licytującemu. Sprzedaje: najwyżej licytujący płaci wybierającemu. Jedyny: licytował tylko wybierający – płaci, a nikt nie zyskuje. Wynik może spaść poniżej zera.",
+  "dealBuys": "Kupuje",
+  "dealSells": "Sprzedaje",
+  "dealSole": "Jedyny",
+  "whoOfferedHighest": "Kto zaoferował najwyższą cenę?",
+  "priceValue": "Cena: {price} pkt",
+  "@priceValue": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "theBidder": "licytujący",
+  "bazaarBuyDesc": "{chooser} płaci {price} pkt, a {bidder} je dostaje.",
+  "@bazaarBuyDesc": {
+    "placeholders": {
+      "chooser": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      },
+      "bidder": {
+        "type": "String"
+      }
+    }
+  },
+  "bazaarSellDesc": "{chooser} dostaje {price} pkt, a {bidder} je płaci.",
+  "@bazaarSellDesc": {
+    "placeholders": {
+      "chooser": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      },
+      "bidder": {
+        "type": "String"
+      }
+    }
+  },
+  "bazaarSoleDesc": "{chooser} płaci {price} pkt, nikt nie zyskuje.",
+  "@bazaarSoleDesc": {
+    "placeholders": {
+      "chooser": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "bazaarBuyLabel": "Bazar: {chooser} kupuje od {bidder} za {price}",
+  "@bazaarBuyLabel": {
+    "placeholders": {
+      "chooser": {
+        "type": "String"
+      },
+      "bidder": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "bazaarSellLabel": "Bazar: {chooser} sprzedaje {bidder} za {price}",
+  "@bazaarSellLabel": {
+    "placeholders": {
+      "chooser": {
+        "type": "String"
+      },
+      "bidder": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "bazaarSoleLabel": "Bazar: {chooser} płaci {price} (jedyny licytujący)",
+  "@bazaarSoleLabel": {
+    "placeholders": {
+      "chooser": {
+        "type": "String"
+      },
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "towerTitle": "Wieża – wykup mepla",
+  "towerWhoBuys": "Kto wykupuje mepla?",
+  "towerFromWhom": "Od kogo wykupuje?",
+  "towerHint": "Okup za uwięzionego mepla to zawsze {points} pkt – także za dużego mepla (nie jest podwajany).\nMożna wykupić: zwykłego mepla, dużego mepla, wóz i burmistrza.\nNie można wykupić budowniczego ani świni – nie da się ich uwięzić.\nWykup robisz w swojej turze, jeden na turę; wykupionego mepla możesz od razu wystawić.\nGdy dwaj gracze trzymają sobie nawzajem po jednym jeńcu, wymiana mepel za mepel odbywa się automatycznie, bez aplikacji.\nBez {points} punktów nie możesz wykupić mepla.",
+  "@towerHint": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "towerHolderDefault": "właściciel jeńca",
+  "ransomValue": "Okup: {points} pkt",
+  "@ransomValue": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "towerDesc": "{buyer} płaci {points} pkt, a {holder} je dostaje.",
+  "@towerDesc": {
+    "placeholders": {
+      "buyer": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      },
+      "holder": {
+        "type": "String"
+      }
+    }
+  },
+  "towerShort": "{name} ma tylko {have} pkt – do wykupu potrzeba {need}.",
+  "@towerShort": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "have": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  },
+  "towerEventLabel": "Wieża: {buyer} wykupuje mepla od {holder} (−{points})",
+  "@towerEventLabel": {
+    "placeholders": {
+      "buyer": {
+        "type": "String"
+      },
+      "holder": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "circusTitle": "Punktacja cyrku",
+  "circusStep1": "1. Odkryj żeton zwierzęcia spod namiotu i wybierz go:",
+  "animalChip": "{name} · {value} pkt ({left}/{count})",
+  "@animalChip": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "int"
+      },
+      "left": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "circusAllUsed": "Wszystkie żetony zwierząt zostały już zużyte. Zeruje je reset punktów.",
+  "circusStep2": "2. Ile mepli ma każdy gracz na płytce cyrku i ośmiu sąsiednich?",
+  "circusStep2Hint": "Liczą się zwykłe meple, duże meple, opaci, wozy i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, pasterze ani stodoły. Punktujące meple zostają na planszy.",
+  "circusEventLabel": "Cyrk ({animal})",
+  "@circusEventLabel": {
+    "placeholders": {
+      "animal": {
+        "type": "String"
+      }
+    }
+  },
+  "pyramidCompleted": "Ukończona piramida",
+  "pyramidEndOfGame": "Koniec gry",
+  "pyramidWhoseThree": "Czyje są trzy meple w piramidzie?",
+  "acrobatsHowMany": "Ilu akrobatów ma każdy gracz?",
+  "pyramidHint": "Każdy akrobata w ukończonej piramidzie daje właścicielowi {points} pkt i wraca do puli. Piramidę możesz podliczyć, nawet jeśli nie masz w niej akrobaty.",
+  "@pyramidHint": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "acrobatsEndHint": "Na koniec gry każdy akrobata na planszy daje {points} pkt, także w niedokończonej piramidzie.",
+  "@acrobatsEndHint": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "pyramidEventDone": "Piramida akrobatów",
+  "pyramidEventEnd": "Akrobaci (koniec gry)",
+  "meeplesInPyramid": "Meple w piramidzie: {total} / {size}",
+  "@meeplesInPyramid": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "size": {
+        "type": "int"
+      }
+    }
+  },
+  "flockTitle": "{name} — Owce",
+  "@flockTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flockHowMany": "Z ilu żetonów składa się stado?",
+  "flockHint": "Liczbę żetonów każdego rodzaju ogranicza ich liczba w grze (4×1, 5×2, 5×3, 2×4), więc stado ma najwyżej {max} owiec. Wilk rozpędza stado – wtedy nie dopisuj punktów. Owce na koniec gry nie punktują.",
+  "@flockHint": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "flockToken": "Żeton {value} {sheep}",
+  "@flockToken": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      },
+      "sheep": {
+        "type": "String"
+      }
+    }
+  },
+  "sheepWord": "{count, plural, =1{owca} other{owce}}",
+  "@sheepWord": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tokensInGame": "w grze: {count} szt.",
+  "@tokensInGame": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flockSummary": "Stado: {sheep} / {max} owiec ({tokens} / {tokenMax} żetonów)",
+  "@flockSummary": {
+    "placeholders": {
+      "sheep": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "tokens": {
+        "type": "int"
+      },
+      "tokenMax": {
+        "type": "int"
+      }
+    }
+  },
+  "shepherdsTitle": "Pasterze w tym polu",
+  "shepherdsHint": "Każdy pasterz w tym polu dostaje punkty za całe stado.",
+  "flockEventLabel": "Owce: {names} +{sheep}",
+  "@flockEventLabel": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      },
+      "sheep": {
+        "type": "int"
+      }
+    }
+  },
+  "pickPaletteColor": "Wybierz kolor z palety",
+  "editPlayer": "Edytuj gracza",
+  "addPlayer": "Dodaj gracza",
+  "nameLabel": "Imię",
+  "nameError": "Podaj imię gracza",
+  "changeColor": "Zmień kolor:",
+  "chooseColor": "Wybierz kolor:",
+  "deletePlayer": "Usuń gracza",
+  "scoreLabel": "Wynik: {points} pkt",
+  "@scoreLabel": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "collapseKeypad": "Zwiń klawiaturę",
+  "tiles": "Płytki",
+  "pennants": "Sztandary",
+  "cathedral": "Katedra",
+  "cathedralHint": "Miasto z katedrą: 3 pkt za płytkę i sztandar. Nieukończone miasto z katedrą nie daje punktów, więc nie ma czego dopisywać.",
+  "completedCity": "Ukończone miasto",
+  "inn": "Karczma",
+  "innHint": "Droga z karczmą: 2 pkt za płytkę. Nieukończona droga z karczmą nie daje punktów, więc nie ma czego dopisywać.",
+  "completedCloister": "Ukończony",
+  "completedAbbey": "Ukończone",
+  "cloisterHint": "Ukończony klasztor daje 9 pkt. Niedokończony daje na koniec gry 1 pkt za każdą płytkę: klasztor i otaczające go płytki.",
+  "abbeyHint": "Ukończone opactwo daje 9 pkt. Niedokończone daje na koniec gry 1 pkt za każdą płytkę: opactwo i otaczające je płytki.",
+  "vineyardsCloister": "Winnice wokół klasztoru",
+  "vineyardsAbbey": "Winnice wokół opactwa",
+  "vineyardsCloisterHint": "{points} pkt za każdą winnicę na płytkach wokół ukończonego klasztoru (najwyżej {max}).",
+  "@vineyardsCloisterHint": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "vineyardsAbbeyHint": "{points} pkt za każdą winnicę na płytkach wokół ukończonego opactwa (najwyżej {max}).",
+  "@vineyardsAbbeyHint": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCities": "Ukończone miasta",
+  "castlesNearFarm": "Zamki przy polu",
+  "castlesNearFarmHint": "Zamek przy polu jest wart 4 pkt zamiast 3, a ze świnką 5 pkt, tak jak ukończone miasto.",
+  "pig": "Świnka",
+  "pigHint": "Ze świnką każde ukończone miasto przy polu daje 4 pkt (przy polu połączonym ze stodołą 2 pkt zamiast 1).",
+  "ringmasterAlways": "Dyrektor punktuje zawsze",
+  "ringmasterAlwaysHint": "Dyrektor cyrku dostaje punkty także wtedy, gdy nie masz większości w budowli, oraz na koniec gry na polu lub w nieukończonej budowli.",
+  "farmNormal": "Zwykłe",
+  "farmJoined": "Połączone ze stodołą",
+  "farmBarnOwner": "Właściciel stodoły",
+  "barn": "Stodoła",
+  "barnHint": "Zwykłe: punktowanie pola na koniec gry albo w chwili postawienia stodoły (3 pkt za miasto). Połączone ze stodołą: rolnicy na polu, które właśnie połączono z polem ze stodołą, dostają 1 pkt za miasto (2 ze świnką). Właściciel stodoły na koniec gry: 4 pkt za miasto i 5 za zamek, bez świnki; każda stodoła na połączonym polu dostaje pełną punktację.",
+  "goldBarsToAdd": "Sztabki złota do dopisania",
+  "goldBars": "Sztabki złota",
+  "goldHint": "Sztabki z płytek ukończonej budowli dostaje gracz z przewagą; przy remisie dzielą się nimi według kolejności. Rolnicy złota nie dostają. Na koniec gry im więcej sztabek, tym więcej warta każda: 1–3 po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.",
+  "inSupply": "W puli: {count} / {total}",
+  "@inSupply": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "goodsInSupply": "w puli: {left} / {total}",
+  "@goodsInSupply": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "pointsAsCastle": "Punkty jako zamek",
+  "pointsAsCastleHint": "Zaznacz, gdy nikt nie miał mepla w tej budowli, ale {name} ma przy niej zamek: dostaje punkty ukończonej budowli (za każdy swój zamek).",
+  "@pointsAsCastleHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "castlesOf": "Liczba zamków gracza {name}",
+  "@castlesOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "castlesCount": "Liczba zamków",
+  "sharedPointsCastles": "Punkty wspólne / zamki",
+  "sharedPoints": "Punkty wspólne",
+  "sharedHint": "Wskaż graczy, którzy dostają te same punkty (np. dzielą budowlę przy remisie). Wróżka i dyrektor cyrku liczą się tylko punktującemu.",
+  "sharedHintCastle": " Dla gracza możesz wybrać „Zamek\": dostaje wtedy punkty budowli za każdy swój zamek przy niej, a nie ze współdzielenia. Punktujący ma tu opcję „ma zamek\": dostaje swoje punkty i dodatkowo punkty za zamek (punkty tylko jako zamek to pole „Punkty jako zamek\").",
+  "chosenCastle": "{name} (zamek ×{count})",
+  "@chosenCastle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chosenScorerAsCastle": "{name} (punktujący, jako zamek ×{count})",
+  "@chosenScorerAsCastle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chosenScorerHasCastle": "{name} (punktujący, ma zamek ×{count})",
+  "@chosenScorerHasCastle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scorerHasCastle": "{name} (punktujący) ma zamek",
+  "@scorerHasCastle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sharesSegment": "Współdzieli",
+  "castleSegment": "Zamek",
+  "fairyOption": "Wróżka przy meplu (+{points} pkt)",
+  "@fairyOption": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "fairyHint": "Jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, droga, klasztor lub pole), jego właściciel dostaje {points} pkt niezależnie od zwykłej punktacji. Dotyczy też punktowania na koniec gry.",
+  "@fairyHint": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "goodsInCity": "Surowce w mieście",
+  "goodsCityHint": "Surowce dostaje gracz, który domknął miasto – nawet bez mepla w mieście.",
+  "goodsOtherHint": "Surowce dostaje wskazany gracz.",
+  "traderCompleted": "Kupiec (domknął miasto):",
+  "goodsWho": "Kto dostaje surowce?",
+  "ringmasterHint": "Dyrektor cyrku dodaje {points} pkt za każdą płytkę cyrku lub akrobatów, na której stoi lub która z nim sąsiaduje.",
+  "@ringmasterHint": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "ringmasterTiles": "Płytki cyrku i akrobatów wokół dyrektora",
+  "ringmasterTilesHint": "{points} pkt za każdą płytkę cyrku lub akrobatów pod dyrektorem i wokół niego (obszar 3×3, najwyżej {max}).",
+  "@ringmasterTilesHint": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "wordCastle": "zamek",
+  "wordShared": "wspólnie",
+  "wordCastles": "zamki",
+  "wordGold": "złoto"
+}

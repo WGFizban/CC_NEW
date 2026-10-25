@@ -4,8 +4,13 @@ import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:cc_new/l10n/tr.dart';
+import 'package:cc_new/l10n/app_language.dart';
+import 'package:cc_new/l10n/app_localizations_en.dart';
+import 'package:cc_new/l10n/app_localizations_pl.dart';
+import 'package:cc_new/l10n/labels.dart';
+import 'package:cc_new/models/circus.dart';
 import 'package:cc_new/models/expansion.dart';
+import 'package:cc_new/models/goods.dart';
 import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/score_event.dart';
@@ -19,7 +24,8 @@ Player _player(String name, {int points = 0}) =>
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  tearDown(() => appLanguage.value = AppLanguage.pl);
+  final pl = AppLocalizationsPl();
+  final en = AppLocalizationsEn();
 
   group('wieża: wykup mepla', () {
     test('okup to 3 punkty', () {
@@ -80,30 +86,49 @@ void main() {
     });
 
     test('etykieta zawiera numer, a mini dodatek dopisek na końcu', () {
-      expect(Expansion.tower.label, '4. Wieża');
-      expect(Expansion.innsCathedrals.label, '1. Karczmy i katedry');
-      expect(Expansion.goldMines.label, 'Kopalnie złota (Mini dodatek 4)');
+      expect(Expansion.tower.label(pl), '4. Wieża');
+      expect(Expansion.innsCathedrals.label(pl), '1. Karczmy i katedry');
+      expect(Expansion.goldMines.label(pl), 'Kopalnie złota (Mini dodatek 4)');
       expect(Expansion.goldMines.mini, isTrue);
     });
 
     test('Wzgórza i owce nazywają się po polsku „Owce i wzgórza"', () {
-      expect(Expansion.hillsSheep.displayName, 'Owce i wzgórza');
+      expect(Expansion.hillsSheep.title(pl), 'Owce i wzgórza');
     });
   });
 
   group('język interfejsu', () {
-    test('tr wybiera tekst według języka', () {
-      expect(tr('Miasto', 'City'), 'Miasto');
-      appLanguage.value = AppLanguage.en;
-      expect(tr('Miasto', 'City'), 'City');
+    test('nazwy dodatków i punktacji zmieniają się z językiem', () {
+      expect(Expansion.hillsSheep.title(en), 'Hills & Sheep');
+      expect(Expansion.goldMines.label(en), 'Gold Mines (Mini expansion 4)');
+      expect(Expansion.tower.label(en), '4. The Tower');
+      expect(ScoringType.meadow.title(en), 'Farms');
+      expect(ScoringType.meadow.title(pl), 'Pola');
     });
 
-    test('nazwy dodatków i punktacji zmieniają się z językiem', () {
-      appLanguage.value = AppLanguage.en;
-      expect(Expansion.hillsSheep.displayName, 'Hills & Sheep');
-      expect(Expansion.goldMines.label, 'Gold Mines (Mini expansion 4)');
-      expect(Expansion.tower.label, '4. The Tower');
-      expect(ScoringType.meadow.displayName, 'Farms');
+    test('każdy dodatek, typ punktacji i surowiec ma nazwę w obu językach', () {
+      for (final l in [pl, en]) {
+        for (final e in Expansion.values) {
+          expect(e.title(l), isNotEmpty);
+          expect(e.description(l), isNotEmpty);
+        }
+        for (final t in ScoringType.values) {
+          expect(t.title(l), isNotEmpty);
+        }
+        for (final g in Goods.values) {
+          expect(g.title(l), isNotEmpty);
+        }
+        for (final a in CircusAnimal.values) {
+          expect(a.title(l), isNotEmpty);
+        }
+      }
+    });
+
+    test('teksty z parametrami wstawiają wartości', () {
+      expect(pl.bazaarBuyDesc('Ala', 5, 'Ola'), 'Ala płaci 5 pkt, a Ola je dostaje.');
+      expect(en.bazaarBuyDesc('Ala', 5, 'Ola'), 'Ala pays 5 pts and Ola receives them.');
+      expect(pl.sheepWord(1), 'owca');
+      expect(pl.sheepWord(3), 'owce');
     });
 
     test('nieznany kod języka daje polski', () {
@@ -194,6 +219,26 @@ void main() {
 
       expect(restored.changes.single.color, 0xFFCC1B1B);
       expect(restored.changes.single.total, 9);
+    });
+
+    test('surowce w historii są zapisane kluczem i tłumaczone przy wyświetlaniu',
+        () {
+      const change = HistoryChange(
+        player: 'Ala',
+        points: 1,
+        goods: {'wine': 2},
+        gold: 3,
+      );
+
+      expect(change.goodsText(pl), 'Wino ×2, Złoto ×3');
+      expect(change.goodsText(en), 'Wine ×2, Gold ×3');
+    });
+
+    test('starsze wpisy z polskimi nazwami surowców wyświetlają się bez zmian',
+        () {
+      const change = HistoryChange(player: 'Ala', points: 1, goods: {'Wino': 2});
+
+      expect(change.goodsText(en), 'Wino ×2');
     });
 
     test('starsze wpisy bez koloru i wyniku nadal się wczytują', () {

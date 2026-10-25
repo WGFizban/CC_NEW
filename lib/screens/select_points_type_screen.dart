@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/l10n.dart';
+import '../l10n/labels.dart';
 import '../models/expansion.dart';
 import '../models/player.dart';
 import '../models/scoring.dart';
@@ -23,7 +24,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
 
   /// Typy pogrupowane według dodatku: gra podstawowa pierwsza, potem dodatki
   /// według numeracji, a mini dodatki na końcu.
-  List<(String, List<ScoringType>)> _groups() {
+  List<(String, List<ScoringType>)> _groups(AppLocalizations l) {
     final groups = <Expansion?, List<ScoringType>>{};
     for (final t in types) {
       (groups[t.expansion] ??= []).add(t);
@@ -36,7 +37,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
       });
     return [
       for (final k in keys)
-        (k?.displayName ?? tr('Gra podstawowa', 'Base game'), groups[k]!),
+        (k?.title(l) ?? l.baseGame, groups[k]!),
     ];
   }
 
@@ -73,11 +74,12 @@ class SelectPointsTypeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final color = player.color;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${tr('Dodaj punkty', 'Add points')}: ${player.name}'),
+        title: Text(l.addPointsTitle(player.name)),
         backgroundColor: color,
         foregroundColor: foregroundOn(color),
       ),
@@ -88,21 +90,21 @@ class SelectPointsTypeScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 8),
             Text(
-              tr('Wybierz rodzaj punktacji:', 'Choose what to score:'),
+              l.chooseScoring,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Expanded(
               child: ListView(
                 children: [
-                  for (final group in _groups())
+                  for (final group in _groups(l))
                     ..._buildGroup(context, group.$1, group.$2),
                 ],
               ),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(tr('Anuluj', 'Cancel')),
+              child: Text(l.cancel),
             ),
           ],
         ),
@@ -149,7 +151,7 @@ class _TypeButton extends StatelessWidget {
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  type.displayName,
+                  type.title(context.l10n),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

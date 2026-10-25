@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/app_language.dart';
+import '../l10n/l10n.dart';
 import '../models/circus.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
@@ -183,7 +184,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(tr('Anuluj', 'Cancel')),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -218,12 +219,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
     if (result.delete) {
       final confirmed = await _confirm(
-        title: tr('Usunąć gracza?', 'Delete player?'),
-        message: tr(
-          '${player.name} zostanie usunięty razem z punktami.',
-          '${player.name} will be deleted along with their points.',
-        ),
-        confirmLabel: tr('Usuń', 'Delete'),
+        title: context.l10n.deletePlayerTitle,
+        message: context.l10n.deletePlayerMessage(player.name),
+        confirmLabel: context.l10n.delete,
       );
       if (!confirmed) return;
       setState(() {
@@ -272,22 +270,20 @@ class _PlayersScreenState extends State<PlayersScreen> {
   /// Wróżka przy meplu gracza daje 1 pkt na początku jego tury, więc
   /// dopisujemy go od razu, bez osobnego ekranu. Można go cofnąć z paska.
   void _scoreFairy(Player player) {
+    final l = context.l10n;
     final event = ScoreEvent(
-      '${player.name}: ${tr('Wróżka', 'Fairy')} +$kFairyTurnPoints',
+      l.fairyEventLabel(player.name, kFairyTurnPoints),
       [ScoreChange(player, kFairyTurnPoints)],
-      category: tr('Wróżka', 'Fairy'),
+      category: l.scFairy,
     );
     _applyEvent(event);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(
-            '${tr('Wróżka', 'Fairy')}: ${player.name} '
-            '+$kFairyTurnPoints ${tr('pkt', 'pts')}',
-          ),
+          content: Text(l.fairySnack(player.name, kFairyTurnPoints)),
           action: SnackBarAction(
-            label: tr('Cofnij', 'Undo'),
+            label: l.undo,
             onPressed: () {
               // Cofamy tylko, jeśli to nadal ostatnie zdarzenie.
               if (_history.isNotEmpty && identical(_history.last, event)) {
@@ -368,14 +364,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
   Future<void> _onReset() async {
     final confirmed = await _confirm(
-      title: tr('Nowa gra?', 'New game?'),
-      message: tr(
-        'Punkty, surowce i zużyte żetony cyrku zostaną wyzerowane, '
-            'a stoper zatrzymany.',
-        'Points, goods and used circus tokens will be reset, '
-            'and the timer stopped.',
-      ),
-      confirmLabel: tr('Resetuj', 'Reset'),
+      title: context.l10n.newGameTitle,
+      message: context.l10n.newGameMessage,
+      confirmLabel: context.l10n.reset,
     );
     if (!confirmed || !mounted) return;
     _resetGame();
@@ -489,49 +480,48 @@ class _PlayersScreenState extends State<PlayersScreen> {
   // ------------------------------------------------------------- widoki
 
   List<PopupMenuEntry<_MenuAction>> _buildMenuItems() {
+    final l = context.l10n;
     final last = _history.isEmpty ? null : _history.last;
     return [
       PopupMenuItem(
         value: _MenuAction.undo,
         enabled: last != null,
         child: Text(
-          last == null
-              ? tr('Cofnij ostatnie punkty', 'Undo last points')
-              : '${tr('Cofnij', 'Undo')}: ${last.label}',
+          last == null ? l.menuUndoNone : l.menuUndo(last.label),
         ),
       ),
       PopupMenuItem(
         value: _MenuAction.history,
-        child: Text(tr('Historia punktów', 'Points history')),
+        child: Text(l.menuHistory),
       ),
       PopupMenuItem(
         value: _MenuAction.endGame,
         enabled: _players.isNotEmpty,
-        child: Text(tr('Zakończ grę', 'End game')),
+        child: Text(l.menuEndGame),
       ),
       PopupMenuItem(
         value: _MenuAction.reset,
-        child: Text(tr('Resetuj punkty', 'Reset points')),
+        child: Text(l.menuReset),
       ),
       PopupMenuItem(
         value: _MenuAction.settings,
-        child: Text(tr('Ustawienia…', 'Settings…')),
+        child: Text(l.menuSettings),
       ),
       const PopupMenuDivider(),
       PopupMenuItem(
         value: _MenuAction.startTimer,
         enabled: !_stopwatch.isRunning,
-        child: Text(tr('Start licznika', 'Start timer')),
+        child: Text(l.menuStartTimer),
       ),
       PopupMenuItem(
         value: _MenuAction.stopTimer,
         enabled: _stopwatch.isRunning,
-        child: Text(tr('Stop licznika', 'Stop timer')),
+        child: Text(l.menuStopTimer),
       ),
       PopupMenuItem(
         value: _MenuAction.resetTimer,
         enabled: !_stopwatch.isRunning && _stopwatch.elapsed > Duration.zero,
-        child: Text(tr('Reset licznika', 'Reset timer')),
+        child: Text(l.menuResetTimer),
       ),
     ];
   }
@@ -561,8 +551,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 8, bottom: 4),
               child: Text(
-                '${tr('Czas gry', 'Game time')}: '
-                '${_formatDuration(_stopwatch.elapsed)}',
+                context.l10n.gameTime(_formatDuration(_stopwatch.elapsed)),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -573,10 +562,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
             child: _players.isEmpty
                 ? Center(
                     child: Text(
-                      tr(
-                        'Brak graczy — dodaj nowego!',
-                        'No players — add a new one!',
-                      ),
+                      context.l10n.noPlayers,
                       style: const TextStyle(fontSize: 18),
                     ),
                   )

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/tr.dart';
+import '../l10n/l10n.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/tower.dart';
@@ -37,36 +37,31 @@ class _TowerScreenState extends State<TowerScreen> {
     Navigator.pop(
       context,
       ScoreEvent(
-        tr(
-          'Wieża: ${_buyer.name} wykupuje mepla od ${holder.name} '
-              '(−$kRansomPoints)',
-          'Tower: ${_buyer.name} buys back a meeple from ${holder.name} '
-              '(−$kRansomPoints)',
-        ),
+        context.l10n.towerEventLabel(_buyer.name, holder.name, kRansomPoints),
         [
           ScoreChange(_buyer, -kRansomPoints),
           ScoreChange(holder, kRansomPoints),
         ],
-        category: tr('Wieża', 'Tower'),
+        category: context.l10n.scTower,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final holderName = _holder?.name ?? tr('właściciel jeńca', 'the holder');
-    final pts = tr('pkt', 'pts');
+    final l = context.l10n;
+    final holderName = _holder?.name ?? l.towerHolderDefault;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr('Wieża – wykup mepla', 'Tower – ransom a meeple')),
+        title: Text(l.towerTitle),
         actions: [ConfirmAction(onPressed: _canConfirm ? _confirm : null)],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            tr('Kto wykupuje mepla?', 'Who is buying back a meeple?'),
+            l.towerWhoBuys,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -80,33 +75,8 @@ class _TowerScreenState extends State<TowerScreen> {
           ),
           const SizedBox(height: 16),
           LabelWithHint(
-            tr('Od kogo wykupuje?', 'Whose prisoner is it?'),
-            tr(
-              'Okup za uwięzionego mepla to zawsze $kRansomPoints pkt – '
-                  'także za dużego mepla (nie jest podwajany).\n'
-                  'Można wykupić: zwykłego mepla, dużego mepla, wóz '
-                  'i burmistrza.\n'
-                  'Nie można wykupić budowniczego ani świni – nie da się ich '
-                  'uwięzić.\n'
-                  'Wykup robisz w swojej turze, jeden na turę; wykupionego '
-                  'mepla możesz od razu wystawić.\n'
-                  'Gdy dwaj gracze trzymają sobie nawzajem po jednym '
-                  'jeńcu, wymiana mepel za mepel odbywa się automatycznie, '
-                  'bez aplikacji.\n'
-                  'Bez $kRansomPoints punktów nie możesz wykupić mepla.',
-              'The ransom for a captured meeple is always $kRansomPoints '
-                  'pts – also for a big meeple (it is not doubled).\n'
-                  'You can buy back: a normal meeple, a big meeple, a wagon '
-                  'and a mayor.\n'
-                  'You cannot buy back a builder or a pig – they cannot be '
-                  'captured.\n'
-                  'You buy back on your own turn, once per turn; the freed '
-                  'meeple can be deployed right away.\n'
-                  'When two players hold one of each other\'s meeples, the '
-                  'meeple-for-meeple swap happens automatically, without the '
-                  'app.\n'
-                  'Without $kRansomPoints points you cannot buy a meeple back.',
-            ),
+            l.towerFromWhom,
+            l.towerHint(kRansomPoints),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -119,19 +89,14 @@ class _TowerScreenState extends State<TowerScreen> {
           const SizedBox(height: 16),
           Center(
             child: Text(
-              '${tr('Okup', 'Ransom')}: $kRansomPoints $pts',
+              l.ransomValue(kRansomPoints),
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(height: 8),
           Center(
             child: Text(
-              tr(
-                '${_buyer.name} płaci $kRansomPoints pkt, a $holderName '
-                    'je dostaje.',
-                '${_buyer.name} pays $kRansomPoints pts and $holderName '
-                    'receives them.',
-              ),
+              l.towerDesc(_buyer.name, kRansomPoints, holderName),
               textAlign: TextAlign.center,
             ),
           ),
@@ -139,12 +104,7 @@ class _TowerScreenState extends State<TowerScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Text(
-                tr(
-                  '${_buyer.name} ma tylko ${_buyer.points} pkt – do wykupu '
-                      'potrzeba $kRansomPoints.',
-                  '${_buyer.name} has only ${_buyer.points} pts – '
-                      '$kRansomPoints are needed to buy back a meeple.',
-                ),
+                l.towerShort(_buyer.name, _buyer.points, kRansomPoints),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.error,

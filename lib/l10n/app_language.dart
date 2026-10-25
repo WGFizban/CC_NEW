@@ -16,10 +16,6 @@ enum AppLanguage {
       values.firstWhere((l) => l.code == code, orElse: () => pl);
 }
 
-/// Aktualny język. Zmiana odświeża `MaterialApp`; ekrany, które są już
-/// otwarte, odświeżają się same przy własnym `setState`.
+/// Aktualny język. Zmiana odświeża `MaterialApp` (jego `locale`), a ekrany
+/// biorą teksty z `AppLocalizations`.
 final ValueNotifier<AppLanguage> appLanguage = ValueNotifier(AppLanguage.pl);
-
-/// Tekst w aktualnym języku: [pl] po polsku, [en] po angielsku.
-String tr(String pl, String en) =>
-    appLanguage.value == AppLanguage.en ? en : pl;

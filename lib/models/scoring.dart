@@ -1,4 +1,3 @@
-import '../l10n/tr.dart';
 import 'circus.dart';
 import 'expansion.dart';
 import 'fairy.dart';
@@ -9,64 +8,49 @@ import 'sheep.dart';
 ///
 /// Wszystkie ikony pochodzą z jednego zestawu w `assets/icons/game/`.
 enum ScoringType {
-  city('Miasto', 'City', 'assets/icons/game/city.svg'),
-  road('Droga', 'Road', 'assets/icons/game/road.svg'),
-  cloister('Klasztor', 'Cloister', 'assets/icons/game/cloister.svg'),
-  meadow('Pola', 'Farms', 'assets/icons/game/meadow.svg'),
+  city('assets/icons/game/city.svg'),
+  road('assets/icons/game/road.svg'),
+  cloister('assets/icons/game/cloister.svg'),
+  meadow('assets/icons/game/meadow.svg'),
   fairy(
-    'Wróżka', 'Fairy',
     'assets/icons/game/fairy.svg',
     expansion: Expansion.princessDragon,
   ),
   sheep(
-    'Owce', 'Sheep',
     'assets/icons/game/sheep.svg',
     expansion: Expansion.hillsSheep,
   ),
   goods(
-    'Surowce', 'Goods',
     'assets/icons/game/goods.svg',
     expansion: Expansion.tradersBuilders,
   ),
   bazaar(
-    'Bazar', 'Bazaar',
     'assets/icons/game/bazaar.svg',
     expansion: Expansion.bridgesCastlesBazaars,
   ),
-  circus('Cyrk', 'Circus', 'assets/icons/game/circus.svg', expansion: Expansion.circus),
+  circus('assets/icons/game/circus.svg', expansion: Expansion.circus),
   pyramid(
-    'Akrobaci', 'Acrobats',
     'assets/icons/game/acrobats.svg',
     expansion: Expansion.circus,
   ),
   ringmaster(
-    'Dyrektor cyrku', 'Ringmaster',
     'assets/icons/game/ringmaster.svg',
     expansion: Expansion.circus,
   ),
   abbey(
-    'Opactwo', 'Abbey',
     'assets/icons/game/abbey.svg',
     expansion: Expansion.abbeyMayor,
   ),
   gold(
-    'Złoto', 'Gold',
     'assets/icons/game/gold.svg',
     expansion: Expansion.goldMines,
   ),
   tower(
-    'Wieża', 'Tower',
     'assets/icons/game/tower.svg',
     expansion: Expansion.tower,
   );
 
-  const ScoringType(this._pl, this._en, this.iconAsset, {this.expansion});
-
-  final String _pl;
-  final String _en;
-
-  /// Nazwa punktacji w aktualnym języku.
-  String get displayName => tr(_pl, _en);
+  const ScoringType(this.iconAsset, {this.expansion});
 
   /// Ikona SVG z jednolitego zestawu gry.
   final String iconAsset;
