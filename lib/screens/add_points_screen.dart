@@ -511,7 +511,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               hint: l.castlesNearFarmHint,
             ),
           if (_has(Expansion.abbeyMayor)) _buildBarnChoice(),
-          if (_farmActive != FarmScoring.barnOwner)
+          // Świnka należy do dodatku „Kupcy i budowniczowie"; właściciel
+          // stodoły na koniec gry liczy bez świnki.
+          if (_has(Expansion.tradersBuilders) &&
+              _farmActive != FarmScoring.barnOwner)
             _check(
               l.pig,
               _bonus,
