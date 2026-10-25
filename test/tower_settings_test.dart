@@ -241,6 +241,39 @@ void main() {
       expect(change.goodsText(en), 'Wino ×2');
     });
 
+    test('wpis zapamiętuje rodzaj punktacji, po którym wybierana jest ikona', () {
+      final entry = HistoryEntry.fromEvent(
+        ScoreEvent(
+          'Droga',
+          [ScoreChange(_player('Ala'), 4)],
+          type: ScoringType.road,
+        ),
+      );
+
+      expect(entry.type, 'road');
+      expect(entry.scoringType, ScoringType.road);
+      expect(HistoryEntry.fromJson(entry.toJson()).scoringType, ScoringType.road);
+    });
+
+    test('wpis bez rodzaju lub z nieznanym rodzajem nie ma ikony', () {
+      final old = HistoryEntry.fromJson({
+        'id': 1,
+        'time': 1000,
+        'label': 'Stary',
+        'changes': [],
+      });
+      final unknown = HistoryEntry.fromJson({
+        'id': 2,
+        'time': 1000,
+        'label': 'Nowy',
+        'type': 'nieistnieje',
+        'changes': [],
+      });
+
+      expect(old.scoringType, isNull);
+      expect(unknown.scoringType, isNull);
+    });
+
     test('starsze wpisy bez koloru i wyniku nadal się wczytują', () {
       final restored = HistoryEntry.fromJson({
         'id': 1,

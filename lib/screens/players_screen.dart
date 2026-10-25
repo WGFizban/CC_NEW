@@ -275,6 +275,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       l.fairyEventLabel(player.name, kFairyTurnPoints),
       [ScoreChange(player, kFairyTurnPoints)],
       category: l.scFairy,
+      type: ScoringType.fairy,
     );
     _applyEvent(event);
     ScaffoldMessenger.of(context)

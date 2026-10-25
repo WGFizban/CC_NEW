@@ -298,6 +298,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         _label(distribution, goods, gold),
         changes,
         category: _type.title(context.l10n),
+        type: _type,
       ),
     );
   }

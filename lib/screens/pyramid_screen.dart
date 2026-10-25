@@ -6,6 +6,7 @@ import '../l10n/l10n.dart';
 import '../models/circus.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
+import '../models/scoring.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
@@ -87,6 +88,7 @@ class _PyramidScreenState extends State<PyramidScreen> {
             : context.l10n.pyramidEventEnd,
         changes,
         category: context.l10n.scAcrobats,
+        type: ScoringType.pyramid,
       ),
     );
   }

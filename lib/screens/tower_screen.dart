@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
+import '../models/scoring.dart';
 import '../models/tower.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/info_hint.dart';
@@ -43,6 +44,7 @@ class _TowerScreenState extends State<TowerScreen> {
           ScoreChange(holder, kRansomPoints),
         ],
         category: context.l10n.scTower,
+        type: ScoringType.tower,
       ),
     );
   }

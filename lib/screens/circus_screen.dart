@@ -5,6 +5,7 @@ import '../l10n/labels.dart';
 import '../models/circus.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
+import '../models/scoring.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
@@ -60,6 +61,7 @@ class _CircusScreenState extends State<CircusScreen> {
         changes,
         animal: animal,
         category: context.l10n.scCircus,
+        type: ScoringType.circus,
       ),
     );
   }

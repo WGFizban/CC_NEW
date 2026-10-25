@@ -18,7 +18,8 @@ z obsługą wybranych dodatków.
 - wybór rodzaju punktacji w siatce pogrupowanej według dodatków,
 - cofanie ostatniego zatwierdzenia (także tych dotyczących wielu graczy),
 - **historia punktów** jako tabela (menu → Historia punktów): czas (sama
-  godzina), gracz, zdarzenie, punkty, surowce i wynik łączny. Wiersz ma kolor
+  godzina), gracz, zdarzenie (jako ikona rodzaju punktacji, np. drogi albo
+  miasta; opis w podpowiedzi), punkty, surowce i wynik łączny. Wiersz ma kolor
   gracza (lekko przyciemniony, żeby tekst był czytelny) i jego mepla przy
   imieniu,
 - **Zakończ grę** (menu): zwycięzca, ranking i rozbicie punktów według rodzaju

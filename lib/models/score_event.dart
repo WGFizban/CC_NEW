@@ -1,6 +1,7 @@
 import 'circus.dart';
 import 'goods.dart';
 import 'player.dart';
+import 'scoring.dart';
 
 /// Zmiana wyniku jednego gracza: punkty i/lub surowce.
 class ScoreChange {
@@ -31,7 +32,16 @@ class ScoreEvent {
   /// Rodzaj punktacji (np. „Miasto"), używany w historii i podsumowaniu gry.
   final String? category;
 
-  const ScoreEvent(this.label, this.changes, {this.animal, this.category});
+  /// Rodzaj punktacji; w historii jego ikona zastępuje opis zdarzenia.
+  final ScoringType? type;
+
+  const ScoreEvent(
+    this.label,
+    this.changes, {
+    this.animal,
+    this.category,
+    this.type,
+  });
 
   void apply() => _shift(1);
 

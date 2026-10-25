@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
 import '../models/history_entry.dart';
+import '../widgets/game_icon.dart';
 import '../widgets/meeple_icon.dart';
 
 /// Historia zatwierdzonych punktów jako tabela, od najnowszych wpisów.
@@ -48,6 +49,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
     setState(() => _entries = []);
   }
 
+  /// Zdarzenie jako ikona rodzaju punktacji (opis w podpowiedzi); starsze
+  /// wpisy bez rodzaju pokazują tekst.
+  Widget _eventCell(HistoryEntry e) {
+    final text = e.category ?? e.label;
+    final type = e.scoringType;
+    if (type == null) return Text(text);
+    return Tooltip(
+      message: text,
+      triggerMode: TooltipTriggerMode.tap,
+      child: GameIcon(type.iconAsset, size: 28),
+    );
+  }
+
   List<DataRow> _rows(BuildContext context) {
     final rows = <DataRow>[];
     for (final e in _entries.reversed) {
@@ -82,7 +96,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ],
                       ),
               ),
-              DataCell(Text(first ? e.category ?? e.label : '')),
+              DataCell(first ? _eventCell(e) : const Text('')),
               DataCell(
                 Text(
                   points,

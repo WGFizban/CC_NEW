@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
+import '../models/scoring.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/number_keypad.dart';
@@ -69,7 +70,15 @@ class _BazaarScreenState extends State<BazaarScreen> {
         changes = [ScoreChange(_chooser, -_price)];
         label = l.bazaarSoleLabel(_chooser.name, _price);
     }
-    Navigator.pop(context, ScoreEvent(label, changes, category: l.scBazaar));
+    Navigator.pop(
+      context,
+      ScoreEvent(
+        label,
+        changes,
+        category: l.scBazaar,
+        type: ScoringType.bazaar,
+      ),
+    );
   }
 
   @override

@@ -2,6 +2,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/labels.dart';
 import 'goods.dart';
 import 'player.dart';
+import 'scoring.dart';
 import 'score_event.dart';
 
 /// Zmiana wyniku jednego gracza w historii.
@@ -78,13 +79,26 @@ class HistoryEntry {
 
   /// Rodzaj punktacji (np. „Miasto") albo `null` dla starszych wpisów.
   final String? category;
+
+  /// Rodzaj punktacji (nazwa wartości [ScoringType]) albo `null` dla starszych
+  /// wpisów; po nim historia wybiera ikonę zdarzenia.
+  final String? type;
   final List<HistoryChange> changes;
+
+  /// Rodzaj punktacji tego wpisu (do ikony) albo `null`, gdy nieznany.
+  ScoringType? get scoringType {
+    for (final t in ScoringType.values) {
+      if (t.name == type) return t;
+    }
+    return null;
+  }
 
   const HistoryEntry({
     required this.id,
     required this.time,
     required this.label,
     this.category,
+    this.type,
     this.changes = const [],
   });
 
@@ -100,6 +114,7 @@ class HistoryEntry {
       time: time,
       label: event.label,
       category: event.category,
+      type: event.type?.name,
       changes: [
         for (final c in event.changes)
           HistoryChange(
@@ -119,6 +134,7 @@ class HistoryEntry {
     'time': time.millisecondsSinceEpoch,
     'label': label,
     'category': category,
+    'type': type,
     'changes': [for (final c in changes) c.toJson()],
   };
 
@@ -127,6 +143,7 @@ class HistoryEntry {
     time: DateTime.fromMillisecondsSinceEpoch(json['time'] as int),
     label: json['label'] as String,
     category: json['category'] as String?,
+    type: json['type'] as String?,
     changes: [
       for (final c in (json['changes'] as List? ?? const []))
         HistoryChange.fromJson(c as Map<String, dynamic>),

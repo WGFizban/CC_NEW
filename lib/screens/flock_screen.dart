@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
+import '../models/scoring.dart';
 import '../models/sheep.dart';
 import '../widgets/confirm_action.dart';
 import '../widgets/counter_stepper.dart';
@@ -46,6 +47,7 @@ class _FlockScreenState extends State<FlockScreen> {
         context.l10n.flockEventLabel(names, sheep),
         [for (final p in owners) ScoreChange(p, sheep)],
         category: context.l10n.scSheep,
+        type: ScoringType.sheep,
       ),
     );
   }
