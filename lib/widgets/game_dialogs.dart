@@ -95,15 +95,15 @@ Future<StartChoice> askStartGame(
         TextButton.icon(
           onPressed: () => Navigator.pop(ctx, StartChoice.expansions),
           icon: const Icon(Icons.extension),
-          label: Text(l.enableExpansions),
+          label: Text(l.modifyExpansions),
         ),
         TextButton(
           onPressed: () => Navigator.pop(ctx, StartChoice.cancel),
-          child: Text(l.no),
+          child: Text(l.backToEdit),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(ctx, StartChoice.start),
-          child: Text(l.yes),
+          child: Text(l.startGame),
         ),
       ],
     ),

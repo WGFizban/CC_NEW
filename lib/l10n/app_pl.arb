@@ -702,11 +702,11 @@
   "noPlayersHint": "Brak graczy — dodaj nowego przyciskiem",
   "startGame": "Rozpocznij grę",
   "startGameQuestion": "Czy chcesz rozpocząć grę?",
-  "startGameBody": "Włączone dodatki: {expansions}\n\nOd teraz nie będzie można dodawać kolejnych graczy, edytować obecnych i zmieniać dodatków.",
+  "startGameBody": "Włączone dodatki: {expansions}\n\nCzy chcesz dodawać kolejnych graczy, edytować obecnych lub zmieniać dodatki? Po rozpoczęciu gry nie będzie to już możliwe.",
   "@startGameBody": {
     "placeholders": {
       "expansions": {
-        "type": "String"
+        "type": "int"
       }
     }
   },
@@ -737,5 +737,7 @@
   "rulesGold": "• Złoto: 16 sztabek. Za ukończoną budowlę sztabki z jej płytek dostaje gracz z przewagą (rolnicy nie).\n• Na koniec gry sztabka jest warta: 1–3 sztabki po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.",
   "gameStartedTitle": "Gra została rozpoczęta!",
   "noPlayersHint2": "Jeśli chcesz edytować gracza, przytrzymaj wiersz z jego imieniem.",
-  "summaryTitle": "Podsumowanie"
+  "summaryTitle": "Podsumowanie",
+  "modifyExpansions": "Modyfikuj dodatki",
+  "backToEdit": "Wróć do edycji"
 }
