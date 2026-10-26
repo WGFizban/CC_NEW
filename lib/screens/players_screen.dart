@@ -554,7 +554,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CarcassonneCounter'),
+        title: const Text('Carcassonne Counter'),
         actions: [
           PopupMenuButton<_MenuAction>(
             onSelected: _onMenuSelected,

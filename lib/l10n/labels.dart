@@ -19,6 +19,8 @@ extension ExpansionLabels on Expansion {
     Expansion.circus => l.expCircus,
     Expansion.goldMines => l.expGold,
     Expansion.monasteries => l.expMonasteries,
+    Expansion.germanCastles => l.expGermanCastles,
+    Expansion.germanCathedrals => l.expGermanCathedrals,
   };
 
   /// Opis dodatku (podpowiedź „?" w ustawieniach).
@@ -33,6 +35,8 @@ extension ExpansionLabels on Expansion {
     Expansion.circus => l.expCircusDesc,
     Expansion.goldMines => l.expGoldDesc,
     Expansion.monasteries => l.expMonasteriesDesc,
+    Expansion.germanCastles => l.expGermanCastlesDesc,
+    Expansion.germanCathedrals => l.expGermanCathedralsDesc,
   };
 
   /// Nazwa z numerem, np. „4. Wieża" albo „Kopalnie złota (Mini dodatek 4)".
@@ -58,6 +62,8 @@ extension ScoringTypeLabels on ScoringType {
     ScoringType.gold => l.scGold,
     ScoringType.tower => l.scTower,
     ScoringType.monastery => l.scMonastery,
+    ScoringType.germanCastle => l.scGermanCastle,
+    ScoringType.archbishop => l.scArchbishop,
   };
 }
 

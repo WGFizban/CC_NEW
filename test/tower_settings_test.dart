@@ -11,6 +11,7 @@ import 'package:cc_new/l10n/labels.dart';
 import 'package:cc_new/models/circus.dart';
 import 'package:cc_new/models/expansion.dart';
 import 'package:cc_new/models/game_state.dart';
+import 'package:cc_new/models/german.dart';
 import 'package:cc_new/models/goods.dart';
 import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
@@ -84,9 +85,11 @@ void main() {
         Expansion.circus,
         Expansion.goldMines,
         Expansion.monasteries,
+        Expansion.germanCastles,
+        Expansion.germanCathedrals,
       ]);
       expect([for (final e in Expansion.values) e.number], [
-        1, 2, 3, 4, 5, 8, 9, 10, 4, 5, //
+        1, 2, 3, 4, 5, 8, 9, 10, 4, 5, 6, 7, //
       ]);
     });
 
@@ -357,6 +360,114 @@ void main() {
     test('wydanie z GitHuba pokazujemy jako vN, a inne wersje bez zmian', () {
       expect(formatAppVersion('7'), 'v7');
       expect(formatAppVersion('0.1.0'), '0.1.0');
+    });
+  });
+
+  group('zamki i katedry w Niemczech', () {
+    test('zamek na końcu ukończonej drogi lub miasta daje 3 pkt za sztukę', () {
+      // Przykłady z instrukcji: miasto 10 pkt + 2 zamki = 16, droga 2 + 3 = 5.
+      expect(
+        calculatePoints(ScoringType.city, tiles: 3, banners: 2, germanCastles: 2),
+        10 + 2 * kGermanCastleBonus,
+      );
+      expect(
+        calculatePoints(ScoringType.road, tiles: 2, germanCastles: 1),
+        2 + kGermanCastleBonus,
+      );
+      expect(
+        calculatePoints(ScoringType.road, tiles: 2, germanCastles: 2),
+        4 + 2 * kGermanCastleBonus,
+      );
+    });
+
+    test('premia za zamek jest po karczmie i katedrze, a nieukończona jej nie ma', () {
+      expect(
+        calculatePoints(ScoringType.city, tiles: 2, bonus: true, germanCastles: 1),
+        2 * 3 + kGermanCastleBonus,
+      );
+      expect(
+        calculatePoints(
+          ScoringType.road,
+          tiles: 3,
+          completed: false,
+          germanCastles: 1,
+        ),
+        3,
+      );
+    });
+
+    test('pan zamku: 12 pkt albo 2 pkt plus płytki wokół na koniec gry', () {
+      expect(calculatePoints(ScoringType.germanCastle), 12);
+      expect(
+        calculatePoints(ScoringType.germanCastle, completed: false, tiles: 6),
+        8,
+      );
+    });
+
+    test('droga z rondem: trzy niemieckie zamki dają 9 pkt premii', () {
+      expect(
+        calculatePoints(ScoringType.road, tiles: 5, germanCastles: 3),
+        14,
+      );
+    });
+
+    test('droga do katedry: 2 pkt za płytkę, z karczmą 3', () {
+      expect(
+        calculatePoints(ScoringType.road, tiles: 4, cathedralRoad: true),
+        8,
+      );
+      expect(
+        calculatePoints(
+          ScoringType.road,
+          tiles: 4,
+          cathedralRoad: true,
+          bonus: true,
+        ),
+        12,
+      );
+      expect(
+        calculatePoints(
+          ScoringType.road,
+          tiles: 4,
+          cathedralRoad: true,
+          completed: false,
+        ),
+        8,
+      );
+      expect(
+        calculatePoints(
+          ScoringType.road,
+          tiles: 4,
+          cathedralRoad: true,
+          completed: false,
+          bonus: true,
+        ),
+        0,
+      );
+    });
+
+    test('arcybiskup: 1 pkt za odcinek, z karczmą 2, nieukończona 0', () {
+      expect(calculatePoints(ScoringType.archbishop, tiles: 8), 8);
+      expect(calculatePoints(ScoringType.archbishop, tiles: 8, bonus: true), 16);
+      expect(
+        calculatePoints(ScoringType.archbishop, tiles: 5, completed: false),
+        0,
+      );
+      expect(
+        calculatePoints(
+          ScoringType.archbishop,
+          tiles: 5,
+          completed: false,
+          bonus: true,
+        ),
+        0,
+      );
+    });
+
+    test('dodatki są mini dodatkami 6 i 7', () {
+      expect(Expansion.germanCastles.number, 6);
+      expect(Expansion.germanCathedrals.number, 7);
+      expect(Expansion.germanCastles.mini, isTrue);
     });
   });
 }

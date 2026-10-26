@@ -1,4 +1,4 @@
-# CarcassonneCounter (cc_new)
+# Carcassonne Counter
 
 Aplikacja we Flutterze do liczenia punktów w grze planszowej Carcassonne,
 z obsługą wybranych dodatków.
@@ -118,6 +118,19 @@ końca; **Nowa gra** w menu wraca do przygotowania.
   klasztor.
 - W aplikacji jedno pole z klawiaturą na punkty końcowe opata (kafelek
   **Opat**). Klasztor z mnichem punktuje jak zwykły klasztor.
+
+### Zamki w Niemczech (mini dodatek 6)
+- Pan zamku: ukończony zamek daje 12 pkt, nieukończony na koniec gry 2 pkt za
+  płytkę zamku i 1 pkt za każdą otaczającą płytkę (kafelek **Zamek niemiecki**).
+- Ukończona droga lub miasto z zamkiem na końcu daje graczom z przewagą po
+  3 pkt za każdy zamek (licznik w punktacji miasta i drogi, po modyfikacjach
+  z karczmy i katedry).
+
+### Katedry w Niemczech (mini dodatek 7)
+- Droga do katedry (zbój): w punktacji drogi pole **Czy prowadzi do katedry**,
+  ukończona daje 2 pkt za płytkę (3 z karczmą).
+- Arcybiskup (kafelek **Arcybiskup**): 1 pkt za odcinek dróg przy katedrze
+  (2 z karczmą), po zamknięciu wszystkich dróg lub na koniec gry.
 
 ### Kopalnie złota
 - 16 sztabek złota, dopisywanych w punktacji miasta, drogi, klasztoru i opactwa

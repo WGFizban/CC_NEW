@@ -1,6 +1,6 @@
 {
-    "name": "cc_new",
-    "short_name": "cc_new",
+    "name": "Carcassonne Counter",
+    "short_name": "Carcassonne Counter",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
