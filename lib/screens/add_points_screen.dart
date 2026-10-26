@@ -6,6 +6,7 @@ import '../models/circus.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
 import '../models/gold.dart';
+import '../models/german.dart';
 import '../models/goods.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
@@ -50,6 +51,12 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   int _tiles = 0;
   int _banners = 0;
   int _castles = 0;
+
+  /// Niemieckie zamki na końcach ukończonej drogi lub miasta (+3 za każdy).
+  int _germanCastles = 0;
+
+  /// Droga prowadzi do niemieckiej katedry (zbój).
+  bool _cathedralRoad = false;
   int _vineyards = 0;
   bool _completed = true;
 
@@ -161,13 +168,18 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool get _usesKeypad => switch (_type) {
     ScoringType.goods || ScoringType.ringmaster || ScoringType.gold => false,
     ScoringType.cloister || ScoringType.abbey => !_completed,
+    ScoringType.germanCastle => !_completed,
     _ => true,
   };
 
   /// Niedokończony klasztor to najwyżej 8 płytek (razem z nim samym);
   /// komplet 9 płytek to już klasztor ukończony.
   int get _tilesMax =>
-      _type == ScoringType.cloister || _type == ScoringType.abbey ? 8 : 999;
+      _type == ScoringType.cloister || _type == ScoringType.abbey
+      ? 8
+      : _type == ScoringType.germanCastle
+      ? kMaxGermanCastleSurround
+      : 999;
 
   Map<Goods, int> get _goodsToAdd => _showGoods
       ? {
@@ -212,6 +224,15 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         ? _vineyards
         : 0,
     completed: _completed,
+    germanCastles:
+        (_type == ScoringType.city || _type == ScoringType.road) &&
+            _has(Expansion.germanCastles)
+        ? _germanCastles
+        : 0,
+    cathedralRoad:
+        _type == ScoringType.road && _has(Expansion.germanCathedrals)
+        ? _cathedralRoad
+        : false,
     bonus: _bonus,
     farm: _farmActive,
     circusTiles: circusTiles,
@@ -463,6 +484,14 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             ),
           if (!_bonus)
             _check(l.completedCity, _completed, (v) => _completed = v),
+          if (_completed && _has(Expansion.germanCastles))
+            _stepperRow(
+              l.germanCastlesAtFeature,
+              _germanCastles,
+              (v) => _germanCastles = v,
+              max: 6,
+              hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
+            ),
         ];
 
       case ScoringType.road:
@@ -474,8 +503,70 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             _check(
               l.inn,
               _bonus,
-              (v) => _bonus = v,
+              (v) {
+                _bonus = v;
+                // Nieukończona droga z karczmą nie daje punktów.
+                if (v) _completed = true;
+              },
               hint: l.innHint,
+            ),
+          if (_has(Expansion.germanCathedrals))
+            _check(
+              l.roadToCathedral,
+              _cathedralRoad,
+              (v) => _cathedralRoad = v,
+              hint: l.roadToCathedralHint,
+            ),
+          // Ukończenie drogi ma znaczenie tylko przy dodatkach z premią
+          // za ukończenie (katedra lub zamek niemiecki).
+          if (!_bonus &&
+              (_has(Expansion.germanCathedrals) ||
+                  _has(Expansion.germanCastles)))
+            _check(l.completedRoad, _completed, (v) => _completed = v),
+          if (_completed && _has(Expansion.germanCastles))
+            _stepperRow(
+              l.germanCastlesAtFeature,
+              _germanCastles,
+              (v) => _germanCastles = v,
+              max: 2,
+              hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
+            ),
+        ];
+
+      case ScoringType.germanCastle:
+        return [
+          _check(
+            l.completedGermanCastle,
+            _completed,
+            (v) => _completed = v,
+            hint: l.germanCastleHint(
+              kGermanCastleCompleted,
+              kGermanCastleTileBase,
+            ),
+          ),
+          if (!_completed)
+            _valueBoxes([_valueBox(l.tilesAroundCastle, _tiles, _Field.tiles)]),
+        ];
+
+      case ScoringType.archbishop:
+        return [
+          _valueBoxes([_valueBox(l.archbishopRoadTiles, _tiles, _Field.tiles)]),
+          if (_has(Expansion.innsCathedrals))
+            _check(
+              l.inn,
+              _bonus,
+              (v) {
+                _bonus = v;
+                if (v) _completed = true;
+              },
+              hint: l.archbishopInnHint,
+            ),
+          if (!_bonus)
+            _check(
+              l.completedCathedral,
+              _completed,
+              (v) => _completed = v,
+              hint: l.archbishopHint,
             ),
         ];
 

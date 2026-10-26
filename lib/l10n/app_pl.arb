@@ -799,5 +799,42 @@
   "newGameChoiceBody": "Chcesz zagrać jeszcze raz w tym samym składzie, czy ustawić graczy od nowa?\n\nPunkty, surowce i zużyte żetony cyrku zostaną wyzerowane. Dodatki zostają bez zmian, a przed startem nadal możesz je zmienić.",
   "newGameSamePlayers": "Ci sami gracze",
   "newGameNewPlayers": "Nowi gracze",
-  "addMorePlayers": "Do gry potrzeba co najmniej dwóch graczy. Dodaj kolejnego przyciskiem"
+  "addMorePlayers": "Do gry potrzeba co najmniej dwóch graczy. Dodaj kolejnego przyciskiem",
+  "expGermanCastles": "Zamki w Niemczech",
+  "expGermanCastlesDesc": "Podwójne płytki niemieckich zamków. Pan zamku dostaje 12 pkt za ukończony zamek, a każdy zamek na końcu ukończonej drogi lub miasta daje graczom z przewagą dodatkowe 3 pkt.",
+  "expGermanCathedrals": "Katedry w Niemczech",
+  "expGermanCathedralsDesc": "Płytki z niemieckimi katedrami na polach. Zbój na drodze do katedry dostaje 2 pkt za płytkę ukończonej drogi, a arcybiskup 1 pkt za każdy odcinek dróg przy katedrze.",
+  "scGermanCastle": "Zamek niemiecki",
+  "scArchbishop": "Arcybiskup",
+  "germanCastlesAtFeature": "Zamki niemieckie przy budowli",
+  "germanCastlesAtFeatureHint": "Ustaw liczbę niemieckich zamków na końcach ukończonej budowli: za każdy gracze z przewagą dostają dodatkowo {points} pkt, niezależnie od tego, czy zamek jest zajęty. Premia jest doliczana po modyfikacjach z katedry i karczmy. Droga, która zaczyna i kończy się na tym samym zamku, liczy go raz.",
+  "@germanCastlesAtFeatureHint": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "roadToCathedral": "Czy prowadzi do katedry",
+  "roadToCathedralHint": "Zaznacz, jeśli droga zaczyna się lub kończy na płytce niemieckiej katedry (zbój): ukończona daje 2 pkt za płytkę (3 z karczmą). Droga, która zaczyna i kończy się na tej samej katedrze, liczy się osobno dla każdego odcinka.",
+  "completedRoad": "Czy ukończona",
+  "completedGermanCastle": "Czy ukończony",
+  "germanCastleHint": "Zaznacz, jeśli zamek jest otoczony ze wszystkich stron: pan zamku dostaje {completed} pkt. Odznacz, jeśli punktujesz go na koniec gry: {base} pkt za płytkę zamku i 1 pkt za każdą otaczającą płytkę.",
+  "@germanCastleHint": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "base": {
+        "type": "int"
+      }
+    }
+  },
+  "tilesAroundCastle": "Płytki wokół zamku",
+  "archbishopRoadTiles": "Odcinki dróg przy katedrze",
+  "completedCathedral": "Czy wszystkie drogi są zamknięte",
+  "archbishopHint": "Wpisz liczbę odcinków dróg prowadzących do katedry (każdy odcinek na płytce katedry liczy się osobno). Zaznacz, jeśli wszystkie drogi są zamknięte: arcybiskup dostaje 1 pkt za odcinek. Odznacz, jeśli punktujesz na koniec gry: też 1 pkt za odcinek, o ile nie ma karczmy.",
+  "archbishopInnHint": "Zaznacz, jeśli drogi mają karczmę: arcybiskup dostaje 2 pkt za odcinek zamiast 1, a nieukończona katedra z karczmą nie daje punktów.",
+  "rulesGermanCastles": "• Każdy gracz dostaje 1 zamek (przy 2–3 graczach 2). Zamek kładziesz zamiast dociągnięcia płytki; nie może dotykać innych zamków, także rogiem.\n• Pan zamku: ukończony zamek (otoczony jak klasztor) daje 12 pkt. Na koniec gry nieukończony: 2 pkt za płytkę zamku i 1 pkt za każdą otaczającą płytkę.\n• Ukończona droga lub miasto z zamkiem na końcu daje graczom z przewagą po 3 pkt za każdy zamek, także nieobsadzony. Premia jest doliczana po modyfikacjach z karczmy i katedry.",
+  "rulesGermanCathedrals": "• 6 płytek z katedrami na polach, z 3 lub 4 drogami od katedry.\n• Zbój na drodze do katedry: ukończona droga daje 2 pkt za płytkę (z karczmą 3), nieukończona na koniec gry 1 pkt za płytkę (z karczmą 0).\n• Arcybiskup na katedrze punktuje, gdy zamknięte są wszystkie drogi: 1 pkt za każdy odcinek drogi (z karczmą 2), każdy odcinek na płytce katedry osobno. Na koniec gry nieukończona: 1 pkt za odcinek (z karczmą 0)."
 }

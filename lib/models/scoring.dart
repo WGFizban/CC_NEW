@@ -1,6 +1,7 @@
 import 'circus.dart';
 import 'expansion.dart';
 import 'fairy.dart';
+import 'german.dart';
 import 'sheep.dart';
 
 /// Rodzaje punktacji dostępne w aplikacji. Typy z dodatków pojawiają się
@@ -52,6 +53,14 @@ enum ScoringType {
   monastery(
     'assets/icons/game/monastery.svg',
     expansion: Expansion.monasteries,
+  ),
+  germanCastle(
+    'assets/icons/game/german_castle.svg',
+    expansion: Expansion.germanCastles,
+  ),
+  archbishop(
+    'assets/icons/game/archbishop.svg',
+    expansion: Expansion.germanCathedrals,
   );
 
   const ScoringType(this.iconAsset, {this.expansion});
@@ -114,6 +123,11 @@ enum FarmScoring {
 /// - [bonus] – katedra (miasto), karczma (droga) lub świnka (pola),
 /// - [circusTiles] – płytki cyrku i akrobatów wokół dyrektora cyrku
 ///   (po 2 pkt, doliczane do dowolnej punktacji z jego udziałem),
+/// - [germanCastles] – niemieckie zamki na końcach ukończonej drogi lub miasta,
+///   po 3 pkt za każdy (po modyfikacjach z karczmy i katedry),
+/// - [cathedralRoad] – droga prowadzi do niemieckiej katedry: ukończona daje
+///   2 pkt za płytkę (3 z karczmą); w typie [ScoringType.archbishop] liczba
+///   płytek to odcinki wszystkich dróg przy katedrze,
 /// - [withFairy] – wróżka stoi przy meplu w tej budowli: +3 pkt
 ///   niezależnie od reszty (tylko miasto, droga, klasztor i pole).
 ///
@@ -129,6 +143,8 @@ int calculatePoints(
   FarmScoring farm = FarmScoring.normal,
   int circusTiles = 0,
   bool withFairy = false,
+  int germanCastles = 0,
+  bool cathedralRoad = false,
 }) {
   final int base;
   switch (type) {
@@ -143,7 +159,7 @@ int calculatePoints(
 
     case ScoringType.road:
       if (completed) {
-        base = tiles * (bonus ? 2 : 1);
+        base = tiles * (bonus ? (cathedralRoad ? 3 : 2) : (cathedralRoad ? 2 : 1));
       } else {
         // Niedokończona droga z karczmą nie daje punktów.
         base = bonus ? 0 : tiles;
@@ -181,7 +197,21 @@ int calculatePoints(
     case ScoringType.tower:
     case ScoringType.monastery:
       base = 0;
+
+    case ScoringType.germanCastle:
+      // Pan zamku: ukończony 12 pkt, nieukończony na koniec gry 2 pkt za
+      // płytkę zamku i 1 za każdą płytkę wokół.
+      base = completed ? kGermanCastleCompleted : kGermanCastleTileBase + tiles;
+
+    case ScoringType.archbishop:
+      // Arcybiskup: 1 pkt za odcinek drogi (2 z karczmą) po zamknięciu
+      // wszystkich dróg; nieukończona katedra z karczmą nie daje punktów.
+      base = completed ? tiles * (bonus ? 2 : 1) : (bonus ? 0 : tiles);
   }
   final fairy = withFairy && type.isFeature ? kFairyFeaturePoints : 0;
-  return base + ringmasterPoints(circusTiles) + fairy;
+  final castleBonus =
+      completed && (type == ScoringType.city || type == ScoringType.road)
+      ? germanCastles * kGermanCastleBonus
+      : 0;
+  return base + castleBonus + ringmasterPoints(circusTiles) + fairy;
 }
