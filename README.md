@@ -112,6 +112,13 @@ końca; **Nowa gra** w menu wraca do przygotowania.
   miasto i 5 za zamek, bez świnki; kilku właścicieli dodajesz w punktach
   wspólnych.
 
+### Klasztory niemieckie i holenderskie (mini dodatek 5)
+- Opat stoi na płytce klasztoru do końca gry i punktuje liniami: 1 pkt za każdą
+  płytkę w wierszu i kolumnie klasztoru (do pierwszej luki) i 1 pkt za sam
+  klasztor.
+- W aplikacji jedno pole z klawiaturą na punkty końcowe opata (kafelek
+  **Klasztor liniowy**). Klasztor z mnichem punktuje jak zwykły klasztor.
+
 ### Kopalnie złota
 - 16 sztabek złota, dopisywanych w punktacji miasta, drogi, klasztoru i opactwa
   (sekcja **Sztabki złota**: punktujący i gracze z punktów wspólnych) albo

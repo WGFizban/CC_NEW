@@ -255,5 +255,12 @@
   "summaryTitle": "Summary",
   "modifyExpansions": "Modify expansions",
   "backToEdit": "Back to editing players",
-  "traderCompleted": "Who completed the city (gets the goods)?"
+  "traderCompleted": "Who completed the city (gets the goods)?",
+  "expMonasteries": "German and Dutch monasteries",
+  "expMonasteriesDesc": "Monasteries with an abbot who stays until the end of the game and scores along lines: 1 pt for each tile in the monastery row and column plus 1 pt for the monastery itself. A monastery with a monk scores like a normal cloister.",
+  "scMonastery": "Line monastery",
+  "monasteryPointsLabel": "Abbot end-game points",
+  "monasteryHint": "Enter the abbot end-game points: 1 pt for each tile in the monastery row and column (counted from the monastery up to the first gap in each direction) and 1 pt for the monastery tile itself. A monastery with a monk scores like a normal cloister – choose \"Cloister\" then.",
+  "monasteryEventLabel": "{name}: line monastery +{points}",
+  "rulesMonasteries": "• Monasteries from the expansion: remove the base-game cloisters and shuffle the new tiles into the stack.\n• After placing the tile you may deploy a meeple as a monk (scores like a normal cloister, 9 pts when completed) or as an abbot (laid on its side).\n• The abbot stays on the tile until the end of the game and only then scores: 1 pt for each tile in the monastery row and column plus 1 pt for the monastery itself.\n• An empty space stops the count in that direction."
 }

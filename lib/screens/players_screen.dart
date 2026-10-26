@@ -30,6 +30,7 @@ import 'end_game_screen.dart';
 import 'flock_screen.dart';
 import 'pyramid_screen.dart';
 import 'select_points_type_screen.dart';
+import 'monastery_screen.dart';
 import 'tower_screen.dart';
 import 'expansions_screen.dart';
 import 'rules_screen.dart';
@@ -258,6 +259,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       ScoringType.sheep => FlockScreen(player: player, players: players),
       ScoringType.bazaar => BazaarScreen(player: player, players: players),
       ScoringType.tower => TowerScreen(player: player, players: players),
+      ScoringType.monastery => MonasteryScreen(player: player),
       ScoringType.pyramid => PyramidScreen(players: players),
       ScoringType.circus => CircusScreen(
         player: player,

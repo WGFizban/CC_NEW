@@ -740,5 +740,22 @@
   "summaryTitle": "Podsumowanie",
   "modifyExpansions": "Modyfikuj dodatki",
   "backToEdit": "Wróć do edycji graczy",
-  "traderCompleted": "Kto domknął miasto (dostaje surowce)?"
+  "traderCompleted": "Kto domknął miasto (dostaje surowce)?",
+  "expMonasteries": "Klasztory niemieckie i holenderskie",
+  "expMonasteriesDesc": "Klasztory z opatem, który stoi do końca gry i punktuje liniami: 1 pkt za każdą płytkę w wierszu i kolumnie klasztoru oraz 1 pkt za sam klasztor. Klasztor z mnichem punktuje jak zwykły klasztor.",
+  "scMonastery": "Klasztor liniowy",
+  "monasteryPointsLabel": "Punkty końcowe opata",
+  "monasteryHint": "Wpisz punkty opata na koniec gry: 1 pkt za każdą płytkę w wierszu i kolumnie klasztoru (liczone od klasztoru do pierwszej luki w danym kierunku) i 1 pkt za samą płytkę klasztoru. Klasztor z mnichem punktuje jak zwykły klasztor – wybierz wtedy „Klasztor\".",
+  "monasteryEventLabel": "{name}: klasztor liniowy +{points}",
+  "@monasteryEventLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "rulesMonasteries": "• Klasztory z dodatku: usuń z gry podstawowe klasztory, a nowe płytki wymieszaj ze stosem.\n• Po położeniu płytki możesz wystawić mepla jako mnicha (punktuje jak zwykły klasztor, 9 pkt po ukończeniu) albo jako opata (kładziony na boku).\n• Opat zostaje na płytce do końca gry i punktuje dopiero wtedy: 1 pkt za każdą płytkę w wierszu i kolumnie klasztoru oraz 1 pkt za sam klasztor.\n• Pusta przestrzeń przerywa liczenie w danym kierunku."
 }
