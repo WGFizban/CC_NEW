@@ -375,7 +375,7 @@ void main() {
         2 + kGermanCastleBonus,
       );
       expect(
-        calculatePoints(ScoringType.road, tiles: 2, germanCastles: 2),
+        calculatePoints(ScoringType.road, tiles: 4, germanCastles: 2),
         4 + 2 * kGermanCastleBonus,
       );
     });
