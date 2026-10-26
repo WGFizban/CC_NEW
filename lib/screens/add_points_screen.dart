@@ -526,7 +526,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               l.germanCastlesAtFeature,
               _germanCastles,
               (v) => _germanCastles = v,
-              max: 2,
+              max: 4,
               hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
             ),
         ];
