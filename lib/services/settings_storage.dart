@@ -27,6 +27,10 @@ class GameSettings {
 
   /// Etap gry oraz czas jej rozpoczęcia i zakończenia. Etap `null` oznacza
   /// stary zapis bez etapu (patrz [inferLegacyStage]).
+  /// Czy użytkownik widział już samouczek (pokazujemy go przy pierwszym
+  /// uruchomieniu).
+  bool tutorialSeen;
+
   GameStage? stage;
   DateTime? startedAt;
   DateTime? endedAt;
@@ -38,6 +42,7 @@ class GameSettings {
     this.themeMode = ThemeMode.system,
     this.language = AppLanguage.pl,
     this.stage,
+    this.tutorialSeen = false,
     this.startedAt,
     this.endedAt,
   }) : expansions = expansions ?? <Expansion>{},
@@ -55,6 +60,7 @@ class SettingsStorage {
   static const _keepScreenOnKey = 'keep_screen_on';
   static const _themeKey = 'theme_mode';
   static const _languageKey = 'language';
+  static const _tutorialKey = 'tutorial_seen';
   static const _stageKey = 'game_stage';
   static const _startedKey = 'game_started_at';
   static const _endedKey = 'game_ended_at';
@@ -118,6 +124,7 @@ class SettingsStorage {
         orElse: () => ThemeMode.system,
       ),
       language: AppLanguage.fromCode(prefs.getString(_languageKey)),
+      tutorialSeen: prefs.getBool(_tutorialKey) ?? false,
       stage: GameStage.values
           .where((g) => g.name == prefs.getString(_stageKey))
           .firstOrNull,
@@ -140,6 +147,7 @@ class SettingsStorage {
     await prefs.setBool(_keepScreenOnKey, settings.keepScreenOn);
     await prefs.setString(_themeKey, settings.themeMode.name);
     await prefs.setString(_languageKey, settings.language.code);
+    await prefs.setBool(_tutorialKey, settings.tutorialSeen);
     await _writeString(prefs, _stageKey, settings.stage?.name);
     await _writeString(prefs, _startedKey, settings.startedAt?.toIso8601String());
     await _writeString(prefs, _endedKey, settings.endedAt?.toIso8601String());

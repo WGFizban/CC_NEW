@@ -32,11 +32,21 @@ import 'pyramid_screen.dart';
 import 'select_points_type_screen.dart';
 import 'monastery_screen.dart';
 import 'tower_screen.dart';
+import 'about_screen.dart';
 import 'expansions_screen.dart';
+import 'tutorial_screen.dart';
 import 'rules_screen.dart';
 import 'settings_screen.dart';
 
-enum _MenuAction { undo, newGame, expansions, rules, settings }
+enum _MenuAction {
+  undo,
+  newGame,
+  expansions,
+  rules,
+  tutorial,
+  about,
+  settings,
+}
 
 class PlayersScreen extends StatefulWidget {
   const PlayersScreen({super.key});
@@ -105,7 +115,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
       _sortPlayers();
     });
     _applyWakelock();
-    if (_stage == GameStage.finished) _showEndScreen();
+    if (_stage == GameStage.finished) {
+      _showEndScreen();
+    } else if (!settings.tutorialSeen) {
+      settings.tutorialSeen = true;
+      _saveSettings();
+      _openTutorial();
+    }
   }
 
   /// Włącza lub wyłącza blokadę wygaszania ekranu zgodnie z ustawieniem.
@@ -409,6 +425,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
     if (newGame == true && mounted) _resetGame();
   }
 
+  Future<void> _openTutorial() async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => const TutorialScreen()),
+    );
+  }
+
   Future<void> _openExpansions() async {
     await Navigator.push<void>(
       context,
@@ -466,6 +489,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
           context,
           MaterialPageRoute(builder: (_) => const RulesScreen()),
         );
+      case _MenuAction.tutorial:
+        _openTutorial();
+      case _MenuAction.about:
+        Navigator.push<void>(
+          context,
+          MaterialPageRoute(builder: (_) => const AboutScreen()),
+        );
       case _MenuAction.settings:
         _openSettings();
     }
@@ -504,6 +534,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
       PopupMenuItem(
         value: _MenuAction.rules,
         child: _menuRow(Icons.menu_book_outlined, l.rulesTitle),
+      ),
+      PopupMenuItem(
+        value: _MenuAction.tutorial,
+        child: _menuRow(Icons.school_outlined, l.menuTutorial),
+      ),
+      PopupMenuItem(
+        value: _MenuAction.about,
+        child: _menuRow(Icons.info_outline, l.menuAbout),
       ),
       PopupMenuItem(
         value: _MenuAction.settings,
