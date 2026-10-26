@@ -39,7 +39,7 @@ class AboutScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'CarcassonneCounter',
+            'Carcassonne Counter',
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
@@ -76,7 +76,7 @@ class AboutScreen extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: () => showLicensePage(
               context: context,
-              applicationName: 'CarcassonneCounter',
+              applicationName: 'Carcassonne Counter',
             ),
             icon: const Icon(Icons.description_outlined),
             label: Text(l.aboutLicenses),

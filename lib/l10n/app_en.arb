@@ -269,7 +269,7 @@
   "tutorialSkip": "Skip",
   "tutorialNext": "Next",
   "tutorialDone": "Let us start!",
-  "tutorial1Title": "Welcome to CarcassonneCounter!",
+  "tutorial1Title": "Welcome to Carcassonne Counter!",
   "tutorial1Body": "A score counter for Carcassonne that supports expansions. A few steps will show you how to use it.",
   "tutorial2Title": "Add players",
   "tutorial2Body": "Use the \"+\" button to add players (at least two are needed) and pick their meeple colors. Press and hold a player row to edit or delete it. Turn on the expansions you play with in the menu: Expansions.",

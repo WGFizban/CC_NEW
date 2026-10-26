@@ -29,7 +29,7 @@ class CarcassonneCounterApp extends StatelessWidget {
       builder: (context, language, _) => ValueListenableBuilder<ThemeMode>(
         valueListenable: appThemeMode,
         builder: (context, mode, _) => MaterialApp(
-          title: 'CarcassonneCounter',
+          title: 'Carcassonne Counter',
           debugShowCheckedModeBanner: false,
           theme: buildTheme(Brightness.light),
           darkTheme: buildTheme(Brightness.dark),

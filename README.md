@@ -1,4 +1,4 @@
-# CarcassonneCounter (cc_new)
+# Carcassonne Counter
 
 Aplikacja we Flutterze do liczenia punktów w grze planszowej Carcassonne,
 z obsługą wybranych dodatków.
