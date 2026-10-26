@@ -16,6 +16,7 @@ dependencies:
   shared_preferences: ^2.3.3
   flutter_colorpicker: ^1.0.3
   wakelock_plus: ^1.2.8
+  package_info_plus: ^8.1.0
 
 dev_dependencies:
   flutter_test:
@@ -31,6 +32,7 @@ flutter:
   assets:
     - assets/icons/meeple.svg
     - assets/icons/game/
+    - assets/icons/splash_logo.png
 
 flutter_launcher_icons:
   android: true
@@ -40,9 +42,12 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"
 
 flutter_native_splash:
-  color: "#f4ecd8"
-  image: assets/icons/splash_meeple.png
+  color: "#000080"
+  image: assets/icons/splash_logo_padded.png
   android: true
   ios: false
   web: false
   android_gravity: center
+  android_12:
+    color: "#000080"
+    image: assets/icons/splash_logo_android12.png

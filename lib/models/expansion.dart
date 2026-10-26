@@ -10,7 +10,8 @@ enum Expansion {
   bridgesCastlesBazaars(8),
   hillsSheep(9),
   circus(10),
-  goldMines(4, mini: true);
+  goldMines(4, mini: true),
+  monasteries(5, mini: true);
 
   const Expansion(this.number, {this.mini = false});
 

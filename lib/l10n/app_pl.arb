@@ -64,7 +64,7 @@
       }
     }
   },
-  "newGameTitle": "Nowa gra?",
+  "newGameTitle": "Nowa gra",
   "newGameMessage": "Punkty, surowce i zużyte żetony cyrku zostaną wyzerowane, a gra wróci do przygotowania: znów będzie można dodawać graczy i zmieniać dodatki.",
   "reset": "Resetuj",
   "menuUndoNone": "Cofnij ostatnie punkty",
@@ -740,5 +740,64 @@
   "summaryTitle": "Podsumowanie",
   "modifyExpansions": "Modyfikuj dodatki",
   "backToEdit": "Wróć do edycji graczy",
-  "traderCompleted": "Kto domknął miasto (dostaje surowce)?"
+  "traderCompleted": "Kto domknął miasto (dostaje surowce)?",
+  "expMonasteries": "Klasztory niemieckie i holenderskie",
+  "expMonasteriesDesc": "Klasztory z opatem, który stoi do końca gry i punktuje liniami: 1 pkt za każdą płytkę w wierszu i kolumnie klasztoru oraz 1 pkt za sam klasztor. Klasztor z mnichem punktuje jak zwykły klasztor.",
+  "scMonastery": "Opat",
+  "monasteryPointsLabel": "Punkty końcowe opata",
+  "monasteryHint": "Wpisz punkty opata na koniec gry: 1 pkt za każdą płytkę w wierszu i kolumnie klasztoru (liczone od klasztoru do pierwszej luki w danym kierunku) i 1 pkt za samą płytkę klasztoru. Klasztor z mnichem punktuje jak zwykły klasztor – wybierz wtedy „Klasztor\".",
+  "monasteryEventLabel": "{name}: opat +{points}",
+  "@monasteryEventLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "rulesMonasteries": "• Klasztory z dodatku: usuń z gry podstawowe klasztory, a nowe płytki wymieszaj ze stosem.\n• Po położeniu płytki możesz wystawić mepla jako mnicha (punktuje jak zwykły klasztor, 9 pkt po ukończeniu) albo jako opata (kładziony na boku).\n• Opat zostaje na płytce do końca gry i punktuje dopiero wtedy: 1 pkt za każdą płytkę w wierszu i kolumnie klasztoru oraz 1 pkt za sam klasztor.\n• Pusta przestrzeń przerywa liczenie w danym kierunku.",
+  "menuTutorial": "Samouczek",
+  "menuAbout": "Info o aplikacji",
+  "tutorialTitle": "Jak to działa",
+  "tutorialSkip": "Pomiń",
+  "tutorialNext": "Dalej",
+  "tutorialDone": "Zaczynamy!",
+  "tutorial1Title": "Witaj w CarcassonneCounter!",
+  "tutorial1Body": "To licznik punktów do Carcassonne z obsługą dodatków. W kilku krokach pokażemy, jak z niego korzystać.",
+  "tutorial2Title": "Dodaj graczy",
+  "tutorial2Body": "Przyciskiem „+\" dodaj graczy (do gry potrzeba co najmniej dwóch) i wybierz kolory ich mepli. Przytrzymaj wiersz gracza, żeby go edytować lub usunąć. Dodatki, w które grasz, włączysz w menu: Dodatki.",
+  "tutorial3Title": "Rozpocznij grę",
+  "tutorial3Body": "Gdy wszystko jest gotowe, naciśnij „Rozpocznij grę\". Od tej chwili nie zmienisz graczy ani dodatków.",
+  "tutorial4Title": "Dodawaj punkty",
+  "tutorial4Body": "Kliknij wiersz gracza, wybierz, co punktujesz (miasto, drogę, klasztor, pole albo element dodatku), wpisz wynik i zatwierdź.",
+  "tutorial5Title": "Pomyłka?",
+  "tutorial5Body": "W menu możesz cofnąć ostatnie zdarzenie. Skrót zasad przypomni, ile punktów co jest warte, a znak „?\" przy elementach podpowie, co zrobić.",
+  "tutorial6Title": "Koniec gry",
+  "tutorial6Body": "Przycisk z flagą kończy grę. Zobaczysz zwycięzcę i podsumowanie punktów z każdego źródła. Miłej rozgrywki!",
+  "aboutTitle": "Info o aplikacji",
+  "aboutVersion": "Wersja {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutDescription": "Licznik punktów do gry planszowej Carcassonne. Liczy punkty zgodnie z zasadami, obsługuje wiele dodatków, pilnuje przebiegu rozgrywki i na końcu pokazuje podsumowanie.",
+  "aboutMadeBy": "Stworzone przez {author}",
+  "@aboutMadeBy": {
+    "placeholders": {
+      "author": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutDisclaimer": "Aplikacja nieoficjalna, tworzona przez fana. Carcassonne jest znakiem towarowym swoich właścicieli. Wszystkie ikony w aplikacji są autorskie.",
+  "aboutLicenses": "Licencje bibliotek",
+  "newGameChoiceBody": "Chcesz zagrać jeszcze raz w tym samym składzie, czy ustawić graczy od nowa?\n\nPunkty, surowce i zużyte żetony cyrku zostaną wyzerowane. Dodatki zostają bez zmian, a przed startem nadal możesz je zmienić.",
+  "newGameSamePlayers": "Ci sami gracze",
+  "newGameNewPlayers": "Nowi gracze",
+  "addMorePlayers": "Do gry potrzeba co najmniej dwóch graczy. Dodaj kolejnego przyciskiem"
 }

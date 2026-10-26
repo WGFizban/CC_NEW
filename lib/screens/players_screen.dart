@@ -30,12 +30,23 @@ import 'end_game_screen.dart';
 import 'flock_screen.dart';
 import 'pyramid_screen.dart';
 import 'select_points_type_screen.dart';
+import 'monastery_screen.dart';
 import 'tower_screen.dart';
+import 'about_screen.dart';
 import 'expansions_screen.dart';
+import 'tutorial_screen.dart';
 import 'rules_screen.dart';
 import 'settings_screen.dart';
 
-enum _MenuAction { undo, newGame, expansions, rules, settings }
+enum _MenuAction {
+  undo,
+  newGame,
+  expansions,
+  rules,
+  tutorial,
+  about,
+  settings,
+}
 
 class PlayersScreen extends StatefulWidget {
   const PlayersScreen({super.key});
@@ -104,7 +115,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
       _sortPlayers();
     });
     _applyWakelock();
-    if (_stage == GameStage.finished) _showEndScreen();
+    if (_stage == GameStage.finished) {
+      _showEndScreen();
+    } else if (!settings.tutorialSeen) {
+      settings.tutorialSeen = true;
+      _saveSettings();
+      _openTutorial();
+    }
   }
 
   /// Włącza lub wyłącza blokadę wygaszania ekranu zgodnie z ustawieniem.
@@ -258,6 +275,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       ScoringType.sheep => FlockScreen(player: player, players: players),
       ScoringType.bazaar => BazaarScreen(player: player, players: players),
       ScoringType.tower => TowerScreen(player: player, players: players),
+      ScoringType.monastery => MonasteryScreen(player: player),
       ScoringType.pyramid => PyramidScreen(players: players),
       ScoringType.circus => CircusScreen(
         player: player,
@@ -320,17 +338,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   Future<void> _onReset() async {
-    final confirmed = await _confirm(
-      title: context.l10n.newGameTitle,
-      message: context.l10n.newGameMessage,
-      confirmLabel: context.l10n.yes,
-    );
-    if (!confirmed || !mounted) return;
-    _resetGame();
+    final choice = await askNewGame(context);
+    if (choice == null || !mounted) return;
+    _resetGame(choice);
   }
 
-  void _resetGame() {
+  void _resetGame(NewGameChoice choice) {
     setState(() {
+      if (choice == NewGameChoice.newPlayers) _players.clear();
       for (final p in _players) {
         p.points = 0;
         p.gold = 0;
@@ -390,7 +405,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
   /// Podsumowanie gry; jedyne wyjście to „Nowa gra".
   Future<void> _showEndScreen() async {
-    final newGame = await Navigator.push<bool>(
+    final newGame = await Navigator.push<NewGameChoice>(
       context,
       MaterialPageRoute(
         builder: (_) => EndGameScreen(
@@ -404,7 +419,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
         ),
       ),
     );
-    if (newGame == true && mounted) _resetGame();
+    if (newGame != null && mounted) _resetGame(newGame);
+  }
+
+  Future<void> _openTutorial() async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => const TutorialScreen()),
+    );
   }
 
   Future<void> _openExpansions() async {
@@ -464,6 +486,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
           context,
           MaterialPageRoute(builder: (_) => const RulesScreen()),
         );
+      case _MenuAction.tutorial:
+        _openTutorial();
+      case _MenuAction.about:
+        Navigator.push<void>(
+          context,
+          MaterialPageRoute(builder: (_) => const AboutScreen()),
+        );
       case _MenuAction.settings:
         _openSettings();
     }
@@ -504,6 +533,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
         child: _menuRow(Icons.menu_book_outlined, l.rulesTitle),
       ),
       PopupMenuItem(
+        value: _MenuAction.tutorial,
+        child: _menuRow(Icons.school_outlined, l.menuTutorial),
+      ),
+      PopupMenuItem(
+        value: _MenuAction.about,
+        child: _menuRow(Icons.info_outline, l.menuAbout),
+      ),
+      PopupMenuItem(
         value: _MenuAction.settings,
         child: _menuRow(Icons.settings, l.settings),
       ),
@@ -513,7 +550,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final showStart = _inSetup && _players.isNotEmpty;
+    final showStart = _inSetup && canStartGame(_players.length);
 
     return Scaffold(
       appBar: AppBar(
@@ -583,9 +620,33 @@ class _PlayersScreenState extends State<PlayersScreen> {
             )
           : ListView.builder(
               padding: const EdgeInsets.only(bottom: 88),
-              itemCount: _players.length,
-              itemBuilder: (context, index) =>
-                  _buildPlayerCard(_players[index]),
+              itemCount: _players.length + 1,
+              itemBuilder: (context, index) {
+                if (index < _players.length) {
+                  return _buildPlayerCard(_players[index]);
+                }
+                // Podpowiedź, gdy za mało graczy, żeby zacząć grę.
+                if (_inSetup && !canStartGame(_players.length)) {
+                  return Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(text: '${l.addMorePlayers} '),
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: fabLookalike(context, Icons.add),
+                          ),
+                          const TextSpan(text: '.'),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
             ),
     );
   }

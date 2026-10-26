@@ -16,6 +16,8 @@ import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/score_event.dart';
 import 'package:cc_new/models/scoring.dart';
+import 'package:cc_new/models/app_version.dart';
+import 'package:cc_new/models/monastery.dart';
 import 'package:cc_new/models/summary.dart';
 import 'package:cc_new/models/tower.dart';
 import 'package:cc_new/services/settings_storage.dart';
@@ -81,9 +83,10 @@ void main() {
         Expansion.hillsSheep,
         Expansion.circus,
         Expansion.goldMines,
+        Expansion.monasteries,
       ]);
       expect([for (final e in Expansion.values) e.number], [
-        1, 2, 3, 4, 5, 8, 9, 10, 4, //
+        1, 2, 3, 4, 5, 8, 9, 10, 4, 5, //
       ]);
     });
 
@@ -331,6 +334,29 @@ void main() {
       expect(result['Ala']![ScoringType.road], 3);
       expect(result['Bob']![ScoringType.city], 6);
       expect(result['Bob']![ScoringType.road], isNull);
+    });
+  });
+
+  group('klasztory niemieckie i holenderskie', () {
+    test('opat: punkty za płytki w liniach plus sam klasztor', () {
+      expect(monasteryLinePoints(0), 1);
+      expect(monasteryLinePoints(5), 6);
+    });
+
+    test('typ punktacji jest dostępny tylko z włączonym dodatkiem', () {
+      expect(ScoringType.availableFor({}), isNot(contains(ScoringType.monastery)));
+      expect(
+        ScoringType.availableFor({Expansion.monasteries}),
+        contains(ScoringType.monastery),
+      );
+      expect(Expansion.monasteries.mini, isTrue);
+    });
+  });
+
+  group('wersja aplikacji', () {
+    test('wydanie z GitHuba pokazujemy jako vN, a inne wersje bez zmian', () {
+      expect(formatAppVersion('7'), 'v7');
+      expect(formatAppVersion('0.1.0'), '0.1.0');
     });
   });
 }

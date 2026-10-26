@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'l10n/app_language.dart';
 import 'l10n/l10n.dart';
-import 'screens/players_screen.dart';
+import 'screens/splash_screen.dart';
 import 'services/settings_storage.dart';
 import 'theme/app_theme.dart';
 
@@ -49,7 +49,7 @@ class CarcassonneCounterApp extends StatelessWidget {
               child: child ?? const SizedBox.shrink(),
             ),
           ),
-          home: const PlayersScreen(),
+          home: const SplashScreen(),
         ),
       ),
     );

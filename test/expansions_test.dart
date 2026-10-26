@@ -598,6 +598,13 @@ void main() {
       );
     });
 
+    test('grę można zacząć od dwóch graczy', () {
+      expect(canStartGame(0), isFalse);
+      expect(canStartGame(1), isFalse);
+      expect(canStartGame(2), isTrue);
+      expect(canStartGame(5), isTrue);
+    });
+
     test('edycja możliwa tylko w przygotowaniu', () {
       expect(isSetup(GameStage.setup), isTrue);
       expect(isSetup(GameStage.playing), isFalse);

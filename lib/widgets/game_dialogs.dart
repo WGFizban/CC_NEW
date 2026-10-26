@@ -75,6 +75,43 @@ Future<void> showGameStartedNote(BuildContext context) {
   );
 }
 
+/// Sposób rozpoczęcia nowej gry.
+enum NewGameChoice {
+  /// Ci sami gracze, wyzerowane punkty.
+  samePlayers,
+
+  /// Lista graczy od zera.
+  newPlayers,
+}
+
+/// Okno nowej gry z trzema przyciskami: Anuluj, ci sami gracze i nowi gracze.
+/// Zwraca `null` po anulowaniu.
+Future<NewGameChoice?> askNewGame(BuildContext context) {
+  final l = context.l10n;
+  return showDialog<NewGameChoice>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l.newGameTitle),
+      content: SingleChildScrollView(child: Text(l.newGameChoiceBody)),
+      actionsOverflowAlignment: OverflowBarAlignment.end,
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: Text(l.cancel),
+        ),
+        FilledButton.tonal(
+          onPressed: () => Navigator.pop(ctx, NewGameChoice.samePlayers),
+          child: Text(l.newGameSamePlayers),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx, NewGameChoice.newPlayers),
+          child: Text(l.newGameNewPlayers),
+        ),
+      ],
+    ),
+  );
+}
+
 /// Odpowiedź w oknie rozpoczęcia gry.
 enum StartChoice { start, cancel, expansions }
 

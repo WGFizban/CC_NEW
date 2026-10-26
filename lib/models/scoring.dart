@@ -48,6 +48,10 @@ enum ScoringType {
   tower(
     'assets/icons/game/tower.svg',
     expansion: Expansion.tower,
+  ),
+  monastery(
+    'assets/icons/game/monastery.svg',
+    expansion: Expansion.monasteries,
   );
 
   const ScoringType(this.iconAsset, {this.expansion});
@@ -175,6 +179,7 @@ int calculatePoints(
     case ScoringType.pyramid:
     case ScoringType.ringmaster:
     case ScoringType.tower:
+    case ScoringType.monastery:
       base = 0;
   }
   final fairy = withFairy && type.isFeature ? kFairyFeaturePoints : 0;

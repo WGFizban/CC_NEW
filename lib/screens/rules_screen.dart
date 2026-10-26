@@ -18,6 +18,7 @@ class RulesScreen extends StatelessWidget {
     Expansion.hillsSheep => l.rulesHills,
     Expansion.circus => l.rulesCircus,
     Expansion.goldMines => l.rulesGold,
+    Expansion.monasteries => l.rulesMonasteries,
   };
 
   @override
