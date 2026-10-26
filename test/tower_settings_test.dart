@@ -425,16 +425,26 @@ void main() {
           cathedralRoad: true,
           completed: false,
         ),
-        4,
+        8,
+      );
+      expect(
+        calculatePoints(
+          ScoringType.road,
+          tiles: 4,
+          cathedralRoad: true,
+          completed: false,
+          bonus: true,
+        ),
+        0,
       );
     });
 
-    test('arcybiskup: 1 pkt za odcinek, z karczmą 2, nieukończona z karczmą 0', () {
+    test('arcybiskup: 1 pkt za odcinek, z karczmą 2, nieukończona 0', () {
       expect(calculatePoints(ScoringType.archbishop, tiles: 8), 8);
       expect(calculatePoints(ScoringType.archbishop, tiles: 8, bonus: true), 16);
       expect(
         calculatePoints(ScoringType.archbishop, tiles: 5, completed: false),
-        5,
+        0,
       );
       expect(
         calculatePoints(
