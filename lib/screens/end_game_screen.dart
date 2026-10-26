@@ -9,7 +9,7 @@ import '../widgets/game_dialogs.dart';
 import 'summary_screen.dart';
 
 /// Koniec gry: zwycięzca (albo remis) i dwa przyciski – podsumowanie oraz
-/// nowa gra. Zwraca `true`, gdy użytkownik zaczyna nową grę; cofnąć się nie
+/// nowa gra. Zwraca wybrany sposób rozpoczęcia nowej gry; cofnąć się nie
 /// można.
 class EndGameScreen extends StatelessWidget {
   final List<Player> players;
@@ -69,11 +69,10 @@ class EndGameScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   FilledButton.icon(
                     onPressed: () async {
-                      final ok = await askYesNo(
-                        context,
-                        title: l.newGameQuestion,
-                      );
-                      if (ok && context.mounted) Navigator.pop(context, true);
+                      final choice = await askNewGame(context);
+                      if (choice != null && context.mounted) {
+                        Navigator.pop(context, choice);
+                      }
                     },
                     icon: const Icon(Icons.refresh),
                     label: Text(l.newGame),

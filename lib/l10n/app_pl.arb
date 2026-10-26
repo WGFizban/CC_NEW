@@ -64,7 +64,7 @@
       }
     }
   },
-  "newGameTitle": "Nowa gra?",
+  "newGameTitle": "Nowa gra",
   "newGameMessage": "Punkty, surowce i zużyte żetony cyrku zostaną wyzerowane, a gra wróci do przygotowania: znów będzie można dodawać graczy i zmieniać dodatki.",
   "reset": "Resetuj",
   "menuUndoNone": "Cofnij ostatnie punkty",
@@ -743,10 +743,10 @@
   "traderCompleted": "Kto domknął miasto (dostaje surowce)?",
   "expMonasteries": "Klasztory niemieckie i holenderskie",
   "expMonasteriesDesc": "Klasztory z opatem, który stoi do końca gry i punktuje liniami: 1 pkt za każdą płytkę w wierszu i kolumnie klasztoru oraz 1 pkt za sam klasztor. Klasztor z mnichem punktuje jak zwykły klasztor.",
-  "scMonastery": "Klasztor liniowy",
+  "scMonastery": "Opat",
   "monasteryPointsLabel": "Punkty końcowe opata",
   "monasteryHint": "Wpisz punkty opata na koniec gry: 1 pkt za każdą płytkę w wierszu i kolumnie klasztoru (liczone od klasztoru do pierwszej luki w danym kierunku) i 1 pkt za samą płytkę klasztoru. Klasztor z mnichem punktuje jak zwykły klasztor – wybierz wtedy „Klasztor\".",
-  "monasteryEventLabel": "{name}: klasztor liniowy +{points}",
+  "monasteryEventLabel": "{name}: opat +{points}",
   "@monasteryEventLabel": {
     "placeholders": {
       "name": {
@@ -769,7 +769,7 @@
   "tutorial2Title": "Dodaj graczy",
   "tutorial2Body": "Przyciskiem „+\" dodaj graczy i wybierz kolory ich mepli. Przytrzymaj wiersz gracza, żeby go edytować lub usunąć. Dodatki, w które grasz, włączysz w menu: Dodatki.",
   "tutorial3Title": "Rozpocznij grę",
-  "tutorial3Body": "Gdy wszystko jest gotowe, naciśnij „Rozpocznij grę\". Od tej chwili nie zmienisz graczy ani dodatków, a w tle liczy się czas rozgrywki.",
+  "tutorial3Body": "Gdy wszystko jest gotowe, naciśnij „Rozpocznij grę\". Od tej chwili nie zmienisz graczy ani dodatków.",
   "tutorial4Title": "Dodawaj punkty",
   "tutorial4Body": "Kliknij wiersz gracza, wybierz, co punktujesz (miasto, drogę, klasztor, pole albo element dodatku), wpisz wynik i zatwierdź.",
   "tutorial5Title": "Pomyłka?",
@@ -795,5 +795,8 @@
     }
   },
   "aboutDisclaimer": "Aplikacja nieoficjalna, tworzona przez fana. Carcassonne jest znakiem towarowym swoich właścicieli. Wszystkie ikony w aplikacji są autorskie.",
-  "aboutLicenses": "Licencje bibliotek"
+  "aboutLicenses": "Licencje bibliotek",
+  "newGameChoiceBody": "Chcesz zagrać jeszcze raz w tym samym składzie, czy ustawić graczy od nowa?\n\nPunkty, surowce i zużyte żetony cyrku zostaną wyzerowane. Dodatki zostają bez zmian, a przed startem nadal możesz je zmienić.",
+  "newGameSamePlayers": "Ci sami gracze",
+  "newGameNewPlayers": "Nowi gracze"
 }

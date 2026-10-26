@@ -16,6 +16,7 @@ import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/score_event.dart';
 import 'package:cc_new/models/scoring.dart';
+import 'package:cc_new/models/app_version.dart';
 import 'package:cc_new/models/monastery.dart';
 import 'package:cc_new/models/summary.dart';
 import 'package:cc_new/models/tower.dart';
@@ -349,6 +350,13 @@ void main() {
         contains(ScoringType.monastery),
       );
       expect(Expansion.monasteries.mini, isTrue);
+    });
+  });
+
+  group('wersja aplikacji', () {
+    test('wydanie z GitHuba pokazujemy jako vN, a inne wersje bez zmian', () {
+      expect(formatAppVersion('7'), 'v7');
+      expect(formatAppVersion('0.1.0'), '0.1.0');
     });
   });
 }

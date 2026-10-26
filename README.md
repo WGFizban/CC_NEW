@@ -117,7 +117,7 @@ końca; **Nowa gra** w menu wraca do przygotowania.
   płytkę w wierszu i kolumnie klasztoru (do pierwszej luki) i 1 pkt za sam
   klasztor.
 - W aplikacji jedno pole z klawiaturą na punkty końcowe opata (kafelek
-  **Klasztor liniowy**). Klasztor z mnichem punktuje jak zwykły klasztor.
+  **Opat**). Klasztor z mnichem punktuje jak zwykły klasztor.
 
 ### Kopalnie złota
 - 16 sztabek złota, dopisywanych w punktacji miasta, drogi, klasztoru i opactwa

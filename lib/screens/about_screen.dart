@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../l10n/l10n.dart';
+import '../models/app_version.dart';
 
 /// Autor aplikacji (pokazywany na ekranie „Info o aplikacji").
 const String kAuthorName = 'WGFizban';
@@ -14,7 +15,7 @@ class AboutScreen extends StatelessWidget {
   Future<String> _version() async {
     try {
       final info = await PackageInfo.fromPlatform();
-      return '${info.version} (${info.buildNumber})';
+      return formatAppVersion(info.version);
     } catch (_) {
       return '—';
     }

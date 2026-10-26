@@ -338,17 +338,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   Future<void> _onReset() async {
-    final confirmed = await _confirm(
-      title: context.l10n.newGameTitle,
-      message: context.l10n.newGameMessage,
-      confirmLabel: context.l10n.yes,
-    );
-    if (!confirmed || !mounted) return;
-    _resetGame();
+    final choice = await askNewGame(context);
+    if (choice == null || !mounted) return;
+    _resetGame(choice);
   }
 
-  void _resetGame() {
+  void _resetGame(NewGameChoice choice) {
     setState(() {
+      if (choice == NewGameChoice.newPlayers) _players.clear();
       for (final p in _players) {
         p.points = 0;
         p.gold = 0;
@@ -408,7 +405,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
   /// Podsumowanie gry; jedyne wyjście to „Nowa gra".
   Future<void> _showEndScreen() async {
-    final newGame = await Navigator.push<bool>(
+    final newGame = await Navigator.push<NewGameChoice>(
       context,
       MaterialPageRoute(
         builder: (_) => EndGameScreen(
@@ -422,7 +419,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         ),
       ),
     );
-    if (newGame == true && mounted) _resetGame();
+    if (newGame != null && mounted) _resetGame(newGame);
   }
 
   Future<void> _openTutorial() async {
