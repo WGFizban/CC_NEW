@@ -223,7 +223,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             _has(Expansion.hillsSheep)
         ? _vineyards
         : 0,
-    completed: _type == ScoringType.archbishop || _completed,
+    completed:
+        _type == ScoringType.archbishop || _type == ScoringType.road || _completed,
     germanCastles:
         (_type == ScoringType.city || _type == ScoringType.road) &&
             _has(Expansion.germanCastles)
@@ -517,11 +518,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               (v) => _cathedralRoad = v,
               hint: l.roadToCathedralHint,
             ),
-          // Ukończenie drogi ma znaczenie tylko dla premii za niemieckie
-          // zamki; katedra liczy się tak samo dla drogi ukończonej i nie.
-          if (!_bonus && _has(Expansion.germanCastles))
-            _check(l.completedRoad, _completed, (v) => _completed = v),
-          if (_completed && _has(Expansion.germanCastles))
+          // Droga liczy się tak samo ukończona i nie (nieukończoną z karczmą
+          // po prostu się nie dopisuje), więc bez pola „Czy ukończona”.
+          if (_has(Expansion.germanCastles))
             _stepperRow(
               l.germanCastlesAtFeature,
               _germanCastles,

@@ -817,7 +817,6 @@
   },
   "roadToCathedral": "Czy prowadzi do katedry",
   "roadToCathedralHint": "Zaznacz, jeśli którykolwiek koniec drogi (także rondo z kilkoma końcami) leży na płytce niemieckiej katedry (zbój); wiele katedr nie zwiększa premii: dostaje podwójne punkty, czyli 2 pkt za płytkę (3 z karczmą), także gdy jest nieukończona na koniec gry.",
-  "completedRoad": "Czy ukończona",
   "completedGermanCastle": "Czy ukończony",
   "germanCastleHint": "Zaznacz, jeśli zamek jest otoczony ze wszystkich stron: pan zamku dostaje {completed} pkt. Odznacz, jeśli punktujesz go na koniec gry: {base} pkt za płytkę zamku i 1 pkt za każdą otaczającą płytkę.",
   "@germanCastleHint": {
