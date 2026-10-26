@@ -272,7 +272,7 @@
   "tutorial1Title": "Welcome to CarcassonneCounter!",
   "tutorial1Body": "A score counter for Carcassonne that supports expansions. A few steps will show you how to use it.",
   "tutorial2Title": "Add players",
-  "tutorial2Body": "Use the \"+\" button to add players and pick their meeple colors. Press and hold a player row to edit or delete it. Turn on the expansions you play with in the menu: Expansions.",
+  "tutorial2Body": "Use the \"+\" button to add players (at least two are needed) and pick their meeple colors. Press and hold a player row to edit or delete it. Turn on the expansions you play with in the menu: Expansions.",
   "tutorial3Title": "Start the game",
   "tutorial3Body": "When everything is ready, press \"Start game\". From then on you cannot change players or expansions.",
   "tutorial4Title": "Add points",
@@ -289,5 +289,6 @@
   "aboutLicenses": "Library licenses",
   "newGameChoiceBody": "Do you want to play again with the same players, or set the players up from scratch?\n\nPoints, goods and used circus tokens will be reset. Expansions stay as they are, and you can still change them before starting.",
   "newGameSamePlayers": "Same players",
-  "newGameNewPlayers": "New players"
+  "newGameNewPlayers": "New players",
+  "addMorePlayers": "You need at least two players. Add another one with the \"+\" button."
 }

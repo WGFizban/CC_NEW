@@ -3,6 +3,12 @@ import 'player.dart';
 /// Etap gry: przygotowanie (dodawanie graczy i dodatków), rozgrywka i koniec.
 enum GameStage { setup, playing, finished }
 
+/// Najmniejsza liczba graczy potrzebna do rozpoczęcia gry.
+const int kMinPlayers = 2;
+
+/// Czy można rozpocząć grę przy [playerCount] graczach.
+bool canStartGame(int playerCount) => playerCount >= kMinPlayers;
+
 /// Czas gry: od rozpoczęcia do zakończenia (albo do teraz, gdy gra trwa).
 Duration gameElapsed({
   required DateTime? startedAt,

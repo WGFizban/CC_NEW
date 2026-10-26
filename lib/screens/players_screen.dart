@@ -550,7 +550,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final showStart = _inSetup && _players.isNotEmpty;
+    final showStart = _inSetup && canStartGame(_players.length);
 
     return Scaffold(
       appBar: AppBar(
@@ -620,9 +620,24 @@ class _PlayersScreenState extends State<PlayersScreen> {
             )
           : ListView.builder(
               padding: const EdgeInsets.only(bottom: 88),
-              itemCount: _players.length,
-              itemBuilder: (context, index) =>
-                  _buildPlayerCard(_players[index]),
+              itemCount: _players.length + 1,
+              itemBuilder: (context, index) {
+                if (index < _players.length) {
+                  return _buildPlayerCard(_players[index]);
+                }
+                // Podpowiedź, gdy za mało graczy, żeby zacząć grę.
+                if (_inSetup && !canStartGame(_players.length)) {
+                  return Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      l.addMorePlayers,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
             ),
     );
   }

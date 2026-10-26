@@ -38,7 +38,7 @@ z obsługą wybranych dodatków.
 - jeden spójny zestaw ikon (`assets/icons/game/`).
 
 Na początku gra jest w fazie przygotowania: dodajesz graczy przyciskiem „+"
-(przytrzymanie wiersza – edycja lub usunięcie), a po dodaniu co najmniej jednego
+(przytrzymanie wiersza – edycja lub usunięcie), a po dodaniu co najmniej dwóch
 pojawia się **Rozpocznij grę**. Od startu nie można dodawać, edytować ani
 usuwać graczy ani zmieniać dodatków. Na liście widać tylko punkty z planszy;
 premia za surowce i wartość złota są doliczane dopiero na ekranie końca gry.
