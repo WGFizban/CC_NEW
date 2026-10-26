@@ -404,6 +404,13 @@ void main() {
       );
     });
 
+    test('droga z rondem: trzy niemieckie zamki dają 9 pkt premii', () {
+      expect(
+        calculatePoints(ScoringType.road, tiles: 5, germanCastles: 3),
+        14,
+      );
+    });
+
     test('droga do katedry: 2 pkt za płytkę, z karczmą 3', () {
       expect(
         calculatePoints(ScoringType.road, tiles: 4, cathedralRoad: true),

@@ -300,7 +300,7 @@
   "germanCastlesAtFeature": "German castles at the feature",
   "germanCastlesAtFeatureHint": "Set the number of German castles at the ends of the completed feature: for each one the majority players get {points} extra pts, whether or not the castle is occupied. The bonus is added after the cathedral and inn modifiers. A road that starts and ends on the same castle counts it once.",
   "roadToCathedral": "Leads to a cathedral",
-  "roadToCathedralHint": "Check it if the road starts or ends on a German cathedral tile (highwayman): it scores double, that is 2 pts per tile (3 with an inn), even when it is unfinished at the end of the game.",
+  "roadToCathedralHint": "Check it if any end of the road (also a roundabout with several ends) is on a German cathedral tile (highwayman); several cathedrals do not increase the bonus: it scores double, that is 2 pts per tile (3 with an inn), even when it is unfinished at the end of the game.",
   "completedRoad": "Is it completed",
   "completedGermanCastle": "Is it completed",
   "germanCastleHint": "Check it if the castle is surrounded on all sides: the lord of the castle gets {completed} pts. Leave it unchecked when scoring at the end of the game: {base} pts for the castle tile and 1 pt for each surrounding tile.",
