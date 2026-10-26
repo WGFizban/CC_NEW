@@ -629,8 +629,17 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 if (_inSetup && !canStartGame(_players.length)) {
                   return Padding(
                     padding: const EdgeInsets.all(24),
-                    child: Text(
-                      l.addMorePlayers,
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(text: '${l.addMorePlayers} '),
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: fabLookalike(context, Icons.add),
+                          ),
+                          const TextSpan(text: '.'),
+                        ],
+                      ),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),

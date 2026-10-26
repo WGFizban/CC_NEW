@@ -290,5 +290,5 @@
   "newGameChoiceBody": "Do you want to play again with the same players, or set the players up from scratch?\n\nPoints, goods and used circus tokens will be reset. Expansions stay as they are, and you can still change them before starting.",
   "newGameSamePlayers": "Same players",
   "newGameNewPlayers": "New players",
-  "addMorePlayers": "You need at least two players. Add another one with the \"+\" button."
+  "addMorePlayers": "You need at least two players. Add another one with the button"
 }
