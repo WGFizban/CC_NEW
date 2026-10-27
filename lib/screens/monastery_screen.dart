@@ -42,19 +42,24 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final color = widget.player.color;
+    final frameColor =
+        visibleOn(color, Theme.of(context).scaffoldBackgroundColor);
+    final frameSide = BorderSide(color: frameColor, width: 4);
 
     return Scaffold(
       bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: _points > 0 ? _confirm : null,
+        frameColor: frameColor,
       ),
       body: SafeArea(
         bottom: false,
         child: Container(
         decoration: BoxDecoration(
-          border: Border.all(
-            color: visibleOn(color, Theme.of(context).scaffoldBackgroundColor),
-            width: 4,
+          border: Border(
+            top: frameSide,
+            left: frameSide,
+            right: frameSide,
           ),
         ),
         child: Column(

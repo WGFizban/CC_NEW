@@ -344,10 +344,15 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         _goodsToAdd.isNotEmpty ||
         _goldToAdd.isNotEmpty;
 
+    final frameColor =
+        visibleOn(color, Theme.of(context).scaffoldBackgroundColor);
+    final frameSide = BorderSide(color: frameColor, width: 4);
+
     return Scaffold(
       bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: canConfirm ? _confirm : null,
+        frameColor: neutral ? null : frameColor,
       ),
       body: SafeArea(
         bottom: false,
@@ -355,12 +360,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         decoration: neutral
             ? null
             : BoxDecoration(
-                border: Border.all(
-                  color: visibleOn(
-                    color,
-                    Theme.of(context).scaffoldBackgroundColor,
-                  ),
-                  width: 4,
+                border: Border(
+                  top: frameSide,
+                  left: frameSide,
+                  right: frameSide,
                 ),
               ),
         child: Column(

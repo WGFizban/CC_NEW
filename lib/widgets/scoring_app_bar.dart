@@ -20,6 +20,7 @@ Widget scoringBottomBar(
   required VoidCallback? onConfirm,
   Color? backgroundColor,
   Color? foregroundColor,
+  Color? frameColor,
 }) {
   final l = context.l10n;
   // Tło paska jest takie samo na każdym ekranie punktacji i zgodne z tłem
@@ -36,9 +37,22 @@ Widget scoringBottomBar(
   return Material(
     color: barColor,
     elevation: 8,
-    child: SafeArea(
-      top: false,
-      child: Padding(
+    // Gdy ekran ma ramkę gracza, pasek domyka ją od boków i od dołu
+    // (górną krawędź ramki rysuje treść ekranu), żeby przyciski leżały
+    // w tej samej ramce co reszta ekranu.
+    child: Container(
+      decoration: frameColor == null
+          ? null
+          : BoxDecoration(
+              border: Border(
+                left: BorderSide(color: frameColor, width: 4),
+                right: BorderSide(color: frameColor, width: 4),
+                bottom: BorderSide(color: frameColor, width: 4),
+              ),
+            ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
         child: Row(
           children: [
@@ -75,6 +89,7 @@ Widget scoringBottomBar(
               ),
             ),
           ],
+        ),
         ),
       ),
     ),
