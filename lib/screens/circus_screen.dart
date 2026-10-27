@@ -77,7 +77,9 @@ class _CircusScreenState extends State<CircusScreen> {
         context,
         onConfirm: animal == null ? null : _confirm,
       ),
-      body: ListView(
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
@@ -129,6 +131,7 @@ class _CircusScreenState extends State<CircusScreen> {
               onChanged: (v) => setState(() => _meeples[p] = v),
             ),
         ],
+      ),
       ),
     );
   }

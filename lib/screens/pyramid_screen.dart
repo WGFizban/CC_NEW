@@ -101,7 +101,9 @@ class _PyramidScreenState extends State<PyramidScreen> {
         context,
         onConfirm: _canConfirm ? _confirm : null,
       ),
-      body: ListView(
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           SegmentedButton<_PyramidMode>(
@@ -148,6 +150,7 @@ class _PyramidScreenState extends State<PyramidScreen> {
               ),
             ),
         ],
+      ),
       ),
     );
   }

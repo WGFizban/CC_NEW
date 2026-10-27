@@ -48,7 +48,9 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
         context,
         onConfirm: _points > 0 ? _confirm : null,
       ),
-      body: Container(
+      body: SafeArea(
+        bottom: false,
+        child: Container(
         decoration: BoxDecoration(
           border: Border.all(
             color: visibleOn(color, Theme.of(context).scaffoldBackgroundColor),
@@ -92,6 +94,7 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
             const SizedBox(height: 8),
           ],
         ),
+      ),
       ),
     );
   }

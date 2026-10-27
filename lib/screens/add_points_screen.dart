@@ -349,7 +349,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         context,
         onConfirm: canConfirm ? _confirm : null,
       ),
-      body: Container(
+      body: SafeArea(
+        bottom: false,
+        child: Container(
         decoration: neutral
             ? null
             : BoxDecoration(
@@ -419,6 +421,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             _buildKeypadPanel(),
           ],
         ),
+      ),
       ),
     );
   }

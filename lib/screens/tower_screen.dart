@@ -59,7 +59,9 @@ class _TowerScreenState extends State<TowerScreen> {
         context,
         onConfirm: _canConfirm ? _confirm : null,
       ),
-      body: ListView(
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
@@ -115,6 +117,7 @@ class _TowerScreenState extends State<TowerScreen> {
               ),
             ),
         ],
+      ),
       ),
     );
   }

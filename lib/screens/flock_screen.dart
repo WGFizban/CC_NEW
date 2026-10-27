@@ -62,7 +62,9 @@ class _FlockScreenState extends State<FlockScreen> {
         context,
         onConfirm: sheep > 0 && _shepherds.isNotEmpty ? _confirm : null,
       ),
-      body: ListView(
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           LabelWithHint(
@@ -133,6 +135,7 @@ class _FlockScreenState extends State<FlockScreen> {
             ],
           ),
         ],
+      ),
       ),
     );
   }

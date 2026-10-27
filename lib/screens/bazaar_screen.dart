@@ -89,7 +89,9 @@ class _BazaarScreenState extends State<BazaarScreen> {
         context,
         onConfirm: _canConfirm ? _confirm : null,
       ),
-      body: ListView(
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
@@ -159,6 +161,7 @@ class _BazaarScreenState extends State<BazaarScreen> {
                 setState(() => _price = applyKey(_price, key, max: 9999)),
           ),
         ],
+      ),
       ),
     );
   }
