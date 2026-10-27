@@ -613,7 +613,18 @@
   "sharedPointsCastles": "Punkty wspólne / zamki",
   "sharedPoints": "Punkty wspólne",
   "sharedHint": "Rozwiń sekcję, aby wskazać graczy, którzy dostają te same punkty (np. dzielą budowlę przy remisie). Wróżka i dyrektor cyrku liczą się tylko punktującemu.",
-  "sharedHintCastle": " Dla gracza możesz wybrać „Zamek\": dostaje wtedy punkty budowli za każdy swój zamek przy niej, a nie ze współdzielenia. Punktujący ma tu opcję „ma zamek\": dostaje swoje punkty i dodatkowo punkty za zamek (punkty tylko jako zamek to pole „Punkty jako zamek\").",
+  "sharedHintCastle": " Dla gracza możesz wybrać „Zamek\": dostaje wtedy punkty budowli za każdy swój zamek przy niej, a nie ze współdzielenia. Opcja „Oba\" oznacza, że gracz współdzieli budowlę i ma przy niej zamki: dostaje punkty raz za współdzielenie i dodatkowo za każdy zamek. Punktujący ma tu opcję „ma zamek\": dostaje swoje punkty i dodatkowo punkty za zamek (punkty tylko jako zamek to pole „Punkty jako zamek\").",
+  "chosenCastleAndShares": "{name} (współdzieli + zamek ×{count})",
+  "@chosenCastleAndShares": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chosenCastle": "{name} (zamek ×{count})",
   "@chosenCastle": {
     "placeholders": {
@@ -657,6 +668,7 @@
   },
   "sharesSegment": "Współdzieli",
   "castleSegment": "Zamek",
+  "bothSegment": "Oba",
   "fairyOption": "Wróżka przy meplu (+{points} pkt)",
   "@fairyOption": {
     "placeholders": {

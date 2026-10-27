@@ -280,7 +280,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final castles = <String>[];
     for (final e in _shares.entries) {
       if (_castleOk && e.value.castle) {
-        castles.add('${e.key.name} ×${e.value.castles}');
+        castles.add(
+          '${e.key.name} ×${e.value.castles}'
+          '${e.value.alsoShares ? ' + ${l.wordShared}' : ''}',
+        );
       } else {
         shared.add(e.key.name);
       }
@@ -777,7 +780,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final chosen = [
       for (final e in _shares.entries)
         castleOk && e.value.castle
-            ? l.chosenCastle(e.key.name, e.value.castles)
+            ? (e.value.alsoShares
+                  ? l.chosenCastleAndShares(e.key.name, e.value.castles)
+                  : l.chosenCastle(e.key.name, e.value.castles))
             : e.key.name,
       if (_castleMode)
         l.chosenScorerAsCastle(widget.player.name, _scorerCastles)
@@ -853,15 +858,26 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             padding: const EdgeInsets.fromLTRB(72, 0, 16, 4),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: SegmentedButton<bool>(
+              child: SegmentedButton<int>(
                 showSelectedIcon: false,
                 segments: [
-                  ButtonSegment(value: false, label: Text(l.sharesSegment)),
-                  ButtonSegment(value: true, label: Text(l.castleSegment)),
+                  ButtonSegment(value: 0, label: Text(l.sharesSegment)),
+                  ButtonSegment(value: 1, label: Text(l.castleSegment)),
+                  ButtonSegment(value: 2, label: Text(l.bothSegment)),
                 ],
-                selected: {share.castle},
+                selected: {
+                  if (!share.castle)
+                    0
+                  else if (share.alsoShares)
+                    2
+                  else
+                    1,
+                },
                 onSelectionChanged: (s) => setState(
-                  () => _shares[p] = share.copyWith(castle: s.first),
+                  () => _shares[p] = share.copyWith(
+                    castle: s.first != 0,
+                    alsoShares: s.first == 2,
+                  ),
                 ),
               ),
             ),

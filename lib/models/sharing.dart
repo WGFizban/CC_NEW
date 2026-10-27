@@ -6,18 +6,35 @@ const int kMaxCastlesPerFeature = 4;
 /// Skąd gracz dostaje punkty budowli, przy której nie jest punktującym.
 ///
 /// - współdzielenie: te same punkty co punktujący (np. remis o większość),
-/// - zamek: punkty budowli za każdy zamek gracza stojący przy niej.
+/// - zamek: punkty budowli za każdy zamek gracza stojący przy niej,
+/// - oba naraz ([alsoShares] przy zamku): gracz współdzieli budowlę
+///   (np. ma w niej mepla i ma remis) *i* ma przy niej zamki, więc dostaje
+///   punkty budowli raz za współdzielenie plus za każdy zamek.
 class PointsShare {
   final bool castle;
   final int castles;
 
-  const PointsShare({this.castle = false, this.castles = 1});
+  /// Ma sens tylko przy [castle]: gracz dodatkowo współdzieli budowlę.
+  final bool alsoShares;
 
-  PointsShare copyWith({bool? castle, int? castles}) =>
-      PointsShare(castle: castle ?? this.castle, castles: castles ?? this.castles);
+  const PointsShare({
+    this.castle = false,
+    this.castles = 1,
+    this.alsoShares = false,
+  });
+
+  PointsShare copyWith({bool? castle, int? castles, bool? alsoShares}) =>
+      PointsShare(
+        castle: castle ?? this.castle,
+        castles: castles ?? this.castles,
+        alsoShares: alsoShares ?? this.alsoShares,
+      );
 
   /// Punkty gracza przy [base] punktach budowli.
-  int pointsFor(int base) => castle ? base * castles : base;
+  int pointsFor(int base) {
+    if (!castle) return base;
+    return base * castles + (alsoShares ? base : 0);
+  }
 }
 
 /// Dzieli punkty budowli między graczy. Zwraca punkty każdego gracza
