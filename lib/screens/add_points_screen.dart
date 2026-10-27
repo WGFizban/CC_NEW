@@ -855,15 +855,17 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         ),
         if (share != null && _castleOk)
           Padding(
-            padding: const EdgeInsets.fromLTRB(72, 0, 16, 4),
-            child: Align(
-              alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+            // Na całą szerokość, żeby segmenty były równe i wyśrodkowane,
+            // a „Współdzieli” nie zawijało się w środku słowa.
+            child: SizedBox(
+              width: double.infinity,
               child: SegmentedButton<int>(
                 showSelectedIcon: false,
                 segments: [
-                  ButtonSegment(value: 0, label: Text(l.sharesSegment)),
-                  ButtonSegment(value: 1, label: Text(l.castleSegment)),
-                  ButtonSegment(value: 2, label: Text(l.bothSegment)),
+                  ButtonSegment(value: 0, label: Text(l.sharesSegment, maxLines: 1, softWrap: false)),
+                  ButtonSegment(value: 1, label: Text(l.castleSegment, maxLines: 1, softWrap: false)),
+                  ButtonSegment(value: 2, label: Text(l.bothSegment, maxLines: 1, softWrap: false)),
                 ],
                 selected: {
                   if (!share.castle)
