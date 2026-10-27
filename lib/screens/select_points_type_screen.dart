@@ -94,8 +94,10 @@ class SelectPointsTypeScreen extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ),
-        backgroundColor: color,
-        foregroundColor: foregroundOn(color),
+        // Kolor gracza zostaje tylko w ramce i meplach; pasek jest neutralny.
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
       ),
       body: Container(
         decoration: BoxDecoration(
