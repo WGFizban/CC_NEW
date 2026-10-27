@@ -81,35 +81,30 @@ class SelectPointsTypeScreen extends StatelessWidget {
     final color = player.color;
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 72,
-        centerTitle: true,
-        titleSpacing: 12,
-        title: MeepleHeader(
-          color: color,
-          size: 44,
-          child: AppBarTitle(
-            l.addPointsTitle(player.name),
-            textAlign: TextAlign.center,
+      // Ramka w kolorze gracza obejmuje cały ekran, razem z tytułem;
+      // poza nią kolor gracza występuje tylko w meplach.
+      body: SafeArea(
+        bottom: false,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color:
+                  visibleOn(color, Theme.of(context).scaffoldBackgroundColor),
+              width: 4,
+            ),
           ),
-        ),
-        // Kolor gracza zostaje tylko w ramce i meplach; pasek jest neutralny.
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: visibleOn(color, Theme.of(context).scaffoldBackgroundColor),
-            width: 4,
-          ),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const SizedBox(height: 8),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              MeepleHeader(
+                color: color,
+                size: 44,
+                child: AppBarTitle(
+                  l.addPointsTitle(player.name),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 16),
             Text(
               l.chooseScoring,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -142,6 +137,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
