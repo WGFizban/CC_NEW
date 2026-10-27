@@ -348,8 +348,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: canConfirm ? _confirm : null,
-        backgroundColor: neutral ? null : color,
-        foregroundColor: neutral ? null : foregroundOn(color),
       ),
       body: Container(
         decoration: neutral

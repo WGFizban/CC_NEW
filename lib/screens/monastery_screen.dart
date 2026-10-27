@@ -47,8 +47,6 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
       bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: _points > 0 ? _confirm : null,
-        backgroundColor: color,
-        foregroundColor: foregroundOn(color),
       ),
       body: Container(
         decoration: BoxDecoration(

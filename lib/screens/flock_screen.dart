@@ -5,7 +5,6 @@ import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../models/sheep.dart';
-import '../theme/app_colors.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/info_hint.dart';
@@ -62,8 +61,6 @@ class _FlockScreenState extends State<FlockScreen> {
       bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: sheep > 0 && _shepherds.isNotEmpty ? _confirm : null,
-        backgroundColor: widget.player.color,
-        foregroundColor: foregroundOn(widget.player.color),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
