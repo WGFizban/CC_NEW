@@ -43,7 +43,7 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
     final color = widget.player.color;
 
     return Scaffold(
-      appBar: scoringAppBar(
+      bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: _points > 0 ? _confirm : null,
         backgroundColor: color,

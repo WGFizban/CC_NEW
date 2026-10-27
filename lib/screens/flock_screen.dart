@@ -59,7 +59,7 @@ class _FlockScreenState extends State<FlockScreen> {
     final l = context.l10n;
 
     return Scaffold(
-      appBar: scoringAppBar(
+      bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: sheep > 0 && _shepherds.isNotEmpty ? _confirm : null,
         backgroundColor: widget.player.color,

@@ -73,7 +73,7 @@ class _CircusScreenState extends State<CircusScreen> {
     final allUsed = CircusAnimal.values.every((a) => _remaining(a) <= 0);
 
     return Scaffold(
-      appBar: scoringAppBar(
+      bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: animal == null ? null : _confirm,
       ),

@@ -55,7 +55,7 @@ class _TowerScreenState extends State<TowerScreen> {
     final holderName = _holder?.name ?? l.towerHolderDefault;
 
     return Scaffold(
-      appBar: scoringAppBar(
+      bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: _canConfirm ? _confirm : null,
       ),

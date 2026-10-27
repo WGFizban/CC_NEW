@@ -344,7 +344,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         _goldToAdd.isNotEmpty;
 
     return Scaffold(
-      appBar: scoringAppBar(
+      bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: canConfirm ? _confirm : null,
         backgroundColor: neutral ? null : color,

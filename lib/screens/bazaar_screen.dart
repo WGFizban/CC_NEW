@@ -85,7 +85,7 @@ class _BazaarScreenState extends State<BazaarScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     return Scaffold(
-      appBar: scoringAppBar(
+      bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: _canConfirm ? _confirm : null,
       ),
