@@ -8,6 +8,7 @@ import '../models/scoring.dart';
 import '../theme/app_colors.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/number_keypad.dart';
+import '../widgets/meeple_header.dart';
 import '../widgets/scoring_app_bar.dart';
 
 /// Punkty opata z klasztoru liniowego (dodatek „Klasztory niemieckie
@@ -71,7 +72,9 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Center(
+                  MeepleHeader(
+                    color: color,
+                    size: 48,
                     child: Text(
                       '$_points',
                       style: const TextStyle(

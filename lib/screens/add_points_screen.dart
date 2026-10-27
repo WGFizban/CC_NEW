@@ -20,6 +20,7 @@ import '../widgets/counter_stepper.dart';
 import '../widgets/game_icon.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/info_hint.dart';
+import '../widgets/meeple_header.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/number_keypad.dart';
 import '../widgets/player_picker.dart';
@@ -367,26 +368,30 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.
             if (!neutral && _type != ScoringType.goods)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Column(
-                  children: [
-                    Text(
-                      l.scoreLabel(points),
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if (distribution.length > 1)
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                child: MeepleHeader(
+                  color: color,
+                  child: Column(
+                    children: [
                       Text(
-                        [
-                          for (final e in distribution.entries)
-                            if (e.key != widget.player)
-                              '${e.key.name} +${e.value}',
-                        ].join(' · '),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        l.scoreLabel(points),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                  ],
+                      if (distribution.length > 1)
+                        Text(
+                          [
+                            for (final e in distribution.entries)
+                              if (e.key != widget.player)
+                                '${e.key.name} +${e.value}',
+                          ].join(' · '),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                    ],
+                  ),
                 ),
               ),
             Expanded(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_theme.dart';
 
 /// Czerwień przycisków „Anuluj".
 const Color kCancelColor = Color(0xFFC62828);
@@ -24,11 +25,11 @@ Widget scoringBottomBar(
   final l = context.l10n;
   final barColor =
       backgroundColor ?? Theme.of(context).colorScheme.surfaceContainer;
-  // Kolor czytelny na tle paska; z niego wynikają też obwódka i stan
-  // nieaktywny, żeby przyciski nie znikały na żadnym kolorze gracza
-  // ani w żadnym motywie.
+  // Kolor czytelny na tle paska wyznacza stan nieaktywny. Obwódka jest
+  // stała, w kolorze kart graczy z listy (zależnym od motywu), więc
+  // przyciski wyglądają tak samo przy każdym kolorze gracza.
   final onBar = foregroundColor ?? foregroundOn(barColor);
-  final edge = BorderSide(color: onBar, width: 2);
+  final edge = BorderSide(color: playerCardColor(context), width: 2);
   const buttonSize = Size.fromHeight(48);
 
   return Material(
@@ -62,9 +63,7 @@ Widget scoringBottomBar(
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: onBar.withValues(alpha: 0.14),
                   disabledForegroundColor: onBar.withValues(alpha: 0.75),
-                  side: onConfirm == null
-                      ? edge.copyWith(color: onBar.withValues(alpha: 0.75))
-                      : edge,
+                  side: edge,
                   minimumSize: buttonSize,
                   shape: const StadiumBorder(),
                 ),

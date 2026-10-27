@@ -9,6 +9,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auto_size_text.dart';
 import '../widgets/game_icon.dart';
+import '../widgets/meeple_header.dart';
 import '../widgets/scoring_app_bar.dart' show kCancelColor;
 
 /// Wybór rodzaju punktacji. Zwraca wybrany [ScoringType] przez `Navigator.pop`.
@@ -84,9 +85,14 @@ class SelectPointsTypeScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         toolbarHeight: 72,
         centerTitle: true,
-        title: AppBarTitle(
-          l.addPointsTitle(player.name),
-          textAlign: TextAlign.center,
+        titleSpacing: 12,
+        title: MeepleHeader(
+          color: color,
+          size: 44,
+          child: AppBarTitle(
+            l.addPointsTitle(player.name),
+            textAlign: TextAlign.center,
+          ),
         ),
         backgroundColor: color,
         foregroundColor: foregroundOn(color),
