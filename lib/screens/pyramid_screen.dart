@@ -7,6 +7,7 @@ import '../models/circus.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
+import '../theme/app_theme.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
@@ -96,14 +97,28 @@ class _PyramidScreenState extends State<PyramidScreen> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    // Neutralna ramka (kolor wierszy graczy): nie wiadomo z góry, kto
+    // dokładnie dostanie punkty.
+    final frameColor = playerCardColor(context);
+    final frameSide = BorderSide(color: frameColor, width: 4);
+
     return Scaffold(
       bottomNavigationBar: scoringBottomBar(
         context,
+        frameColor: frameColor,
         onConfirm: _canConfirm ? _confirm : null,
       ),
       body: SafeArea(
         bottom: false,
-        child: ListView(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: frameSide,
+              left: frameSide,
+              right: frameSide,
+            ),
+          ),
+          child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           SegmentedButton<_PyramidMode>(
@@ -151,6 +166,7 @@ class _PyramidScreenState extends State<PyramidScreen> {
             ),
         ],
       ),
+        ),
       ),
     );
   }

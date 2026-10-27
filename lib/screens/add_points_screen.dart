@@ -15,6 +15,7 @@ import '../models/sharing.dart';
 import '../models/sheep.dart';
 import '../models/standings.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_theme.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/game_icon.dart';
@@ -344,28 +345,27 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         _goodsToAdd.isNotEmpty ||
         _goldToAdd.isNotEmpty;
 
-    final frameColor =
-        visibleOn(color, Theme.of(context).scaffoldBackgroundColor);
+    final frameColor = neutral
+        ? playerCardColor(context)
+        : visibleOn(color, Theme.of(context).scaffoldBackgroundColor);
     final frameSide = BorderSide(color: frameColor, width: 4);
 
     return Scaffold(
       bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: canConfirm ? _confirm : null,
-        frameColor: neutral ? null : frameColor,
+        frameColor: frameColor,
       ),
       body: SafeArea(
         bottom: false,
         child: Container(
-        decoration: neutral
-            ? null
-            : BoxDecoration(
-                border: Border(
-                  top: frameSide,
-                  left: frameSide,
-                  right: frameSide,
-                ),
-              ),
+        decoration: BoxDecoration(
+          border: Border(
+            top: frameSide,
+            left: frameSide,
+            right: frameSide,
+          ),
+        ),
         child: Column(
           children: [
             // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.
