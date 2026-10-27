@@ -9,6 +9,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auto_size_text.dart';
 import '../widgets/game_icon.dart';
+import '../widgets/meeple_header.dart';
 import '../widgets/scoring_app_bar.dart' show kCancelColor;
 
 /// Wybór rodzaju punktacji. Zwraca wybrany [ScoringType] przez `Navigator.pop`.
@@ -80,28 +81,30 @@ class SelectPointsTypeScreen extends StatelessWidget {
     final color = player.color;
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 72,
-        centerTitle: true,
-        title: AppBarTitle(
-          l.addPointsTitle(player.name),
-          textAlign: TextAlign.center,
-        ),
-        backgroundColor: color,
-        foregroundColor: foregroundOn(color),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: visibleOn(color, Theme.of(context).scaffoldBackgroundColor),
-            width: 4,
+      // Ramka w kolorze gracza obejmuje cały ekran, razem z tytułem;
+      // poza nią kolor gracza występuje tylko w meplach.
+      body: SafeArea(
+        bottom: false,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color:
+                  visibleOn(color, Theme.of(context).scaffoldBackgroundColor),
+              width: 4,
+            ),
           ),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const SizedBox(height: 8),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              MeepleHeader(
+                color: color,
+                size: 44,
+                child: AppBarTitle(
+                  l.addPointsTitle(player.name),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 16),
             Text(
               l.chooseScoring,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -134,6 +137,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

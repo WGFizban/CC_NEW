@@ -645,6 +645,22 @@ void main() {
       expect(result, {a: 10, b: 10, c: 20});
     });
 
+    test('gracz współdzieli budowlę i ma przy niej zamki', () {
+      final a = _player('A');
+      final b = _player('B');
+
+      // A i B mają wspólne miasto; B ma przy nim dodatkowo dwa zamki.
+      final result = splitPoints(
+        scorer: a,
+        base: 10,
+        others: {
+          b: const PointsShare(castle: true, castles: 2, alsoShares: true),
+        },
+      );
+
+      expect(result, {a: 10, b: 30});
+    });
+
     test('premie przy meplu dostaje tylko punktujący', () {
       final a = _player('A');
       final b = _player('B');

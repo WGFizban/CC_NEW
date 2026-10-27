@@ -5,7 +5,7 @@ import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../models/sheep.dart';
-import '../theme/app_colors.dart';
+import '../theme/app_theme.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/info_hint.dart';
@@ -58,14 +58,28 @@ class _FlockScreenState extends State<FlockScreen> {
     final sheep = _sheep;
     final l = context.l10n;
 
+    // Neutralna ramka (kolor wierszy graczy): nie wiadomo z góry, kto
+    // dokładnie dostanie punkty.
+    final frameColor = playerCardColor(context);
+    final frameSide = BorderSide(color: frameColor, width: 4);
+
     return Scaffold(
-      appBar: scoringAppBar(
+      bottomNavigationBar: scoringBottomBar(
         context,
+        frameColor: frameColor,
         onConfirm: sheep > 0 && _shepherds.isNotEmpty ? _confirm : null,
-        backgroundColor: widget.player.color,
-        foregroundColor: foregroundOn(widget.player.color),
       ),
-      body: ListView(
+      body: SafeArea(
+        bottom: false,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: frameSide,
+              left: frameSide,
+              right: frameSide,
+            ),
+          ),
+          child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           LabelWithHint(
@@ -136,6 +150,8 @@ class _FlockScreenState extends State<FlockScreen> {
             ],
           ),
         ],
+      ),
+        ),
       ),
     );
   }

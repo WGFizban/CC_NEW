@@ -15,11 +15,13 @@ import '../models/sharing.dart';
 import '../models/sheep.dart';
 import '../models/standings.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_theme.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/game_icon.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/info_hint.dart';
+import '../widgets/meeple_header.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/number_keypad.dart';
 import '../widgets/player_picker.dart';
@@ -278,7 +280,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final castles = <String>[];
     for (final e in _shares.entries) {
       if (_castleOk && e.value.castle) {
-        castles.add('${e.key.name} ×${e.value.castles}');
+        castles.add(
+          '${e.key.name} ×${e.value.castles}'
+          '${e.value.alsoShares ? ' + ${l.wordShared}' : ''}',
+        );
       } else {
         shared.add(e.key.name);
       }
@@ -343,50 +348,56 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         _goodsToAdd.isNotEmpty ||
         _goldToAdd.isNotEmpty;
 
+    final frameColor = neutral
+        ? playerCardColor(context)
+        : visibleOn(color, Theme.of(context).scaffoldBackgroundColor);
+    final frameSide = BorderSide(color: frameColor, width: 4);
+
     return Scaffold(
-      appBar: scoringAppBar(
+      bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: canConfirm ? _confirm : null,
-        backgroundColor: neutral ? null : color,
-        foregroundColor: neutral ? null : foregroundOn(color),
+        frameColor: frameColor,
       ),
-      body: Container(
-        decoration: neutral
-            ? null
-            : BoxDecoration(
-                border: Border.all(
-                  color: visibleOn(
-                    color,
-                    Theme.of(context).scaffoldBackgroundColor,
-                  ),
-                  width: 4,
-                ),
-              ),
+      body: SafeArea(
+        bottom: false,
+        child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: frameSide,
+            left: frameSide,
+            right: frameSide,
+          ),
+        ),
         child: Column(
           children: [
             // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.
             if (!neutral && _type != ScoringType.goods)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Column(
-                  children: [
-                    Text(
-                      l.scoreLabel(points),
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if (distribution.length > 1)
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                child: MeepleHeader(
+                  color: color,
+                  child: Column(
+                    children: [
                       Text(
-                        [
-                          for (final e in distribution.entries)
-                            if (e.key != widget.player)
-                              '${e.key.name} +${e.value}',
-                        ].join(' · '),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        l.scoreLabel(points),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                  ],
+                      if (distribution.length > 1)
+                        Text(
+                          [
+                            for (final e in distribution.entries)
+                              if (e.key != widget.player)
+                                '${e.key.name} +${e.value}',
+                          ].join(' · '),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                    ],
+                  ),
                 ),
               ),
             Expanded(
@@ -416,6 +427,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             _buildKeypadPanel(),
           ],
         ),
+      ),
       ),
     );
   }
@@ -768,7 +780,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final chosen = [
       for (final e in _shares.entries)
         castleOk && e.value.castle
-            ? l.chosenCastle(e.key.name, e.value.castles)
+            ? (e.value.alsoShares
+                  ? l.chosenCastleAndShares(e.key.name, e.value.castles)
+                  : l.chosenCastle(e.key.name, e.value.castles))
             : e.key.name,
       if (_castleMode)
         l.chosenScorerAsCastle(widget.player.name, _scorerCastles)
@@ -841,18 +855,31 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         ),
         if (share != null && _castleOk)
           Padding(
-            padding: const EdgeInsets.fromLTRB(72, 0, 16, 4),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: SegmentedButton<bool>(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+            // Na całą szerokość, żeby segmenty były równe i wyśrodkowane,
+            // a „Współdzieli” nie zawijało się w środku słowa.
+            child: SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<int>(
                 showSelectedIcon: false,
                 segments: [
-                  ButtonSegment(value: false, label: Text(l.sharesSegment)),
-                  ButtonSegment(value: true, label: Text(l.castleSegment)),
+                  ButtonSegment(value: 0, label: Text(l.sharesSegment, maxLines: 1, softWrap: false)),
+                  ButtonSegment(value: 1, label: Text(l.castleSegment, maxLines: 1, softWrap: false)),
+                  ButtonSegment(value: 2, label: Text(l.bothSegment, maxLines: 1, softWrap: false)),
                 ],
-                selected: {share.castle},
+                selected: {
+                  if (!share.castle)
+                    0
+                  else if (share.alsoShares)
+                    2
+                  else
+                    1,
+                },
                 onSelectionChanged: (s) => setState(
-                  () => _shares[p] = share.copyWith(castle: s.first),
+                  () => _shares[p] = share.copyWith(
+                    castle: s.first != 0,
+                    alsoShares: s.first == 2,
+                  ),
                 ),
               ),
             ),

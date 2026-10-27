@@ -8,6 +8,7 @@ import '../models/scoring.dart';
 import '../theme/app_colors.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/number_keypad.dart';
+import '../widgets/meeple_header.dart';
 import '../widgets/scoring_app_bar.dart';
 
 /// Punkty opata z klasztoru liniowego (dodatek „Klasztory niemieckie
@@ -41,19 +42,24 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final color = widget.player.color;
+    final frameColor =
+        visibleOn(color, Theme.of(context).scaffoldBackgroundColor);
+    final frameSide = BorderSide(color: frameColor, width: 4);
 
     return Scaffold(
-      appBar: scoringAppBar(
+      bottomNavigationBar: scoringBottomBar(
         context,
         onConfirm: _points > 0 ? _confirm : null,
-        backgroundColor: color,
-        foregroundColor: foregroundOn(color),
+        frameColor: frameColor,
       ),
-      body: Container(
+      body: SafeArea(
+        bottom: false,
+        child: Container(
         decoration: BoxDecoration(
-          border: Border.all(
-            color: visibleOn(color, Theme.of(context).scaffoldBackgroundColor),
-            width: 4,
+          border: Border(
+            top: frameSide,
+            left: frameSide,
+            right: frameSide,
           ),
         ),
         child: Column(
@@ -71,7 +77,9 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Center(
+                  MeepleHeader(
+                    color: color,
+                    size: 48,
                     child: Text(
                       '$_points',
                       style: const TextStyle(
@@ -91,6 +99,7 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
             const SizedBox(height: 8),
           ],
         ),
+      ),
       ),
     );
   }

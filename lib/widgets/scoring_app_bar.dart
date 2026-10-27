@@ -6,56 +6,92 @@ import '../theme/app_colors.dart';
 /// Czerwień przycisków „Anuluj".
 const Color kCancelColor = Color(0xFFC62828);
 
-/// Pasek ekranu punktowania: po lewej przycisk „Anuluj", po prawej
-/// „Zatwierdź" (wyszarzony, gdy [onConfirm] jest `null`), bez tytułu.
-AppBar scoringAppBar(
+/// Zieleń przycisku „Zatwierdź".
+const Color kConfirmColor = Color(0xFF2E9E44);
+
+/// Dolny pasek ekranu punktowania: po lewej „Anuluj", po prawej „Zatwierdź"
+/// (przygaszony, gdy [onConfirm] jest `null`), bez tytułu.
+///
+/// Ustawiany jako `Scaffold.bottomNavigationBar`, więc leży pod treścią,
+/// a klawiatura numeryczna w treści ekranu wysuwa się nad nim i go nie
+/// zasłania. Przyciski są w zasięgu kciuka na telefonie.
+Widget scoringBottomBar(
   BuildContext context, {
   required VoidCallback? onConfirm,
   Color? backgroundColor,
   Color? foregroundColor,
+  Color? frameColor,
 }) {
   final l = context.l10n;
-  // Obwódka w kolorze kontrastowym do tła paska, żeby czerwony i zielony
-  // przycisk nie znikały na tle w podobnym kolorze (np. zielony gracz).
-  final barColor = backgroundColor ?? Theme.of(context).colorScheme.surface;
-  final edge = BorderSide(color: foregroundOn(barColor), width: 2);
-  return AppBar(
-    automaticallyImplyLeading: false,
-    backgroundColor: backgroundColor,
-    foregroundColor: foregroundColor,
-    leadingWidth: 130,
-    leading: Align(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 8),
-        child: FilledButton(
-          onPressed: () => Navigator.pop(context),
-          style: FilledButton.styleFrom(
-            backgroundColor: kCancelColor,
-            foregroundColor: Colors.white,
-            side: edge,
-            shape: const StadiumBorder(),
-          ),
-          child: Text(l.cancel),
+  // Tło paska jest takie samo na każdym ekranie punktacji i zgodne z tłem
+  // przycisku „Anuluj” na ekranie wyboru rodzaju punktacji (czarne w
+  // motywie ciemnym, białe w jasnym), niezależnie od koloru gracza.
+  final barColor =
+      backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
+  // Kolor czytelny na tle paska; z niego wynikają też obwódka i stan
+  // nieaktywny, żeby przyciski nie znikały w żadnym motywie.
+  final onBar = foregroundColor ?? foregroundOn(barColor);
+  final edge = BorderSide(color: onBar, width: 2);
+  const buttonSize = Size.fromHeight(48);
+
+  return Material(
+    color: barColor,
+    elevation: 8,
+    // Gdy ekran ma ramkę gracza, pasek domyka ją od boków i od dołu
+    // (górną krawędź ramki rysuje treść ekranu), żeby przyciski leżały
+    // w tej samej ramce co reszta ekranu.
+    child: Container(
+      decoration: frameColor == null
+          ? null
+          : BoxDecoration(
+              border: Border(
+                left: BorderSide(color: frameColor, width: 4),
+                right: BorderSide(color: frameColor, width: 4),
+                bottom: BorderSide(color: frameColor, width: 4),
+              ),
+            ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: FilledButton(
+                onPressed: () => Navigator.pop(context),
+                style: FilledButton.styleFrom(
+                  backgroundColor: kCancelColor,
+                  foregroundColor: Colors.white,
+                  side: edge,
+                  minimumSize: buttonSize,
+                  shape: const StadiumBorder(),
+                ),
+                child: Text(l.cancel),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: onConfirm,
+                style: FilledButton.styleFrom(
+                  backgroundColor: kConfirmColor,
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: onBar.withValues(alpha: 0.14),
+                  disabledForegroundColor: onBar.withValues(alpha: 0.75),
+                  side: onConfirm == null
+                      ? edge.copyWith(color: onBar.withValues(alpha: 0.75))
+                      : edge,
+                  minimumSize: buttonSize,
+                  shape: const StadiumBorder(),
+                ),
+                icon: const Icon(Icons.check),
+                label: Text(l.confirm),
+              ),
+            ),
+          ],
+        ),
         ),
       ),
     ),
-    actions: [
-      Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: FilledButton.icon(
-          onPressed: onConfirm,
-          style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF2E9E44),
-            foregroundColor: Colors.white,
-            disabledBackgroundColor: Colors.black12,
-            side: edge,
-            shape: const StadiumBorder(),
-          ),
-          icon: const Icon(Icons.check),
-          label: Text(l.confirm),
-        ),
-      ),
-    ],
   );
 }
