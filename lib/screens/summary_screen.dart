@@ -49,7 +49,7 @@ class SummaryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final byType = pointsByType(log);
+    final byType = pointsByType(log, players);
     // Surowce i złoto nie dają punktów w trakcie gry – mają osobne kolumny
     // z premią i wartością złota, żeby wiersze sumowały się do wyniku.
     final types = [
@@ -59,7 +59,7 @@ class SummaryScreen extends StatelessWidget {
     final showGoods = expansions.contains(Expansion.tradersBuilders);
     final showGold = expansions.contains(Expansion.goldMines);
     final hasOther = players.any(
-      (p) => (byType[p.name]?[null] ?? 0) != 0,
+      (p) => (byType[p.id]?[null] ?? 0) != 0,
     );
 
     final scores = {for (final p in players) p: finalScore(p, players)};
@@ -74,10 +74,10 @@ class SummaryScreen extends StatelessWidget {
     // Wartości w kolejności kolumn (bez nazwy gracza), osobno dla każdego
     // gracza – potrzebne do wyróżnienia najlepszych w kolumnie.
     List<int> values(Player p) => [
-      for (final t in types) byType[p.name]?[t] ?? 0,
+      for (final t in types) byType[p.id]?[t] ?? 0,
       for (final g in goodsTypes) goodsPart(p, g),
       if (showGold) goldPoints(p.gold),
-      if (hasOther) byType[p.name]?[null] ?? 0,
+      if (hasOther) byType[p.id]?[null] ?? 0,
       scores[p]!,
     ];
     final table = {for (final p in ranking) p: values(p)};

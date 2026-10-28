@@ -3,7 +3,7 @@
 <rect x="4" y="4" width="88" height="88" rx="18" fill="#8FC46A"/>
 <g clip-path="url(#t)"><path d="M71 26 L74 20 L77 26 M74 26 L75 18" stroke="#6AA84A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M13 66 L16 60 L19 66 M16 66 L17 58" stroke="#6AA84A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M79 50 L82 44 L85 50 M82 50 L83 42" stroke="#6AA84A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M19 16 L22 10 L25 16 M22 16 L23 8" stroke="#6AA84A" stroke-width="2" fill="none" stroke-linecap="round"/></g>
 <g fill="none" stroke="#3B2F2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
-<path d="M30 92 C30 70 66 70 62 48 C60 34 40 34 44 4" stroke-width="15"/><path d="M30 92 C30 70 66 70 62 48 C60 34 40 34 44 4" stroke="#EFE2C4" stroke-width="9"/><circle cx="18" cy="38" r="7" fill="#4F9440"/><circle cx="76" cy="72" r="6" fill="#4F9440"/>
+<g clip-path="url(#t)"><path d="M30 92 C30 70 66 70 62 48 C60 34 40 34 44 4" stroke-width="15"/><path d="M30 92 C30 70 66 70 62 48 C60 34 40 34 44 4" stroke="#EFE2C4" stroke-width="9"/></g><circle cx="18" cy="38" r="7" fill="#4F9440"/><circle cx="76" cy="72" r="6" fill="#4F9440"/>
 </g>
 <rect x="4" y="4" width="88" height="88" rx="18" fill="none" stroke="#3B2F2F" stroke-width="3.5"/>
 </svg>

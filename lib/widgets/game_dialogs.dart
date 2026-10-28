@@ -60,7 +60,7 @@ Future<void> showGameStartedNote(BuildContext context) {
                 alignment: PlaceholderAlignment.middle,
                 child: fabLookalike(ctx, kEndGameIcon),
               ),
-              TextSpan(text: '\n\n${l.gameStartedAfter}'),
+              TextSpan(text: ' ${l.gameStartedEnd}\n\n${l.gameStartedAfter}'),
             ],
           ),
         ),
