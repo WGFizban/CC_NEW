@@ -421,3 +421,245 @@ class _AddPlayerAnimationState extends _LoopingSceneState<AddPlayerAnimation> {
     );
   }
 }
+
+/// Wiersz gracza na makiecie (mepel w kolorze, imię, wynik).
+Widget _playerRow(
+  BuildContext context, {
+  required double top,
+  required Color color,
+  required String name,
+  String score = '0',
+}) {
+  return Positioned(
+    left: 10,
+    right: 10,
+    top: top,
+    child: Container(
+      height: 38,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: playerCardColor(context),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          MeepleIcon(color: color, size: 26),
+          const SizedBox(width: 8),
+          Text(
+            name,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            score,
+            style: const TextStyle(fontSize: 14, color: Colors.white70),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Animacja „Rozpocznij grę”: palec dotyka „Rozpocznij grę”, w oknie
+/// potwierdza, a przyciski dodawania graczy zastępuje flaga końca gry.
+class StartGameAnimation extends _LoopingScene {
+  const StartGameAnimation({super.key});
+
+  @override
+  State<StartGameAnimation> createState() => _StartGameAnimationState();
+}
+
+class _StartGameAnimationState extends _LoopingSceneState<StartGameAnimation> {
+  static const _w = 280.0;
+  static const _h = 230.0;
+
+  static const _startButton = Offset(66, _h - 36);
+  static const _fab = Offset(_w - 38, _h - 38);
+  static const _dialog = Rect.fromLTWH(34, 56, _w - 68, 128);
+  static const _confirmButton = Offset(_w - 34 - 12 - 48, 56 + 128 - 12 - 13);
+
+  @override
+  Duration get duration => const Duration(seconds: 8);
+
+  @override
+  Widget buildScene(BuildContext context, double t) {
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+
+    final toStart = _seg(t, 0.04, 0.18);
+    final startPress = _seg(t, 0.18, 0.23);
+    final dialogIn = _seg(t, 0.24, 0.30, Curves.easeOut);
+    final toConfirm = _seg(t, 0.44, 0.56);
+    final confirmPress = _seg(t, 0.56, 0.61);
+    final dialogOut = _seg(t, 0.61, 0.66);
+    final swap = _seg(t, 0.64, 0.74);
+    final fingerOut = _seg(t, 0.66, 0.72);
+    final fadeAll = _seg(t, 0.94, 0.99);
+
+    double bump(double p) => p < 0.5 ? p * 2 : (1 - p) * 2;
+    final restFinger = Offset(_w * 0.5, _h * 0.55);
+    final finger = t < 0.4
+        ? Offset.lerp(restFinger, _startButton, toStart)!
+        : Offset.lerp(_startButton, _confirmButton, toConfirm)!;
+    final fingerOpacity =
+        (t < 0.04 ? _seg(t, 0, 0.04) : 1.0) * (1 - fingerOut) * (1 - fadeAll);
+    final pressing = t < 0.4 ? bump(startPress) : bump(confirmPress);
+    final dialogOpacity = dialogIn * (1 - dialogOut);
+
+    return _PhoneFrame(
+      width: _w,
+      height: _h,
+      children: [
+        Container(
+          height: 34,
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          color: scheme.surfaceContainerHighest,
+          child: Text(
+            'Carcassonne Counter',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: scheme.onSurface,
+            ),
+          ),
+        ),
+        _playerRow(
+          context,
+          top: 44,
+          color: const Color(0xFF1D27EA),
+          name: 'Ala',
+        ),
+        _playerRow(
+          context,
+          top: 88,
+          color: const Color(0xFFEA1D27),
+          name: 'Bob',
+        ),
+        // Przed startem: „Rozpocznij grę” i „+”.
+        Positioned(
+          left: 12,
+          top: _h - 56,
+          child: Opacity(
+            opacity: 1 - swap,
+            child: Transform.scale(
+              scale: 1 - 0.08 * (t < 0.4 ? pressing : 0),
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.play_arrow,
+                      size: 18,
+                      color: scheme.onPrimaryContainer,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      l.startGame,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: scheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: _fab.dx - 22,
+          top: _fab.dy - 22,
+          child: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Opacity(
+                  opacity: 1 - swap,
+                  child: Icon(Icons.add, color: scheme.onPrimaryContainer),
+                ),
+                Opacity(
+                  opacity: swap,
+                  child: Icon(Icons.flag, color: scheme.onPrimaryContainer),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (dialogOpacity > 0)
+          Positioned.fromRect(
+            rect: _dialog,
+            child: Opacity(
+              opacity: dialogOpacity,
+              child: Transform.scale(
+                scale: 0.85 + 0.15 * dialogIn,
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: scheme.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: const [
+                      BoxShadow(blurRadius: 12, color: Colors.black38),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l.startGameQuestion,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                      const Spacer(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: scheme.primary,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Text(
+                            l.startGame,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: scheme.onPrimary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        _tap(context, _startButton, startPress),
+        _tap(context, _confirmButton, confirmPress),
+        _finger(context, finger, opacity: fingerOpacity, pressed: pressing),
+      ],
+    );
+  }
+}

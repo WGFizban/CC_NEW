@@ -44,7 +44,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
         l.tutorial1Body,
       ),
       _Step(const AddPlayerAnimation(), l.tutorial2Title, l.tutorial2Body),
-      _Step(material(Icons.play_arrow), l.tutorial3Title, l.tutorial3Body),
+      _Step(const StartGameAnimation(), l.tutorial3Title, l.tutorial3Body),
       _Step(material(Icons.touch_app), l.tutorial4Title, l.tutorial4Body),
       _Step(material(Icons.undo), l.tutorial5Title, l.tutorial5Body),
       _Step(material(kEndGameIcon), l.tutorial6Title, l.tutorial6Body),

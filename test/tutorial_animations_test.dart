@@ -4,7 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cc_new/l10n/app_localizations.dart';
 import 'package:cc_new/widgets/tutorial_animations.dart';
 
-Widget _app({bool reduceMotion = false}) => MaterialApp(
+Widget _app({
+  bool reduceMotion = false,
+  Widget scene = const AddPlayerAnimation(),
+}) => MaterialApp(
   locale: const Locale('pl'),
   supportedLocales: AppLocalizations.supportedLocales,
   localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -12,7 +15,7 @@ Widget _app({bool reduceMotion = false}) => MaterialApp(
     data: MediaQuery.of(context).copyWith(disableAnimations: reduceMotion),
     child: child!,
   ),
-  home: const Scaffold(body: Center(child: AddPlayerAnimation())),
+  home: Scaffold(body: Center(child: scene)),
 );
 
 void main() {
@@ -64,5 +67,20 @@ void main() {
     // Po wstrzymaniu nie ma już zaplanowanych klatek.
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('animacja startu gry przechodzi pętlę i pokazuje flagę', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_app(scene: const StartGameAnimation()));
+
+    for (var i = 0; i < 16; i++) {
+      await tester.pump(const Duration(milliseconds: 500));
+    }
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Ala'), findsOneWidget);
+    expect(find.text('Bob'), findsOneWidget);
+    expect(find.byIcon(Icons.flag), findsOneWidget);
   });
 }
