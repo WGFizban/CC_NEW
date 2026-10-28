@@ -105,12 +105,16 @@ class _PlayersScreenState extends State<PlayersScreen> {
       _settings = settings;
       appThemeMode.value = settings.themeMode;
       appLanguage.value = settings.language;
-      _log
-        ..clear()
-        ..addAll(log);
       _players
         ..clear()
         ..addAll(loaded);
+      // Starsze zapisy nie mają id graczy: nowe id są nadawane przy
+      // wczytaniu, a historia dostaje je według imienia i koloru.
+      _log
+        ..clear()
+        ..addAll([for (final e in log) e.withPlayerIds(loaded)]);
+      _save();
+      _saveLog();
       _stage = settings.stage ?? inferLegacyStage(loaded);
       _sortPlayers();
     });
@@ -212,8 +216,12 @@ class _PlayersScreenState extends State<PlayersScreen> {
         _history.removeWhere(
           (e) => e.changes.any((c) => c.player == player),
         );
+        // Wpisy usuniętego gracza znikają też z trwałej historii, żeby nie
+        // trafiły do podsumowania (np. po ponownym użyciu imienia lub koloru).
+        _log.removeWhere((e) => e.changes.any((c) => c.belongsTo(player)));
         _sortPlayers();
       });
+      _saveLog();
     } else {
       setState(() {
         player

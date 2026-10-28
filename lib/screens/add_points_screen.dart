@@ -24,6 +24,7 @@ import '../widgets/info_hint.dart';
 import '../widgets/meeple_header.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/number_keypad.dart';
+import '../widgets/player_label.dart';
 import '../widgets/player_picker.dart';
 
 enum _Field { tiles, banners }
@@ -701,7 +702,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   Widget _buildGold() {
     final l = context.l10n;
     final chosen = [
-      for (final e in _goldToAdd.entries) '${e.key.name} ×${e.value}',
+      for (final e in _goldToAdd.entries)
+        (player: e.key, text: '${e.key.name} ×${e.value}'),
     ];
     final onlyGold = _type == ScoringType.gold;
 
@@ -715,7 +717,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         l.goldHint,
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
-      subtitle: Text(chosen.isEmpty ? l.none : chosen.join(' · ')),
+      subtitle: PlayerLabels(items: chosen, empty: l.none),
       children: [
         Align(
           alignment: Alignment.centerLeft,
@@ -779,15 +781,24 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final castleOk = _castleOk;
     final chosen = [
       for (final e in _shares.entries)
-        castleOk && e.value.castle
-            ? (e.value.alsoShares
-                  ? l.chosenCastleAndShares(e.key.name, e.value.castles)
-                  : l.chosenCastle(e.key.name, e.value.castles))
-            : e.key.name,
+        (
+          player: e.key,
+          text: castleOk && e.value.castle
+              ? (e.value.alsoShares
+                    ? l.chosenCastleAndShares(e.key.name, e.value.castles)
+                    : l.chosenCastle(e.key.name, e.value.castles))
+              : e.key.name,
+        ),
       if (_castleMode)
-        l.chosenScorerAsCastle(widget.player.name, _scorerCastles)
+        (
+          player: widget.player,
+          text: l.chosenScorerAsCastle(widget.player.name, _scorerCastles),
+        )
       else if (_scorerExtraCastles > 0)
-        l.chosenScorerHasCastle(widget.player.name, _scorerExtraCastles),
+        (
+          player: widget.player,
+          text: l.chosenScorerHasCastle(widget.player.name, _scorerExtraCastles),
+        ),
     ];
 
     return ExpansionTile(
@@ -803,7 +814,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         l.sharedHint + (castleOk ? l.sharedHintCastle : ''),
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
-      subtitle: Text(chosen.isEmpty ? l.none : chosen.join(' · ')),
+      subtitle: PlayerLabels(items: chosen, empty: l.none),
       children: [
         if (castleOk && !_scorerCastle) _scorerCastleRow(),
         for (final p in _otherPlayers) _shareRow(p),

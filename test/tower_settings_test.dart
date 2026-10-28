@@ -331,12 +331,12 @@ void main() {
         e(ScoringType.city, bob, 6),
       ];
 
-      final result = pointsByType(log);
+      final result = pointsByType(log, [ala, bob]);
 
-      expect(result['Ala']![ScoringType.city], 12);
-      expect(result['Ala']![ScoringType.road], 3);
-      expect(result['Bob']![ScoringType.city], 6);
-      expect(result['Bob']![ScoringType.road], isNull);
+      expect(result[ala.id]![ScoringType.city], 12);
+      expect(result[ala.id]![ScoringType.road], 3);
+      expect(result[bob.id]![ScoringType.city], 6);
+      expect(result[bob.id]![ScoringType.road], isNull);
     });
   });
 

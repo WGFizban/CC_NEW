@@ -5,6 +5,7 @@ import '../models/expansion.dart';
 import '../models/history_entry.dart';
 import '../models/player.dart';
 import '../models/standings.dart';
+import '../widgets/player_label.dart';
 import '../widgets/game_dialogs.dart';
 import 'summary_screen.dart';
 
@@ -96,10 +97,21 @@ class EndGameScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(title, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
-            Text(
-              winners.map((p) => p.name).join(', '),
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 16,
+              runSpacing: 4,
+              children: [
+                for (final p in winners)
+                  PlayerLabel(
+                    player: p,
+                    iconSize: 30,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+              ],
             ),
             Text(l.pointsValue(best), style: const TextStyle(fontSize: 20)),
           ],
