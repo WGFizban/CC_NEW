@@ -109,6 +109,11 @@ class _PhoneFrame extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(20),
+      ),
+      // Ramka jest rysowana NA treści (a nie wokół niej), więc zawartość ma
+      // pełny rozmiar makiety, a jej rogi nie wchodzą na zaokrąglenie ramki.
+      foregroundDecoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: scheme.outline, width: 3),
       ),
       child: Stack(children: children),
@@ -1040,7 +1045,7 @@ class _UndoAnimationState extends _LoopingSceneState<UndoAnimation> {
   static const _h = 230.0;
 
   static const _menuButton = Offset(_w - 24, 17);
-  static const _menu = Rect.fromLTWH(_w - 178, 32, 166, 104);
+  static const _menu = Rect.fromLTWH(_w - 178, 32, 166, 140);
   static const _undoItem = Offset(_w - 178 + 83, 32 + 14 + 14);
 
   @override
@@ -1066,7 +1071,12 @@ class _UndoAnimationState extends _LoopingSceneState<UndoAnimation> {
     final menuOpacity = menuIn * (1 - menuOut);
     final reverted = t > 0.54;
 
-    Widget item(String text, int i, {bool highlight = false}) => Positioned(
+    Widget item(
+      String text,
+      int i, {
+      bool highlight = false,
+      bool emphasized = false,
+    }) => Positioned(
       left: _menu.left,
       top: _menu.top + 14 + i * 28.0,
       width: _menu.width,
@@ -1081,7 +1091,11 @@ class _UndoAnimationState extends _LoopingSceneState<UndoAnimation> {
           text,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 12, color: scheme.onSurface),
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: emphasized ? FontWeight.bold : FontWeight.normal,
+            color: emphasized ? scheme.primary : scheme.onSurface,
+          ),
         ),
       ),
     );
@@ -1125,7 +1139,10 @@ class _UndoAnimationState extends _LoopingSceneState<UndoAnimation> {
               children: [
                 item(l.menuUndoNone, 0, highlight: itemPress > 0),
                 item(l.newGame, 1),
-                item(l.menuTutorial, 2),
+                // Skrót zasad jest wspomniany w tekście kroku, więc go
+                // wyróżniamy.
+                item(l.rulesTitle, 2, emphasized: true),
+                item(l.menuTutorial, 3),
               ],
             ),
           ),
