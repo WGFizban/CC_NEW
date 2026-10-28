@@ -787,7 +787,7 @@
   "tutorial5Title": "Pomyłka?",
   "tutorial5Body": "W menu możesz cofnąć ostatnie zdarzenie. Skrót zasad przypomni, ile punktów co jest warte, a znak „?\" przy elementach podpowie, co zrobić.",
   "tutorial6Title": "Koniec gry",
-  "tutorial6Body": "Przycisk z flagą kończy grę. Zobaczysz zwycięzcę i podsumowanie punktów z każdego źródła. Miłej rozgrywki!",
+  "tutorial6Body": "Przycisk z flagą kończy grę. Zobaczysz zwycięzcę i podsumowanie punktów z każdego źródła.\n\nMiłej rozgrywki!",
   "aboutTitle": "Info o aplikacji",
   "aboutVersion": "Wersja {version}",
   "@aboutVersion": {

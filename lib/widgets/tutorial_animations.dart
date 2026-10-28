@@ -793,7 +793,7 @@ class _ScoreAnimationState extends _LoopingSceneState<ScoreAnimation> {
   static const _h = 230.0;
 
   static const _alaRow = Offset(140, 63);
-  static const _roadTile = Offset(140, 98);
+  static const _roadTile = Offset(140, 102);
   static const _confirm = Offset(207, 196);
 
   @override
@@ -814,8 +814,11 @@ class _ScoreAnimationState extends _LoopingSceneState<ScoreAnimation> {
     final ca = _seg(t, 0.66, 0.72);
     final fingerOut = _seg(t, 0.72, 0.78);
 
-    final aOp = ((1 - ab) + ca).clamp(0.0, 1.0);
-    final bOp = ab * (1 - bc);
+    // Ekran 1 leży na dole, a pozostałe wsuwają się na niego nieprzezroczyste
+    // (tylko z płynnym pojawianiem się), więc treść spod spodu nie
+    // prześwituje. Wyjście z ekranu 3 odsłania ekran 1.
+    const aOp = 1.0;
+    final bOp = ca > 0 ? 0.0 : ab;
     final cOp = bc * (1 - ca);
 
     final restFinger = Offset(_w * 0.7, _h * 0.7);
@@ -835,20 +838,25 @@ class _ScoreAnimationState extends _LoopingSceneState<ScoreAnimation> {
     final points = digit.isEmpty ? 0 : 4;
     final alaScore = t > 0.69 ? '4' : '0';
 
-    Widget header(Widget center) => Padding(
-      padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
+    // Nagłówek przypięty do góry ekranu ([mepel] tekst [mepel]); musi być
+    // Positioned, inaczej rozciąga się na całą makietę i nachodzi na treść.
+    Widget header(Widget center) => Positioned(
+      left: 10,
+      right: 10,
+      top: 8,
+      height: 40,
       child: Row(
         children: [
-          MeepleIcon(color: _kAla, size: 26),
+          MeepleIcon(color: _kAla, size: 32),
           Expanded(child: Center(child: center)),
-          MeepleIcon(color: _kAla, size: 26),
+          MeepleIcon(color: _kAla, size: 32),
         ],
       ),
     );
 
     Widget tile(ScoringType type, String label, double left) => Positioned(
       left: left,
-      top: 58,
+      top: 62,
       child: Container(
         width: 78,
         height: 80,
@@ -945,7 +953,7 @@ class _ScoreAnimationState extends _LoopingSceneState<ScoreAnimation> {
                     Positioned(
                       left: 0,
                       right: 0,
-                      top: 56,
+                      top: 62,
                       child: Column(
                         children: [
                           Text(
