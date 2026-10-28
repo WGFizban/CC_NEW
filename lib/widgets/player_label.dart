@@ -39,13 +39,20 @@ class PlayerLabel extends StatelessWidget {
 class PlayerLabels extends StatelessWidget {
   final List<({Player player, String text})> items;
   final String empty;
+  final WrapAlignment alignment;
 
-  const PlayerLabels({super.key, required this.items, required this.empty});
+  const PlayerLabels({
+    super.key,
+    required this.items,
+    required this.empty,
+    this.alignment = WrapAlignment.start,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) return Text(empty);
     return Wrap(
+      alignment: alignment,
       spacing: 6,
       runSpacing: 2,
       crossAxisAlignment: WrapCrossAlignment.center,

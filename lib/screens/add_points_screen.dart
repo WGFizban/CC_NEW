@@ -388,14 +388,22 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                         ),
                       ),
                       if (distribution.length > 1)
-                        Text(
-                          [
-                            for (final e in distribution.entries)
-                              if (e.key != widget.player)
-                                '${e.key.name} +${e.value}',
-                          ].join(' · '),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          textAlign: TextAlign.center,
+                        // Pod wynikiem: mepel w kolorze gracza i jego punkty
+                        // z podziału (współdzielenie, zamek).
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: PlayerLabels(
+                            alignment: WrapAlignment.center,
+                            items: [
+                              for (final e in distribution.entries)
+                                if (e.key != widget.player)
+                                  (
+                                    player: e.key,
+                                    text: '${e.key.name} +${e.value}',
+                                  ),
+                            ],
+                            empty: '',
+                          ),
                         ),
                     ],
                   ),
