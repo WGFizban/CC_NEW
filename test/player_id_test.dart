@@ -6,6 +6,7 @@ import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/score_event.dart';
 import 'package:cc_new/models/scoring.dart';
+import 'package:cc_new/models/sharing.dart';
 import 'package:cc_new/models/summary.dart';
 
 HistoryEntry _entry(Player p, int points, {ScoringType? type}) =>
@@ -61,6 +62,54 @@ void main() {
 
     expect(restored.changes.single.playerId, a.id);
     expect(restored.changes.single.belongsTo(a), isTrue);
+  });
+
+  group('dwóch graczy o imieniu „Ja” w różnych kolorach', () {
+    final a = Player(name: 'Ja', color: const Color(0xFF1D27EA));
+    final b = Player(name: 'Ja', color: const Color(0xFFEA1D27));
+
+    test('współdzielenie przypisuje punkty właściwemu graczowi', () {
+      // A punktuje, B (też „Ja”) jest zaznaczony jako współdzielący.
+      final result = splitPoints(
+        scorer: a,
+        base: 10,
+        others: {b: const PointsShare()},
+      );
+
+      expect(result[a], 10);
+      expect(result[b], 10);
+      expect(result.length, 2);
+    });
+
+    test('zamek drugiego „Ja” liczy się tylko jemu', () {
+      final result = splitPoints(
+        scorer: a,
+        base: 10,
+        others: {
+          b: const PointsShare(castle: true, castles: 2, alsoShares: true),
+        },
+      );
+
+      expect(result, {a: 10, b: 30});
+    });
+
+    test('zatwierdzenie i cofnięcie zmienia wynik tylko wskazanego gracza', () {
+      final event = ScoreEvent('x', [ScoreChange(b, 7)]);
+
+      event.apply();
+      expect(a.points, 0);
+      expect(b.points, 7);
+
+      event.revert();
+      expect(b.points, 0);
+    });
+
+    test('wpisy historii należą tylko do swojego gracza', () {
+      final entry = _entry(b, 5);
+
+      expect(entry.changes.single.belongsTo(b), isTrue);
+      expect(entry.changes.single.belongsTo(a), isFalse);
+    });
   });
 
   group('migracja starych wpisów bez id', () {
