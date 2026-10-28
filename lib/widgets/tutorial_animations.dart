@@ -170,8 +170,27 @@ class _AddPlayerAnimationState extends _LoopingSceneState<AddPlayerAnimation> {
 
   // Położenia elementów makiety.
   static const _fab = Offset(_w - 38, _h - 38);
-  static const _dialog = Rect.fromLTWH(34, 56, _w - 68, 132);
-  static const _addButton = Offset(_w - 34 - 42, 56 + 132 - 24);
+  static const _dialog = Rect.fromLTWH(34, 46, _w - 68, 150);
+  static const _addButton = Offset(_w - 34 - 12 - 28, 46 + 150 - 12 - 13);
+
+  // Paleta kolorów mepla w oknie (pokazujemy tylko kilka z nich; własny
+  // kolor wybiera się w aplikacji z pełnej palety, co opisuje tekst kroku).
+  static const _palette = [
+    Color(0xFF1D27EA),
+    Color(0xFFEA1D27),
+    Color(0xFF078E04),
+    Color(0xFFEAD21D),
+    Color(0xFF000000),
+  ];
+  static const _chosen = 2;
+  static const _dot = 18.0;
+  static const _dotGap = 8.0;
+  static const _dotsLeft = 34 + 12.0;
+  static const _dotsTop = 46 + 12 + 17 + 8 + 30 + 8.0;
+  static const _chosenDot = Offset(
+    _dotsLeft + _dot / 2 + _chosen * (_dot + _dotGap),
+    _dotsTop + _dot / 2,
+  );
 
   @override
   Duration get duration => const Duration(seconds: 8);
@@ -185,29 +204,38 @@ class _AddPlayerAnimationState extends _LoopingSceneState<AddPlayerAnimation> {
     final toFab = _seg(t, 0.04, 0.17);
     final fabPress = _seg(t, 0.17, 0.22);
     final dialogIn = _seg(t, 0.22, 0.28, Curves.easeOut);
-    final typing = _seg(t, 0.30, 0.46, Curves.linear);
-    final toAdd = _seg(t, 0.50, 0.60);
-    final addPress = _seg(t, 0.60, 0.65);
-    final dialogOut = _seg(t, 0.65, 0.70);
-    final rowIn = _seg(t, 0.68, 0.78, Curves.easeOutBack);
-    final fingerOut = _seg(t, 0.70, 0.76);
+    final typing = _seg(t, 0.30, 0.44, Curves.linear);
+    final toColor = _seg(t, 0.46, 0.52);
+    final colorPress = _seg(t, 0.52, 0.56);
+    final toAdd = _seg(t, 0.58, 0.66);
+    final addPress = _seg(t, 0.66, 0.70);
+    final dialogOut = _seg(t, 0.70, 0.75);
+    final rowIn = _seg(t, 0.73, 0.83, Curves.easeOutBack);
+    final fingerOut = _seg(t, 0.75, 0.80);
     final fadeAll = _seg(t, 0.94, 0.99);
 
     final typed = _name.substring(0, (typing * _name.length).round());
     final restFinger = Offset(_w * 0.55, _h * 0.62);
-    final finger = t < 0.5
+    final finger = t < 0.45
         ? Offset.lerp(restFinger, _fab, toFab)!
-        : Offset.lerp(_fab, _addButton, toAdd)!;
+        : t < 0.57
+        ? Offset.lerp(_fab, _chosenDot, toColor)!
+        : Offset.lerp(_chosenDot, _addButton, toAdd)!;
+    final colorChosen = colorPress > 0.5;
+    final playerColor = colorChosen ? _palette[_chosen] : _palette[0];
     final fingerOpacity = (t < 0.04 ? _seg(t, 0, 0.04) : 1.0) *
         (1 - fingerOut) *
         (1 - fadeAll);
-    final pressing = t < 0.5
-        ? (fabPress < 0.5 ? fabPress * 2 : (1 - fabPress) * 2)
-        : (addPress < 0.5 ? addPress * 2 : (1 - addPress) * 2);
+    double bump(double p) => p < 0.5 ? p * 2 : (1 - p) * 2;
+    final pressing = t < 0.45
+        ? bump(fabPress)
+        : t < 0.57
+        ? bump(colorPress)
+        : bump(addPress);
 
     final dialogOpacity = dialogIn * (1 - dialogOut);
     final rowOpacity = rowIn.clamp(0.0, 1.0) * (1 - fadeAll);
-    final fabScale = 1 - 0.12 * (t < 0.5 ? pressing : 0);
+    final fabScale = 1 - 0.12 * (t < 0.45 ? pressing : 0);
 
     return _PhoneFrame(
       width: _w,
@@ -244,7 +272,7 @@ class _AddPlayerAnimationState extends _LoopingSceneState<AddPlayerAnimation> {
               ),
               child: Row(
                 children: [
-                  const MeepleIcon(color: Color(0xFF1D27EA), size: 26),
+                  MeepleIcon(color: playerColor, size: 26),
                   const SizedBox(width: 8),
                   const Text(
                     _name,
@@ -328,6 +356,31 @@ class _AddPlayerAnimationState extends _LoopingSceneState<AddPlayerAnimation> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          for (var i = 0; i < _palette.length; i++)
+                            Container(
+                              width: _dot,
+                              height: _dot,
+                              margin: const EdgeInsets.only(right: _dotGap),
+                              decoration: BoxDecoration(
+                                color: _palette[i],
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: (colorChosen && i == _chosen) ||
+                                          (!colorChosen && i == 0)
+                                      ? scheme.primary
+                                      : scheme.outlineVariant,
+                                  width: (colorChosen && i == _chosen) ||
+                                          (!colorChosen && i == 0)
+                                      ? 3
+                                      : 1,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                       const Spacer(),
                       Align(
                         alignment: Alignment.centerRight,
@@ -356,6 +409,7 @@ class _AddPlayerAnimationState extends _LoopingSceneState<AddPlayerAnimation> {
             ),
           ),
         _tap(context, _fab, fabPress),
+        _tap(context, _chosenDot, colorPress),
         _tap(context, _addButton, addPress),
         _finger(
           context,
