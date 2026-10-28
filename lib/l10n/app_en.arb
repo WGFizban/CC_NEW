@@ -282,7 +282,7 @@
   "tutorial5Title": "A mistake?",
   "tutorial5Body": "In the menu you can undo the last event. The rules summary reminds you what everything is worth, and the \"?\" next to elements tells you what to do.",
   "tutorial6Title": "End of the game",
-  "tutorial6Body": "The flag button ends the game. You will see the winner and a summary of the points from each source.\n\nHave fun!",
+  "tutorial6Body": "The flag button ends the game and shows the winner. The \"Summary\" button opens a table of the points from each source, and \"New game\" lets you start again.\n\nHave fun!",
   "aboutTitle": "About the app",
   "aboutVersion": "Version {version}",
   "aboutDescription": "A score counter for the Carcassonne board game. It scores by the rules, supports many expansions, guides the game flow and shows a summary at the end.",
