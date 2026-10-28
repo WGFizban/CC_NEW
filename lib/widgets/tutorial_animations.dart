@@ -691,15 +691,18 @@ Widget _titleBar(BuildContext context, {Widget? trailing, String? title}) {
     color: scheme.surfaceContainerHighest,
     child: Row(
       children: [
-        Text(
-          title ?? 'Carcassonne Counter',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: scheme.onSurface,
+        Expanded(
+          child: Text(
+            title ?? 'Carcassonne Counter',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: scheme.onSurface,
+            ),
           ),
         ),
-        const Spacer(),
         ?trailing,
       ],
     ),
@@ -874,11 +877,19 @@ class _ScoreAnimationState extends _LoopingSceneState<ScoreAnimation> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GameIcon(type.iconAsset, size: 44),
+            GameIcon(type.iconAsset, size: 40),
             const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(fontSize: 11, color: scheme.onSurface),
+            // Etykieta zmniejsza się, zamiast zawijać się i wystawać.
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  style: TextStyle(fontSize: 11, color: scheme.onSurface),
+                ),
+              ),
             ),
           ],
         ),
