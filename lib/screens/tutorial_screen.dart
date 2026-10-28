@@ -4,6 +4,7 @@ import '../l10n/l10n.dart';
 import '../models/scoring.dart';
 import '../widgets/game_dialogs.dart';
 import '../widgets/game_icon.dart';
+import '../widgets/tutorial_animations.dart';
 
 /// Krótki samouczek: przesuwane strony z opisem kolejnych kroków gry.
 /// Pokazywany przy pierwszym uruchomieniu i na życzenie z menu.
@@ -42,7 +43,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
         l.tutorial1Title,
         l.tutorial1Body,
       ),
-      _Step(material(Icons.person_add), l.tutorial2Title, l.tutorial2Body),
+      _Step(const AddPlayerAnimation(), l.tutorial2Title, l.tutorial2Body),
       _Step(material(Icons.play_arrow), l.tutorial3Title, l.tutorial3Body),
       _Step(material(Icons.touch_app), l.tutorial4Title, l.tutorial4Body),
       _Step(material(Icons.undo), l.tutorial5Title, l.tutorial5Body),
