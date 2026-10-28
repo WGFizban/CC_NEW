@@ -1282,9 +1282,9 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                     Positioned(
                       left: 14,
                       right: 14,
-                      top: 46,
+                      top: 42,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
                           color: scheme.primaryContainer,
                           borderRadius: BorderRadius.circular(14),
@@ -1293,7 +1293,7 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                           children: [
                             const Icon(
                               Icons.emoji_events,
-                              size: 34,
+                              size: 30,
                               color: Color(0xFFD4A017),
                             ),
                             Text(
@@ -1332,10 +1332,11 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                     Positioned(
                       left: 14,
                       right: 14,
-                      top: 156,
+                      top: 154,
                       child: _pill(
                         context,
                         l.summaryTitle,
+                        height: 30,
                         color: scheme.surfaceContainerHighest,
                         textColor: scheme.onSurface,
                         icon: Icons.table_chart_outlined,
@@ -1344,10 +1345,11 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                     Positioned(
                       left: 14,
                       right: 14,
-                      top: 192,
+                      top: 190,
                       child: _pill(
                         context,
                         l.newGame,
+                        height: 30,
                         color: scheme.primary,
                         textColor: scheme.onPrimary,
                         icon: Icons.refresh,
