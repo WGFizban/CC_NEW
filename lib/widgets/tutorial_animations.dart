@@ -1417,16 +1417,17 @@ class _ExpansionsAnimationState
   static const _expansionsItem = Offset(_w - 178 + 83, 32 + 14 + 2 * 28 + 14);
 
   static const _rowsTop = 40.0;
-  static const _rowH = 38.0;
+  static const _rowH = 34.0;
   static const _switchX = _w - 14 - 19;
   // Wiersze: 0 „Wszystkie dodatki”, 1.. poszczególne dodatki.
   static const _expansions = [
     Expansion.innsCathedrals,
     Expansion.tradersBuilders,
+    Expansion.princessDragon,
     Expansion.tower,
   ];
   static const _firstTap = 2; // „Kupcy i budowniczowie”
-  static const _secondTap = 3; // „Wieża”
+  static const _secondTap = 4; // „Wieża”
 
   static Offset _switchCenter(int row) =>
       Offset(_switchX, _rowsTop + row * _rowH + _rowH / 2);
@@ -1530,6 +1531,7 @@ class _ExpansionsAnimationState
     final onValues = [
       0.0, // Karczmy i katedry
       firstOn, // Kupcy i budowniczowie
+      0.0, // Księżniczka i smok
       secondOn, // Wieża
     ];
     final allOn = 0.0;
