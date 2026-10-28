@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
 import '../l10n/labels.dart';
+import '../models/expansion.dart';
 import '../models/scoring.dart';
 import '../theme/app_theme.dart';
 import 'game_icon.dart';
@@ -1360,6 +1361,278 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
         _tap(context, _flag, flagPress),
         _tap(context, _yes, yesPress),
         _veil(context, t),
+        _finger(context, finger, opacity: fingerOpacity, pressed: pressing),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+
+/// Przełącznik makiety: [on] 0 → wyłączony, 1 → włączony (płynnie).
+Widget _miniSwitch(BuildContext context, double on) {
+  final scheme = Theme.of(context).colorScheme;
+  return Container(
+    width: 38,
+    height: 22,
+    decoration: BoxDecoration(
+      color: Color.lerp(scheme.surfaceContainerHighest, scheme.primary, on),
+      borderRadius: BorderRadius.circular(11),
+      border: Border.all(
+        color: Color.lerp(scheme.outline, scheme.primary, on)!,
+        width: 2,
+      ),
+    ),
+    child: Align(
+      alignment: Alignment(-1 + 2 * on, 0),
+      child: Container(
+        width: 14,
+        height: 14,
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color.lerp(scheme.outline, scheme.onPrimary, on),
+        ),
+      ),
+    ),
+  );
+}
+
+/// Animacja „Wybierz dodatki”: menu (⋮) → „Dodatki” → włączenie kilku
+/// dodatków przełącznikami.
+class ExpansionsAnimation extends _LoopingScene {
+  const ExpansionsAnimation({super.key});
+
+  @override
+  State<ExpansionsAnimation> createState() => _ExpansionsAnimationState();
+}
+
+class _ExpansionsAnimationState
+    extends _LoopingSceneState<ExpansionsAnimation> {
+  static const _w = 280.0;
+  static const _h = 230.0;
+
+  static const _menuButton = Offset(_w - 24, 17);
+  static const _menu = Rect.fromLTWH(_w - 178, 32, 166, 140);
+  static const _expansionsItem = Offset(_w - 178 + 83, 32 + 14 + 2 * 28 + 14);
+
+  static const _rowsTop = 40.0;
+  static const _rowH = 38.0;
+  static const _switchX = _w - 14 - 19;
+  // Wiersze: 0 „Wszystkie dodatki”, 1.. poszczególne dodatki.
+  static const _expansions = [
+    Expansion.innsCathedrals,
+    Expansion.tradersBuilders,
+    Expansion.tower,
+  ];
+  static const _firstTap = 2; // „Kupcy i budowniczowie”
+  static const _secondTap = 3; // „Wieża”
+
+  static Offset _switchCenter(int row) =>
+      Offset(_switchX, _rowsTop + row * _rowH + _rowH / 2);
+
+  @override
+  Duration get duration => const Duration(seconds: 11);
+
+  @override
+  Widget buildScene(BuildContext context, double t) {
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final bg = Theme.of(context).scaffoldBackgroundColor;
+
+    final menuPress = _seg(t, 0.14, 0.18);
+    final menuIn = _seg(t, 0.18, 0.24, Curves.easeOut);
+    final itemPress = _seg(t, 0.40, 0.44);
+    final menuOut = _seg(t, 0.44, 0.48);
+    final screenIn = _seg(t, 0.46, 0.52);
+    final firstPress = _seg(t, 0.66, 0.70);
+    final firstOn = _seg(t, 0.68, 0.72);
+    final secondPress = _seg(t, 0.86, 0.90);
+    final secondOn = _seg(t, 0.88, 0.92);
+    final fingerOut = _seg(t, 0.92, 0.96);
+
+    final restFinger = Offset(_w * 0.5, _h * 0.75);
+    final finger = t < 0.3
+        ? Offset.lerp(restFinger, _menuButton, _seg(t, 0.04, 0.14))!
+        : t < 0.5
+        ? Offset.lerp(_menuButton, _expansionsItem, _seg(t, 0.30, 0.40))!
+        : t < 0.75
+        ? Offset.lerp(
+            _expansionsItem,
+            _switchCenter(_firstTap),
+            _seg(t, 0.56, 0.66),
+          )!
+        : Offset.lerp(
+            _switchCenter(_firstTap),
+            _switchCenter(_secondTap),
+            _seg(t, 0.76, 0.86),
+          )!;
+    final pressing = t < 0.3
+        ? _bump(menuPress)
+        : t < 0.5
+        ? _bump(itemPress)
+        : t < 0.75
+        ? _bump(firstPress)
+        : _bump(secondPress);
+    final fingerOpacity = _seg(t, 0.02, 0.05) * (1 - fingerOut);
+    final menuOpacity = menuIn * (1 - menuOut);
+
+    Widget menuItem(String text, int i, {bool emphasized = false}) =>
+        Positioned(
+          left: _menu.left,
+          top: _menu.top + 14 + i * 28.0,
+          width: _menu.width,
+          height: 28,
+          child: Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            color: emphasized && itemPress > 0
+                ? scheme.primary.withValues(alpha: 0.18)
+                : Colors.transparent,
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: emphasized ? FontWeight.bold : FontWeight.normal,
+                color: emphasized ? scheme.primary : scheme.onSurface,
+              ),
+            ),
+          ),
+        );
+
+    Widget switchRow(int row, String text, double on, {bool bold = false}) =>
+        Positioned(
+          left: 14,
+          right: 14,
+          top: _rowsTop + row * _rowH,
+          height: _rowH,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  text,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+                    color: scheme.onSurface,
+                  ),
+                ),
+              ),
+              _miniSwitch(context, on),
+            ],
+          ),
+        );
+
+    final onValues = [
+      0.0, // Karczmy i katedry
+      firstOn, // Kupcy i budowniczowie
+      secondOn, // Wieża
+    ];
+    final allOn = 0.0;
+
+    return _PhoneFrame(
+      width: _w,
+      height: _h,
+      children: [
+        // Ekran 1: lista graczy i menu.
+        Positioned.fill(
+          child: Stack(
+            children: [
+              _titleBar(
+                context,
+                trailing: Icon(
+                  Icons.more_vert,
+                  size: 20,
+                  color: scheme.onSurface,
+                ),
+              ),
+              _playerRow(context, top: 44, color: _kAla, name: 'Ala'),
+              _playerRow(context, top: 88, color: _kBob, name: 'Bob'),
+            ],
+          ),
+        ),
+        if (menuOpacity > 0)
+          Positioned.fromRect(
+            rect: _menu,
+            child: Opacity(
+              opacity: menuOpacity,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: scheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: const [
+                    BoxShadow(blurRadius: 10, color: Colors.black38),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        if (menuOpacity > 0)
+          Opacity(
+            opacity: menuOpacity,
+            child: Stack(
+              children: [
+                menuItem(l.menuUndoNone, 0),
+                menuItem(l.newGame, 1),
+                menuItem(l.expansionsSection, 2, emphasized: true),
+                menuItem(l.rulesTitle, 3),
+              ],
+            ),
+          ),
+        // Ekran 2: lista dodatków.
+        if (screenIn > 0)
+          Positioned.fill(
+            child: Opacity(
+              opacity: screenIn,
+              child: Container(
+                color: bg,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        height: 34,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        color: scheme.surfaceContainerHighest,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.arrow_back,
+                              size: 18,
+                              color: scheme.onSurface,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              l.expansionsSection,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: scheme.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    switchRow(0, l.allExpansions, allOn, bold: true),
+                    for (var i = 0; i < _expansions.length; i++)
+                      switchRow(i + 1, _expansions[i].label(l), onValues[i]),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        _tap(context, _menuButton, menuPress),
+        _tap(context, _expansionsItem, itemPress),
+        _tap(context, _switchCenter(_firstTap), firstPress),
+        _tap(context, _switchCenter(_secondTap), secondPress),
+        _veil(context, t, fadeOutFrom: 0.96),
         _finger(context, finger, opacity: fingerOpacity, pressed: pressing),
       ],
     );

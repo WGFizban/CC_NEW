@@ -41,6 +41,11 @@ class _TutorialScreenState extends State<TutorialScreen> {
         l.tutorial1Body,
       ),
       _Step(const AddPlayerAnimation(), l.tutorial2Title, l.tutorial2Body),
+      _Step(
+        const ExpansionsAnimation(),
+        l.tutorialExpansionsTitle,
+        l.tutorialExpansionsBody,
+      ),
       _Step(const StartGameAnimation(), l.tutorial3Title, l.tutorial3Body),
       _Step(const ScoreAnimation(), l.tutorial4Title, l.tutorial4Body),
       _Step(const UndoAnimation(), l.tutorial5Title, l.tutorial5Body),

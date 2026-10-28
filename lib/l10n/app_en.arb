@@ -275,6 +275,8 @@
   "tutorial1Body": "A score counter for Carcassonne that supports expansions. A few steps will show you how to use it.",
   "tutorial2Title": "Add players",
   "tutorial2Body": "Use the \"+\" button to add players (at least two are needed) and pick their meeple colors. Press and hold a player row to edit or delete it. Turn on the expansions you play with in the menu: Expansions.",
+  "tutorialExpansionsTitle": "Choose expansions",
+  "tutorialExpansionsBody": "Before the game starts, turn on the expansions you play with: pick \"Expansions\" in the menu or use the \"Modify expansions\" button in the start dialog. The \"All expansions\" switch turns them all on at once.",
   "tutorial3Title": "Start the game",
   "tutorial3Body": "When everything is ready, press \"Start game\". From then on you cannot change players or expansions.",
   "tutorial4Title": "Add points",

@@ -88,6 +88,7 @@ void main() {
     'punktowania': const ScoreAnimation(),
     'cofania': const UndoAnimation(),
     'końca gry': const EndGameAnimation(),
+    'wyboru dodatków': const ExpansionsAnimation(),
   }.entries) {
     testWidgets('animacja ${entry.key} przechodzi całą pętlę bez błędów', (
       tester,

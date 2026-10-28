@@ -780,6 +780,8 @@
   "tutorial1Body": "To licznik punktów do Carcassonne z obsługą dodatków. W kilku krokach pokażemy, jak z niego korzystać.",
   "tutorial2Title": "Dodaj graczy",
   "tutorial2Body": "Przyciskiem „+\" dodaj graczy (do gry potrzeba co najmniej dwóch) i wybierz kolory ich mepli. Przytrzymaj wiersz gracza, żeby go edytować lub usunąć. Dodatki, w które grasz, włączysz w menu: Dodatki.",
+  "tutorialExpansionsTitle": "Wybierz dodatki",
+  "tutorialExpansionsBody": "Przed rozpoczęciem gry włącz dodatki, w które grasz: w menu wybierz „Dodatki\" albo użyj przycisku „Modyfikuj dodatki\" w oknie startu gry. Przełącznik „Wszystkie dodatki\" włącza je za jednym razem.",
   "tutorial3Title": "Rozpocznij grę",
   "tutorial3Body": "Gdy wszystko jest gotowe, naciśnij „Rozpocznij grę\". Od tej chwili nie zmienisz graczy ani dodatków.",
   "tutorial4Title": "Dodawaj punkty",
