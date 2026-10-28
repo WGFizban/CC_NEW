@@ -83,4 +83,32 @@ void main() {
     expect(find.text('Bob'), findsOneWidget);
     expect(find.byIcon(Icons.flag), findsOneWidget);
   });
+
+  for (final entry in {
+    'punktowania': const ScoreAnimation(),
+    'cofania': const UndoAnimation(),
+    'końca gry': const EndGameAnimation(),
+  }.entries) {
+    testWidgets('animacja ${entry.key} przechodzi całą pętlę bez błędów', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_app(scene: entry.value));
+
+      for (var i = 0; i < 24; i++) {
+        await tester.pump(const Duration(milliseconds: 500));
+      }
+
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('animacja ${entry.key} przy ograniczonym ruchu jest statyczna', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_app(reduceMotion: true, scene: entry.value));
+      await tester.pump();
+
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    });
+  }
 }

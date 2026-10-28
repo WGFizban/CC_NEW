@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
 import '../models/scoring.dart';
-import '../widgets/game_dialogs.dart';
 import '../widgets/game_icon.dart';
 import '../widgets/tutorial_animations.dart';
 
@@ -35,8 +34,6 @@ class _TutorialScreenState extends State<TutorialScreen> {
 
   List<_Step> _steps(BuildContext context) {
     final l = context.l10n;
-    final color = Theme.of(context).colorScheme.primary;
-    Widget material(IconData icon) => Icon(icon, size: 96, color: color);
     return [
       _Step(
         GameIcon(ScoringType.city.iconAsset, size: 110),
@@ -45,9 +42,9 @@ class _TutorialScreenState extends State<TutorialScreen> {
       ),
       _Step(const AddPlayerAnimation(), l.tutorial2Title, l.tutorial2Body),
       _Step(const StartGameAnimation(), l.tutorial3Title, l.tutorial3Body),
-      _Step(material(Icons.touch_app), l.tutorial4Title, l.tutorial4Body),
-      _Step(material(Icons.undo), l.tutorial5Title, l.tutorial5Body),
-      _Step(material(kEndGameIcon), l.tutorial6Title, l.tutorial6Body),
+      _Step(const ScoreAnimation(), l.tutorial4Title, l.tutorial4Body),
+      _Step(const UndoAnimation(), l.tutorial5Title, l.tutorial5Body),
+      _Step(const EndGameAnimation(), l.tutorial6Title, l.tutorial6Body),
     ];
   }
 

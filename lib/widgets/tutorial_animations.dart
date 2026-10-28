@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../l10n/labels.dart';
+import '../models/scoring.dart';
 import '../theme/app_theme.dart';
+import 'game_icon.dart';
 import 'meeple_icon.dart';
+
+/// Gracze z przykładów: Ala (zielony, wybrany w animacji dodawania gracza)
+/// i Bob (czerwony).
+const Color _kAla = Color(0xFF078E04);
+const Color _kBob = Color(0xFFEA1D27);
 
 /// Postęp [t] w przedziale [a]–[b] jako liczba 0–1 (poza przedziałem
 /// przycina do 0 lub 1), z krzywą [curve].
@@ -178,7 +186,7 @@ class _AddPlayerAnimationState extends _LoopingSceneState<AddPlayerAnimation> {
   static const _palette = [
     Color(0xFF1D27EA),
     Color(0xFFEA1D27),
-    Color(0xFF078E04),
+    _kAla,
     Color(0xFFEAD21D),
     Color(0xFF000000),
   ];
@@ -531,13 +539,13 @@ class _StartGameAnimationState extends _LoopingSceneState<StartGameAnimation> {
         _playerRow(
           context,
           top: 44,
-          color: const Color(0xFF1D27EA),
+          color: _kAla,
           name: 'Ala',
         ),
         _playerRow(
           context,
           top: 88,
-          color: const Color(0xFFEA1D27),
+          color: _kBob,
           name: 'Bob',
         ),
         // Przed startem: „Rozpocznij grę” i „+”.
@@ -658,6 +666,675 @@ class _StartGameAnimationState extends _LoopingSceneState<StartGameAnimation> {
           ),
         _tap(context, _startButton, startPress),
         _tap(context, _confirmButton, confirmPress),
+        _finger(context, finger, opacity: fingerOpacity, pressed: pressing),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Wspólne elementy kolejnych scen.
+
+double _bump(double p) => p < 0.5 ? p * 2 : (1 - p) * 2;
+
+Widget _titleBar(BuildContext context, {Widget? trailing, String? title}) {
+  final scheme = Theme.of(context).colorScheme;
+  return Container(
+    height: 34,
+    padding: const EdgeInsets.symmetric(horizontal: 12),
+    color: scheme.surfaceContainerHighest,
+    child: Row(
+      children: [
+        Text(
+          title ?? 'Carcassonne Counter',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: scheme.onSurface,
+          ),
+        ),
+        const Spacer(),
+        ?trailing,
+      ],
+    ),
+  );
+}
+
+/// Zasłona w kolorze tła do płynnego startu i końca pętli: w pełni kryje
+/// scenę na początku ([fadeIn] 0→1 ją odsłania) i na końcu ([fadeOut]).
+Widget _veil(BuildContext context, double t, {double fadeOutFrom = 0.94}) {
+  final cover = (1 - _seg(t, 0, 0.03)) > _seg(t, fadeOutFrom, 0.99)
+      ? 1 - _seg(t, 0, 0.03)
+      : _seg(t, fadeOutFrom, 0.99);
+  if (cover <= 0) return const SizedBox.shrink();
+  return Positioned.fill(
+    child: IgnorePointer(
+      child: Opacity(
+        opacity: cover,
+        child: ColoredBox(color: Theme.of(context).scaffoldBackgroundColor),
+      ),
+    ),
+  );
+}
+
+Widget _pill(
+  BuildContext context,
+  String text, {
+  required Color color,
+  Color textColor = Colors.white,
+  double? width,
+  double height = 32,
+  IconData? icon,
+}) {
+  return Container(
+    width: width,
+    height: height,
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    alignment: Alignment.center,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(height / 2),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: 15, color: textColor),
+          const SizedBox(width: 4),
+        ],
+        Flexible(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12, color: textColor),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _dialogCard(BuildContext context, Rect rect, double appear, Widget child) {
+  final scheme = Theme.of(context).colorScheme;
+  return Positioned.fromRect(
+    rect: rect,
+    child: Opacity(
+      opacity: appear.clamp(0.0, 1.0),
+      child: Transform.scale(
+        scale: 0.85 + 0.15 * appear.clamp(0.0, 1.0),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: scheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [BoxShadow(blurRadius: 12, color: Colors.black38)],
+          ),
+          child: child,
+        ),
+      ),
+    ),
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+/// Animacja „Dodawaj punkty”: dotknięcie wiersza gracza, wybór „Droga”,
+/// wpisanie płytek i „Zatwierdź”; wynik pojawia się na liście.
+class ScoreAnimation extends _LoopingScene {
+  const ScoreAnimation({super.key});
+
+  @override
+  State<ScoreAnimation> createState() => _ScoreAnimationState();
+}
+
+class _ScoreAnimationState extends _LoopingSceneState<ScoreAnimation> {
+  static const _w = 280.0;
+  static const _h = 230.0;
+
+  static const _alaRow = Offset(140, 63);
+  static const _roadTile = Offset(140, 98);
+  static const _confirm = Offset(207, 196);
+
+  @override
+  Duration get duration => const Duration(seconds: 10);
+
+  @override
+  Widget buildScene(BuildContext context, double t) {
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final bg = Theme.of(context).scaffoldBackgroundColor;
+
+    final rowPress = _seg(t, 0.12, 0.16);
+    final ab = _seg(t, 0.16, 0.20);
+    final roadPress = _seg(t, 0.32, 0.36);
+    final bc = _seg(t, 0.36, 0.40);
+    final typing = _seg(t, 0.42, 0.46, Curves.linear);
+    final confirmPress = _seg(t, 0.62, 0.66);
+    final ca = _seg(t, 0.66, 0.72);
+    final fingerOut = _seg(t, 0.72, 0.78);
+
+    final aOp = ((1 - ab) + ca).clamp(0.0, 1.0);
+    final bOp = ab * (1 - bc);
+    final cOp = bc * (1 - ca);
+
+    final restFinger = Offset(_w * 0.7, _h * 0.7);
+    final finger = t < 0.15
+        ? Offset.lerp(restFinger, _alaRow, _seg(t, 0.03, 0.12))!
+        : t < 0.40
+        ? Offset.lerp(_alaRow, _roadTile, _seg(t, 0.22, 0.32))!
+        : Offset.lerp(_roadTile, _confirm, _seg(t, 0.50, 0.62))!;
+    final pressing = t < 0.2
+        ? _bump(rowPress)
+        : t < 0.45
+        ? _bump(roadPress)
+        : _bump(confirmPress);
+    final fingerOpacity = _seg(t, 0.02, 0.05) * (1 - fingerOut);
+
+    final digit = typing >= 0.5 ? '4' : '';
+    final points = digit.isEmpty ? 0 : 4;
+    final alaScore = t > 0.69 ? '4' : '0';
+
+    Widget header(Widget center) => Padding(
+      padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
+      child: Row(
+        children: [
+          MeepleIcon(color: _kAla, size: 26),
+          Expanded(child: Center(child: center)),
+          MeepleIcon(color: _kAla, size: 26),
+        ],
+      ),
+    );
+
+    Widget tile(ScoringType type, String label, double left) => Positioned(
+      left: left,
+      top: 58,
+      child: Container(
+        width: 78,
+        height: 80,
+        decoration: BoxDecoration(
+          color: scheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: scheme.outlineVariant, width: 2),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GameIcon(type.iconAsset, size: 44),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(fontSize: 11, color: scheme.onSurface),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return _PhoneFrame(
+      width: _w,
+      height: _h,
+      children: [
+        // Ekran 1: lista graczy.
+        Positioned.fill(
+          child: Opacity(
+            opacity: aOp,
+            child: Stack(
+              children: [
+                _titleBar(context),
+                _playerRow(context, top: 44, color: _kAla, name: 'Ala', score: alaScore),
+                _playerRow(context, top: 88, color: _kBob, name: 'Bob'),
+              ],
+            ),
+          ),
+        ),
+        // Ekran 2: wybór rodzaju punktacji.
+        if (bOp > 0)
+          Positioned.fill(
+            child: Opacity(
+              opacity: bOp,
+              child: Container(
+                color: bg,
+                child: Stack(
+                  children: [
+                    header(
+                      Text(
+                        l.addPointsTitle('Ala'),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 11, color: scheme.onSurface),
+                      ),
+                    ),
+                    tile(ScoringType.city, l.scCity, 10),
+                    tile(ScoringType.road, l.scRoad, 101),
+                    tile(ScoringType.cloister, ScoringType.cloister.title(l), 192),
+                    Positioned(
+                      left: 14,
+                      right: 14,
+                      top: _h - 50,
+                      child: _pill(
+                        context,
+                        l.cancel,
+                        color: const Color(0xFFC62828),
+                        height: 34,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        // Ekran 3: wynik i płytki.
+        if (cOp > 0)
+          Positioned.fill(
+            child: Opacity(
+              opacity: cOp,
+              child: Container(
+                color: bg,
+                child: Stack(
+                  children: [
+                    header(
+                      Text(
+                        l.scoreLabel(points),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: 56,
+                      child: Column(
+                        children: [
+                          Text(
+                            l.tiles,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            width: 56,
+                            height: 36,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: scheme.primary, width: 2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              digit.isEmpty ? '0' : digit,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: digit.isEmpty
+                                    ? scheme.onSurfaceVariant
+                                    : scheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      left: 12,
+                      right: 12,
+                      top: _h - 52,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _pill(
+                              context,
+                              l.cancel,
+                              color: const Color(0xFFC62828),
+                              height: 36,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _pill(
+                              context,
+                              l.confirm,
+                              color: const Color(0xFF2E9E44),
+                              height: 36,
+                              icon: Icons.check,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        _tap(context, _alaRow, rowPress),
+        _tap(context, _roadTile, roadPress),
+        _tap(context, _confirm, confirmPress),
+        _veil(context, t),
+        _finger(context, finger, opacity: fingerOpacity, pressed: pressing),
+      ],
+    );
+  }
+}
+
+/// Animacja „Pomyłka?”: menu (⋮), „Cofnij ostatnie punkty”, wynik wraca.
+class UndoAnimation extends _LoopingScene {
+  const UndoAnimation({super.key});
+
+  @override
+  State<UndoAnimation> createState() => _UndoAnimationState();
+}
+
+class _UndoAnimationState extends _LoopingSceneState<UndoAnimation> {
+  static const _w = 280.0;
+  static const _h = 230.0;
+
+  static const _menuButton = Offset(_w - 24, 17);
+  static const _menu = Rect.fromLTWH(_w - 178, 32, 166, 104);
+  static const _undoItem = Offset(_w - 178 + 83, 32 + 14 + 14);
+
+  @override
+  Duration get duration => const Duration(seconds: 8);
+
+  @override
+  Widget buildScene(BuildContext context, double t) {
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+
+    final menuPress = _seg(t, 0.16, 0.20);
+    final menuIn = _seg(t, 0.20, 0.26, Curves.easeOut);
+    final itemPress = _seg(t, 0.46, 0.50);
+    final menuOut = _seg(t, 0.50, 0.56);
+    final fingerOut = _seg(t, 0.56, 0.62);
+
+    final restFinger = Offset(_w * 0.5, _h * 0.7);
+    final finger = t < 0.3
+        ? Offset.lerp(restFinger, _menuButton, _seg(t, 0.04, 0.16))!
+        : Offset.lerp(_menuButton, _undoItem, _seg(t, 0.34, 0.46))!;
+    final pressing = t < 0.3 ? _bump(menuPress) : _bump(itemPress);
+    final fingerOpacity = _seg(t, 0.02, 0.05) * (1 - fingerOut);
+    final menuOpacity = menuIn * (1 - menuOut);
+    final reverted = t > 0.54;
+
+    Widget item(String text, int i, {bool highlight = false}) => Positioned(
+      left: _menu.left,
+      top: _menu.top + 14 + i * 28.0,
+      width: _menu.width,
+      height: 28,
+      child: Container(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        color: highlight
+            ? scheme.primary.withValues(alpha: 0.18)
+            : Colors.transparent,
+        child: Text(
+          text,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 12, color: scheme.onSurface),
+        ),
+      ),
+    );
+
+    return _PhoneFrame(
+      width: _w,
+      height: _h,
+      children: [
+        _titleBar(
+          context,
+          trailing: Icon(Icons.more_vert, size: 20, color: scheme.onSurface),
+        ),
+        _playerRow(
+          context,
+          top: 44,
+          color: _kAla,
+          name: 'Ala',
+          score: reverted ? '0' : '4',
+        ),
+        _playerRow(context, top: 88, color: _kBob, name: 'Bob'),
+        if (menuOpacity > 0)
+          Positioned.fromRect(
+            rect: _menu,
+            child: Opacity(
+              opacity: menuOpacity,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: scheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: const [
+                    BoxShadow(blurRadius: 10, color: Colors.black38),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        if (menuOpacity > 0)
+          Opacity(
+            opacity: menuOpacity,
+            child: Stack(
+              children: [
+                item(l.menuUndoNone, 0, highlight: itemPress > 0),
+                item(l.newGame, 1),
+                item(l.menuTutorial, 2),
+              ],
+            ),
+          ),
+        _tap(context, _menuButton, menuPress),
+        _tap(context, _undoItem, itemPress),
+        _veil(context, t),
+        _finger(context, finger, opacity: fingerOpacity, pressed: pressing),
+      ],
+    );
+  }
+}
+
+/// Animacja „Koniec gry”: flaga, potwierdzenie i ekran zwycięzcy.
+class EndGameAnimation extends _LoopingScene {
+  const EndGameAnimation({super.key});
+
+  @override
+  State<EndGameAnimation> createState() => _EndGameAnimationState();
+}
+
+class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
+  static const _w = 280.0;
+  static const _h = 230.0;
+
+  static const _flag = Offset(_w - 38, _h - 38);
+  static const _dialog = Rect.fromLTWH(34, 56, _w - 68, 112);
+  static const _yes = Offset(_w - 34 - 12 - 18, 56 + 112 - 12 - 13);
+
+  @override
+  Duration get duration => const Duration(seconds: 9);
+
+  @override
+  Widget buildScene(BuildContext context, double t) {
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final bg = Theme.of(context).scaffoldBackgroundColor;
+
+    final flagPress = _seg(t, 0.16, 0.20);
+    final dialogIn = _seg(t, 0.20, 0.26, Curves.easeOut);
+    final yesPress = _seg(t, 0.46, 0.50);
+    final dialogOut = _seg(t, 0.50, 0.55);
+    final swap = _seg(t, 0.54, 0.62);
+    final fingerOut = _seg(t, 0.50, 0.56);
+
+    final restFinger = Offset(_w * 0.55, _h * 0.55);
+    final finger = t < 0.3
+        ? Offset.lerp(restFinger, _flag, _seg(t, 0.04, 0.16))!
+        : Offset.lerp(_flag, _yes, _seg(t, 0.34, 0.46))!;
+    final pressing = t < 0.3 ? _bump(flagPress) : _bump(yesPress);
+    final fingerOpacity = _seg(t, 0.02, 0.05) * (1 - fingerOut);
+    final dialogOpacity = dialogIn * (1 - dialogOut);
+
+    return _PhoneFrame(
+      width: _w,
+      height: _h,
+      children: [
+        // Ekran z listą graczy.
+        Positioned.fill(
+          child: Opacity(
+            opacity: 1 - swap,
+            child: Stack(
+              children: [
+                _titleBar(context),
+                _playerRow(context, top: 44, color: _kAla, name: 'Ala', score: '12'),
+                _playerRow(context, top: 88, color: _kBob, name: 'Bob', score: '7'),
+                Positioned(
+                  left: _flag.dx - 22,
+                  top: _flag.dy - 22,
+                  child: Transform.scale(
+                    scale: 1 - 0.12 * (t < 0.3 ? pressing : 0),
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: scheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(Icons.flag, color: scheme.onPrimaryContainer),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (dialogOpacity > 0)
+          _dialogCard(
+            context,
+            _dialog,
+            dialogOpacity,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l.endGameQuestion,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: scheme.onSurface,
+                  ),
+                ),
+                const Spacer(),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l.no,
+                        style: TextStyle(fontSize: 12, color: scheme.primary),
+                      ),
+                      const SizedBox(width: 12),
+                      _pill(
+                        context,
+                        l.yes,
+                        color: scheme.primary,
+                        textColor: scheme.onPrimary,
+                        height: 26,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        // Ekran końca gry.
+        if (swap > 0)
+          Positioned.fill(
+            child: Opacity(
+              opacity: swap,
+              child: Container(
+                color: bg,
+                child: Stack(
+                  children: [
+                    _titleBar(context, title: l.gameOver),
+                    Positioned(
+                      left: 14,
+                      right: 14,
+                      top: 46,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: scheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Column(
+                          children: [
+                            const Icon(
+                              Icons.emoji_events,
+                              size: 34,
+                              color: Color(0xFFD4A017),
+                            ),
+                            Text(
+                              l.winner,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: scheme.onPrimaryContainer,
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                MeepleIcon(color: _kAla, size: 24),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Ala',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: scheme.onPrimaryContainer,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              l.pointsValue(12),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: scheme.onPrimaryContainer,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 14,
+                      right: 14,
+                      top: 156,
+                      child: _pill(
+                        context,
+                        l.summaryTitle,
+                        color: scheme.surfaceContainerHighest,
+                        textColor: scheme.onSurface,
+                        icon: Icons.table_chart_outlined,
+                      ),
+                    ),
+                    Positioned(
+                      left: 14,
+                      right: 14,
+                      top: 192,
+                      child: _pill(
+                        context,
+                        l.newGame,
+                        color: scheme.primary,
+                        textColor: scheme.onPrimary,
+                        icon: Icons.refresh,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        _tap(context, _flag, flagPress),
+        _tap(context, _yes, yesPress),
+        _veil(context, t),
         _finger(context, finger, opacity: fingerOpacity, pressed: pressing),
       ],
     );
