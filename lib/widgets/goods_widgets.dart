@@ -24,7 +24,7 @@ extension GoodsStyle on Goods {
   };
 }
 
-/// Liczniki trzech surowców (wino, pszenica, sukno).
+/// Liczniki trzech surowców (wino, zboże, sukno).
 class GoodsCounters extends StatelessWidget {
   final Map<Goods, int> values;
   final void Function(Goods goods, int value) onChanged;
