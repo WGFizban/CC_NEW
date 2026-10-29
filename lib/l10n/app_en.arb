@@ -55,8 +55,6 @@
   "tokenRobber": "Robber Baron token",
   "tokenNobody": "Nobody has this token yet.",
   "takeTokenInfo": "Taking the token",
-  "tokenMinHintKing": "The scored city should be at least {min} tiles to take the token.",
-  "tokenMinHintRobber": "The scored road should be at least {min} tiles to take the token.",
   "tokenCurrent": "Currently held by:",
   "tokenCurrentValue": "{name} ({size} tiles)",
   "tokenSizeKing": "City size (number of tiles)",

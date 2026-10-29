@@ -111,7 +111,7 @@ void main() {
       final c = _player('C');
       final all = [a, b, c];
 
-      expect(goodsBonus(a, all), 20); // wino (remis) + żyto
+      expect(goodsBonus(a, all), 20); // wino (remis) + pszenica
       expect(goodsBonus(b, all), 20); // wino (remis) + sukno
       expect(finalScore(a, all), 25);
       expect(finalScore(c, all), 0);
@@ -234,7 +234,7 @@ void main() {
   });
 
   group('limity z gry', () {
-    test('w grze jest 20 żetonów surowców: 9 wina, 6 żyta, 5 sukna', () {
+    test('w grze jest 20 żetonów surowców: 9 wina, 6 pszenicy, 5 sukna', () {
       expect(Goods.wine.supply, 9);
       expect(Goods.grain.supply, 6);
       expect(Goods.cloth.supply, 5);

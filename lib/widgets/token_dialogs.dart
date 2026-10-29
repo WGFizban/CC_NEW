@@ -5,7 +5,6 @@ import '../l10n/l10n.dart';
 import '../models/crown_tokens.dart';
 import '../models/player.dart';
 import 'counter_stepper.dart';
-import 'info_hint.dart';
 import 'meeple_icon.dart';
 import 'player_picker.dart';
 
@@ -168,10 +167,7 @@ class _TokenDialogState extends State<_TokenDialog> {
               ),
             const SizedBox(height: 16),
             if (_choose) ...[
-              LabelWithHint(
-                isKing ? l.tokenSizeKing : l.tokenSizeRobber,
-                isKing ? l.tokenMinHintKing(_min) : l.tokenMinHintRobber(_min),
-              ),
+              Text(isKing ? l.tokenSizeKing : l.tokenSizeRobber),
               const SizedBox(height: 4),
               Center(
                 child: CounterStepper(
@@ -218,6 +214,45 @@ class _TokenDialogState extends State<_TokenDialog> {
           child: Text(l.confirm),
         ),
       ],
+    );
+  }
+}
+
+/// Plakietka żetonu w wierszu gracza (jak plakietki surowców): grafika
+/// żetonu i wyraźna cyfra – wielkość najwyższej ukończonej budowli, dzięki
+/// której gracz ma żeton.
+class CrownTokenBadge extends StatelessWidget {
+  final CrownToken token;
+  final int size;
+
+  const CrownTokenBadge({super.key, required this.token, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    // Barwy żetonów: fiolet Króla i zieleń Barona rabusiów, spójne z ich
+    // grafikami; cyfra w kolorze tekstu motywu, żeby była czytelna w jasnym
+    // i ciemnym motywie.
+    final accent = token == CrownToken.king
+        ? const Color(0xFF7A5CC8)
+        : const Color(0xFF5E9B3E);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(4, 2, 12, 2),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.22),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: accent, width: 2),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          tokenIcon(token, size: 30),
+          const SizedBox(width: 6),
+          Text(
+            '$size',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+          ),
+        ],
+      ),
     );
   }
 }

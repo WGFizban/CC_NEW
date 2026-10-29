@@ -758,9 +758,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final heldTokens = _has(Expansion.kingRobber)
         ? [
             for (final t in CrownToken.values)
-              if (_settings.tokens[t]?.playerId == p.id) t,
+              if (_settings.tokens[t]?.playerId == p.id)
+                (t, _settings.tokens[t]!.size),
           ]
-        : const <CrownToken>[];
+        : const <(CrownToken, int)>[];
 
     return Card(
       color: playerCardColor(context),
@@ -782,7 +783,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
                   children: [
                     if (hasGoods) GoodsBadges(player: p, players: _players),
                     if (hasGold) GoldBadge(count: p.gold),
-                    for (final t in heldTokens) tokenIcon(t, size: 30),
+                    for (final (t, size) in heldTokens)
+                      CrownTokenBadge(token: t, size: size),
                   ],
                 ),
               )

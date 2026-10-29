@@ -55,11 +55,11 @@ końca; **Nowa gra** w menu wraca do przygotowania.
   osobnej opcji „nieukończone" – po prostu niczego się nie dopisuje.
 
 ### Kupcy i budowniczowie
-- W punktacji miasta liczniki **wina, żyta i sukna** – surowce dostaje gracz,
+- W punktacji miasta liczniki **wina, pszenicy i sukna** – surowce dostaje gracz,
   który domknął miasto (nawet bez mepla w mieście).
 - Osobny kafelek **Surowce** do dopisania żetonów dla gracza, który wybrał
   płytkę.
-- Liczniki pilnują limitów z gry: 9 wina, 6 żyta i 5 sukna (razem 20 żetonów).
+- Liczniki pilnują limitów z gry: 9 wina, 6 pszenicy i 5 sukna (razem 20 żetonów).
 - **Premia 10 pkt** dla prowadzącego w każdym rodzaju surowca liczona na
   bieżąco: przy remisie każdy z remisujących dostaje pełne 10, a przy zerze
   nikt. Premia od razu podnosi wynik na liście, bez osobnych opisów,

@@ -144,4 +144,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.widget<CounterStepper>(find.byType(CounterStepper)).min, 7);
   });
+
+  testWidgets('plakietka żetonu pokazuje wielkość budowli', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        const Scaffold(
+          body: CrownTokenBadge(token: CrownToken.robber, size: 9),
+        ),
+      ),
+    );
+    expect(find.text('9'), findsOneWidget);
+  });
 }
