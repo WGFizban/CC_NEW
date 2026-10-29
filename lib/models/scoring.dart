@@ -224,6 +224,9 @@ int calculatePoints(
     case ScoringType.ringmaster:
     case ScoringType.tower:
     case ScoringType.monastery:
+    case ScoringType.crown:
+    case ScoringType.king:
+    case ScoringType.robber:
       base = 0;
 
     case ScoringType.germanCastle:

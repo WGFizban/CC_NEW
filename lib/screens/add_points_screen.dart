@@ -706,6 +706,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       case ScoringType.pyramid:
       case ScoringType.tower:
       case ScoringType.monastery:
+      case ScoringType.crown:
+      case ScoringType.king:
+      case ScoringType.robber:
         // Wróżka dopisuje 1 pkt od razu na liście graczy, a pozostałe typy
         // mają osobne ekrany lub (surowce) tylko sekcję surowców.
         return const [];
