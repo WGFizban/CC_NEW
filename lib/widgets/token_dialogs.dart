@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../l10n/l10n.dart';
 import '../models/crown_tokens.dart';
@@ -17,12 +18,16 @@ String tokenName(BuildContext context, CrownToken token) {
   };
 }
 
-/// Ikona żetonu (tymczasowa, z zestawu Material; docelowa grafika po
-/// decyzji).
-IconData tokenIcon(CrownToken token) => switch (token) {
-  CrownToken.king => Icons.workspace_premium,
-  CrownToken.robber => Icons.visibility_off,
-};
+/// Grafika żetonu: Król (korona w tarczy) i Baron rabusiów (mieszek i
+/// sztylet na tle drogi).
+Widget tokenIcon(CrownToken token, {double size = 24}) => SvgPicture.asset(
+  switch (token) {
+    CrownToken.king => 'assets/icons/game/token_king.svg',
+    CrownToken.robber => 'assets/icons/game/token_robber.svg',
+  },
+  width: size,
+  height: size,
+);
 
 /// Okno przejęcia żetonu: nowa wielkość budowli (zawsze większa od
 /// zapamiętanej) i gracz, który żeton przejmuje. Zwraca zmianę żetonu albo
@@ -89,7 +94,7 @@ class _TokenDialogState extends State<_TokenDialog> {
     return AlertDialog(
       title: Row(
         children: [
-          Icon(tokenIcon(widget.token)),
+          tokenIcon(widget.token, size: 32),
           const SizedBox(width: 8),
           Expanded(child: Text(tokenName(context, widget.token))),
         ],
@@ -220,7 +225,7 @@ class _CrownTilesDialogState extends State<_CrownTilesDialog> {
         children: [
           Row(
             children: [
-              Icon(tokenIcon(token), size: 18),
+              tokenIcon(token, size: 24),
               const SizedBox(width: 6),
               Text(
                 tokenName(context, token),
