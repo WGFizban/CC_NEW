@@ -1439,14 +1439,20 @@ class _ExpansionsAnimationState
     Expansion.princessDragon,
     Expansion.tower,
   ];
-  static const _firstTap = 2; // „Kupcy i budowniczowie”
-  static const _secondTap = 4; // „Wieża”
+  static const _singleRow = 2; // „Kupcy i budowniczowie”
+  static const _allRow = 0; // „Wszystkie dodatki”
 
   static Offset _switchCenter(int row) =>
       Offset(_switchX, _rowsTop + row * _rowH + _rowH / 2);
 
+  static const _seconds = 14.0;
+
   @override
-  Duration get duration => const Duration(seconds: 11);
+  Duration get duration => const Duration(seconds: 14);
+
+  /// Postęp w przedziale [from]–[to] podanym w sekundach pętli.
+  double _s(double t, double from, double to, [Curve c = Curves.easeInOut]) =>
+      _seg(t, from / _seconds, to / _seconds, c);
 
   @override
   Widget buildScene(BuildContext context, double t) {
@@ -1454,42 +1460,54 @@ class _ExpansionsAnimationState
     final scheme = Theme.of(context).colorScheme;
     final bg = Theme.of(context).scaffoldBackgroundColor;
 
-    final menuPress = _seg(t, 0.14, 0.18);
-    final menuIn = _seg(t, 0.18, 0.24, Curves.easeOut);
-    final itemPress = _seg(t, 0.40, 0.44);
-    final menuOut = _seg(t, 0.44, 0.48);
-    final screenIn = _seg(t, 0.46, 0.52);
-    final firstPress = _seg(t, 0.66, 0.70);
-    final firstOn = _seg(t, 0.68, 0.72);
-    final secondPress = _seg(t, 0.86, 0.90);
-    final secondOn = _seg(t, 0.88, 0.92);
-    final fingerOut = _seg(t, 0.92, 0.96);
+    // Oś czasu w sekundach: menu → „Dodatki” → jeden przełącznik →
+    // „Wszystkie dodatki” (wszystkie włączone) → ponownie (wszystkie wyłączone).
+    final menuPress = _s(t, 1.6, 2.0);
+    final menuIn = _s(t, 2.0, 2.6, Curves.easeOut);
+    final itemPress = _s(t, 4.4, 4.8);
+    final menuOut = _s(t, 4.8, 5.2);
+    final screenIn = _s(t, 5.0, 5.6);
+    final singlePress = _s(t, 7.0, 7.4);
+    final singleOn = _s(t, 7.2, 7.6);
+    final allPress1 = _s(t, 8.8, 9.2);
+    final allOn = _s(t, 9.0, 9.6);
+    final allPress2 = _s(t, 11.0, 11.4);
+    final allOff = _s(t, 11.2, 11.8);
+    final fingerOut = _s(t, 12.4, 12.9);
 
     final restFinger = Offset(_w * 0.5, _h * 0.75);
-    final finger = t < 0.3
-        ? Offset.lerp(restFinger, _menuButton, _seg(t, 0.04, 0.14))!
-        : t < 0.5
-        ? Offset.lerp(_menuButton, _expansionsItem, _seg(t, 0.30, 0.40))!
-        : t < 0.75
-        ? Offset.lerp(
-            _expansionsItem,
-            _switchCenter(_firstTap),
-            _seg(t, 0.56, 0.66),
-          )!
-        : Offset.lerp(
-            _switchCenter(_firstTap),
-            _switchCenter(_secondTap),
-            _seg(t, 0.76, 0.86),
-          )!;
-    final pressing = t < 0.3
+    final single = _switchCenter(_singleRow);
+    final all = _switchCenter(_allRow);
+    final finger = t * _seconds < 3.0
+        ? Offset.lerp(restFinger, _menuButton, _s(t, 0.5, 1.6))!
+        : t * _seconds < 6.0
+        ? Offset.lerp(_menuButton, _expansionsItem, _s(t, 3.3, 4.4))!
+        : t * _seconds < 8.0
+        ? Offset.lerp(_expansionsItem, single, _s(t, 6.2, 7.0))!
+        : Offset.lerp(single, all, _s(t, 8.0, 8.8))!;
+    final sec = t * _seconds;
+    final pressing = sec < 3.0
         ? _bump(menuPress)
-        : t < 0.5
+        : sec < 6.0
         ? _bump(itemPress)
-        : t < 0.75
-        ? _bump(firstPress)
-        : _bump(secondPress);
+        : sec < 8.0
+        ? _bump(singlePress)
+        : sec < 10.0
+        ? _bump(allPress1)
+        : _bump(allPress2);
     final fingerOpacity = _seg(t, 0.02, 0.05) * (1 - fingerOut);
     final menuOpacity = menuIn * (1 - menuOut);
+
+    // Wartości przełączników (0 wyłączony, 1 włączony).
+    final everyOn = allOn * (1 - allOff);
+    final allValue = everyOn;
+    double rowValue(int expansionIndex) {
+      final isSingle = expansionIndex + 1 == _singleRow;
+      // Pojedynczy dodatek włącza się wcześniej, a „wszystkie” gasi go razem
+      // z resztą.
+      final own = isSingle ? singleOn : 0.0;
+      return (own > everyOn ? own : everyOn) * (1 - allOff);
+    }
 
     Widget menuItem(String text, int i, {bool emphasized = false}) =>
         Positioned(
@@ -1541,13 +1559,6 @@ class _ExpansionsAnimationState
           ),
         );
 
-    final onValues = [
-      0.0, // Karczmy i katedry
-      firstOn, // Kupcy i budowniczowie
-      0.0, // Księżniczka i smok
-      secondOn, // Wieża
-    ];
-    final allOn = 0.0;
 
     return _PhoneFrame(
       width: _w,
@@ -1635,9 +1646,9 @@ class _ExpansionsAnimationState
                         ),
                       ),
                     ),
-                    switchRow(0, l.allExpansions, allOn, bold: true),
+                    switchRow(0, l.allExpansions, allValue, bold: true),
                     for (var i = 0; i < _expansions.length; i++)
-                      switchRow(i + 1, _expansions[i].label(l), onValues[i]),
+                      switchRow(i + 1, _expansions[i].title(l), rowValue(i)),
                   ],
                 ),
               ),
@@ -1645,9 +1656,10 @@ class _ExpansionsAnimationState
           ),
         _tap(context, _menuButton, menuPress),
         _tap(context, _expansionsItem, itemPress),
-        _tap(context, _switchCenter(_firstTap), firstPress),
-        _tap(context, _switchCenter(_secondTap), secondPress),
-        _veil(context, t, fadeOutFrom: 0.96),
+        _tap(context, single, singlePress),
+        _tap(context, all, allPress1),
+        _tap(context, all, allPress2),
+        _veil(context, t, fadeOutFrom: 0.93),
         _finger(context, finger, opacity: fingerOpacity, pressed: pressing),
       ],
     );

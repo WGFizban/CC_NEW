@@ -123,6 +123,67 @@
   "expPrincessDesc": "Wróżka: 1 pkt na początku tury i 3 pkt przy punktowaniu budowli z jej meplem.",
   "expTower": "Wieża",
   "expTowerDesc": "Wykup uwięzionego mepla: płacisz 3 pkt temu, kto go trzyma. Wymiana mepel za mepel odbywa się bez aplikacji.",
+  "expKingRobber": "Król i Baron rabusiów",
+  "expKingRobberDesc": "Żetony Króla (największe ukończone miasto) i Barona rabusiów (najdłuższa ukończona droga). Na koniec gry właściciel każdego żetonu dostaje 1 pkt za płytkę w zamkniętych miastach lub drogach.",
+  "rulesKingRobber": "• Żeton Króla dostaje gracz, który ukończy miasto większe niż dotychczasowy właściciel żetonu; żeton Barona rabusiów – gracz, który ukończy dłuższą drogę.\n• Przy punktowaniu miasta lub drogi zaznacz przejęcie żetonu i podaj nową wielkość budowli w płytkach (musi być większa niż poprzednia).\n• Na koniec gry właściciel żetonu Króla dostaje 1 pkt za każdą płytkę w zamkniętych miastach, a właściciel żetonu Barona rabusiów 1 pkt za każdą płytkę w zamkniętych drogach.",
+  "tokenKing": "Żeton Króla",
+  "tokenRobber": "Żeton Barona rabusiów",
+  "takeKingToken": "Przejęcie żetonu Króla",
+  "takeKingTokenHint": "Zaznacz, jeśli to miasto jest większe niż miasto, dzięki któremu obecny właściciel ma żeton Króla. Po zatwierdzeniu podasz nową wielkość miasta i wybierzesz, kto przejmuje żeton.",
+  "takeRobberToken": "Przejęcie żetonu Barona rabusiów",
+  "takeRobberTokenHint": "Zaznacz, jeśli ta droga jest dłuższa niż droga, dzięki której obecny właściciel ma żeton Barona rabusiów. Po zatwierdzeniu podasz nową długość drogi i wybierzesz, kto przejmuje żeton.",
+  "tokenNobody": "Nikt jeszcze nie ma tego żetonu.",
+  "tokenCurrent": "Obecnie ma go:",
+  "tokenCurrentValue": "{name} ({size} płytek)",
+  "@tokenCurrentValue": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "size": {
+        "type": "int"
+      }
+    }
+  },
+  "tokenSizeKing": "Wielkość miasta (liczba płytek)",
+  "tokenSizeRobber": "Długość drogi (liczba płytek)",
+  "tokenMustExceed": "Co najmniej {min} (więcej niż poprzednio)",
+  "@tokenMustExceed": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "tokenWho": "Kto przejmuje żeton?",
+  "tokenSkip": "Bez żetonu",
+  "crownEndTitle": "Punkty za żetony",
+  "crownEndBody": "Podaj, ile płytek jest w zamkniętych miastach i drogach na planszy. Właściciel żetonu dostaje po 1 punkcie za każdą płytkę.",
+  "crownCityTiles": "Płytki w zamkniętych miastach",
+  "crownRoadTiles": "Płytki w zamkniętych drogach",
+  "crownTilesHelper": "Zostaw puste lub wpisz 0, jeśli nie dopisujesz punktów",
+  "crownEventKing": "Żeton Króla: {name} +{points}",
+  "@crownEventKing": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "crownEventRobber": "Żeton Barona rabusiów: {name} +{points}",
+  "@crownEventRobber": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
   "expAbbey": "Opactwo i burmistrz",
   "expAbbeyDesc": "Opactwo (punktuje jak klasztor) i stodoła na polach.",
   "expBridges": "Mosty, zamki i bazary",
@@ -788,7 +849,7 @@
   "tutorial4Title": "Dodawaj punkty",
   "tutorial4Body": "Kliknij wiersz gracza, wybierz, co punktujesz (miasto, drogę, klasztor, pole albo element dodatku), wpisz wynik i zatwierdź.",
   "tutorial5Title": "Pomyłka?",
-  "tutorial5Body": "W menu możesz cofnąć ostatnie zdarzenie. Skrót zasad przypomni, ile punktów co jest warte, a znak „?\" przy elementach podpowie, co zrobić.",
+  "tutorial5Body": "W menu możesz cofnąć ostatnio zatwierdzone punkty. „Skrót zasad\" zawiera punktację poszczególnych elementów, a ikona „?\" przy opcjach wyświetla ich objaśnienie.",
   "tutorial6Title": "Koniec gry",
   "tutorial6Body": "Przycisk z flagą kończy grę i pokazuje zwycięzcę. Przyciskiem „Podsumowanie\" zobaczysz tabelę punktów z każdego źródła, a „Nowa gra\" pozwoli zacząć od nowa.\n\nMiłej rozgrywki!",
   "aboutTitle": "Info o aplikacji",

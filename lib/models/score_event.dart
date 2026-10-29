@@ -1,4 +1,5 @@
 import 'circus.dart';
+import 'crown_tokens.dart';
 import 'goods.dart';
 import 'player.dart';
 import 'scoring.dart';
@@ -35,12 +36,17 @@ class ScoreEvent {
   /// Rodzaj punktacji; w historii jego ikona zastępuje opis zdarzenia.
   final ScoringType? type;
 
+  /// Przejęcie żetonu Króla lub Barona rabusiów przy tym punktowaniu
+  /// (cofnięcie zdarzenia przywraca poprzedniego właściciela).
+  final TokenChange? token;
+
   const ScoreEvent(
     this.label,
     this.changes, {
     this.animal,
     this.category,
     this.type,
+    this.token,
   });
 
   void apply() => _shift(1);

@@ -7,6 +7,7 @@ import '../l10n/app_language.dart';
 import '../l10n/l10n.dart';
 import '../l10n/labels.dart';
 import '../models/circus.dart';
+import '../models/crown_tokens.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
 import '../models/game_state.dart';
@@ -23,6 +24,7 @@ import '../widgets/game_dialogs.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/player_dialog.dart';
+import '../widgets/token_dialogs.dart';
 import 'add_points_screen.dart';
 import 'bazaar_screen.dart';
 import 'circus_screen.dart';
@@ -295,6 +297,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         players: players,
         type: type,
         expansions: _settings.expansions,
+        tokens: Map<CrownToken, TokenHolding>.of(_settings.tokens),
       ),
     };
   }
@@ -315,6 +318,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
         _settings.usedAnimals[animal] =
             (_settings.usedAnimals[animal] ?? 0) + 1;
       }
+      final token = event.token;
+      if (token != null) _settings.tokens[token.token] = token.after;
       _sortPlayers();
     });
     _save();
@@ -329,6 +334,15 @@ class _PlayersScreenState extends State<PlayersScreen> {
       event.revert();
       final logId = _logIds.remove(event);
       if (logId != null) _log.removeWhere((e) => e.id == logId);
+      final token = event.token;
+      if (token != null) {
+        final before = token.before;
+        if (before == null) {
+          _settings.tokens.remove(token.token);
+        } else {
+          _settings.tokens[token.token] = before;
+        }
+      }
       final animal = event.animal;
       if (animal != null) {
         final left = (_settings.usedAnimals[animal] ?? 0) - 1;
@@ -363,6 +377,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       _logIds.clear();
       _log.clear();
       _settings.usedAnimals.clear();
+      _settings.tokens.clear();
       _settings.startedAt = null;
       _settings.endedAt = null;
       _stage = GameStage.setup;
@@ -404,11 +419,59 @@ class _PlayersScreenState extends State<PlayersScreen> {
   Future<void> _onEndGame() async {
     final ok = await askYesNo(context, title: context.l10n.endGameQuestion);
     if (!ok || !mounted) return;
+    if (!await _askCrownEndPoints()) return;
+    if (!mounted) return;
     setState(() {
       _settings.endedAt = DateTime.now();
       _setStage(GameStage.finished);
     });
     await _showEndScreen();
+  }
+
+  /// Dodatek „Król i Baron rabusiów": przed końcem gry pyta o liczbę płytek
+  /// w zamkniętych miastach i drogach i dopisuje punkty właścicielom żetonów.
+  /// Zwraca `false`, gdy użytkownik anulował (gra wtedy się nie kończy).
+  Future<bool> _askCrownEndPoints() async {
+    if (!_has(Expansion.kingRobber)) return true;
+    final king = _settings.tokens[CrownToken.king]?.holder(_players);
+    final robber = _settings.tokens[CrownToken.robber]?.holder(_players);
+    if (king == null && robber == null) return true;
+
+    final tiles = await askCrownTiles(context, king: king, robber: robber);
+    if (tiles == null || !mounted) return false;
+
+    final l = context.l10n;
+    final points = crownEndPoints(
+      tokens: _settings.tokens,
+      players: _players,
+      cityTiles: tiles.cityTiles,
+      roadTiles: tiles.roadTiles,
+    );
+    void award(CrownToken token, Player? holder, String label) {
+      final value = points[holder];
+      if (holder == null || value == null || value == 0) return;
+      // Gdy ten sam gracz trzyma oba żetony, punkty są liczone osobno.
+      final own = token == CrownToken.king ? tiles.cityTiles : tiles.roadTiles;
+      _applyEvent(
+        ScoreEvent(
+          label,
+          [ScoreChange(holder, own)],
+          category: l.expKingRobber,
+        ),
+      );
+    }
+
+    award(
+      CrownToken.king,
+      king,
+      l.crownEventKing(king?.name ?? '', tiles.cityTiles),
+    );
+    award(
+      CrownToken.robber,
+      robber,
+      l.crownEventRobber(robber?.name ?? '', tiles.roadTiles),
+    );
+    return true;
   }
 
   /// Podsumowanie gry; jedyne wyjście to „Nowa gra".

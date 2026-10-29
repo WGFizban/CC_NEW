@@ -80,6 +80,7 @@ void main() {
         Expansion.princessDragon,
         Expansion.tower,
         Expansion.abbeyMayor,
+        Expansion.kingRobber,
         Expansion.bridgesCastlesBazaars,
         Expansion.hillsSheep,
         Expansion.circus,
@@ -89,7 +90,7 @@ void main() {
         Expansion.germanCathedrals,
       ]);
       expect([for (final e in Expansion.values) e.number], [
-        1, 2, 3, 4, 5, 8, 9, 10, 4, 5, 6, 7, //
+        1, 2, 3, 4, 5, 6, 8, 9, 10, 4, 5, 6, 7, //
       ]);
     });
 
@@ -98,6 +99,13 @@ void main() {
       expect(Expansion.innsCathedrals.label(pl), '1. Karczmy i katedry');
       expect(Expansion.goldMines.label(pl), 'Kopalnie złota (Mini dodatek 4)');
       expect(Expansion.goldMines.mini, isTrue);
+    });
+
+    test('dodatek Król i Baron rabusiów ma numer 6 i właściwą nazwę', () {
+      expect(Expansion.kingRobber.number, 6);
+      expect(Expansion.kingRobber.mini, isFalse);
+      expect(Expansion.kingRobber.title(pl), 'Król i Baron rabusiów');
+      expect(Expansion.kingRobber.title(en), 'King and Robber Baron');
     });
 
     test('Wzgórza i owce nazywają się po polsku „Owce i wzgórza"', () {

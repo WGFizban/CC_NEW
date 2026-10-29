@@ -130,6 +130,15 @@ class _PlayerDialogState extends State<_PlayerDialog> {
               autofocus: !_isEditing,
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
+                // Mały mepel w kolorze gracza przed imieniem.
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: MeepleIcon(color: _color, size: 32),
+                ),
+                prefixIconConstraints: const BoxConstraints(
+                  minWidth: 48,
+                  minHeight: 48,
+                ),
                 labelText: l.nameLabel,
                 errorText: _showError ? l.nameError : null,
               ),
@@ -161,11 +170,6 @@ class _PlayerDialogState extends State<_PlayerDialog> {
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 12),
-            Container(
-              color: kBrandColor,
-              child: MeepleIcon(color: _color, size: 60),
             ),
           ],
         ),

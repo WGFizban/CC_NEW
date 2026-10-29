@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 import '../l10n/labels.dart';
 import '../models/circus.dart';
+import '../models/crown_tokens.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
 import '../models/gold.dart';
@@ -17,6 +18,7 @@ import '../models/standings.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
 import '../widgets/scoring_app_bar.dart';
+import '../widgets/token_dialogs.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/game_icon.dart';
 import '../widgets/goods_widgets.dart';
@@ -38,12 +40,17 @@ class AddPointsScreen extends StatefulWidget {
   final ScoringType type;
   final Set<Expansion> expansions;
 
+  /// Kto trzyma żetony Króla i Barona rabusiów (dodatek „Król i Baron
+  /// rabusiów").
+  final Map<CrownToken, TokenHolding> tokens;
+
   const AddPointsScreen({
     super.key,
     required this.player,
     required this.players,
     required this.type,
     required this.expansions,
+    this.tokens = const {},
   });
 
   @override
@@ -66,6 +73,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   /// Katedra (miasto), karczma (droga) lub świnka (pola).
   bool _bonus = false;
   bool _ringmaster = false;
+
+  /// Gracz przejmuje żeton Króla (miasto) albo Barona rabusiów (droga).
+  bool _takeToken = false;
   int _circusTiles = 0;
   bool _fairy = false;
   _Field _active = _Field.tiles;
@@ -302,7 +312,19 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     ].join(' · ');
   }
 
-  void _confirm() {
+  /// Żeton, który można przejąć przy tym punktowaniu (Król przy mieście,
+  /// Baron rabusiów przy drodze); `null`, gdy dodatek jest wyłączony albo
+  /// budowla nie jest ukończona.
+  CrownToken? get _tokenKind {
+    if (!_has(Expansion.kingRobber)) return null;
+    return switch (_type) {
+      ScoringType.city => _completed ? CrownToken.king : null,
+      ScoringType.road => CrownToken.robber,
+      _ => null,
+    };
+  }
+
+  Future<void> _confirm() async {
     final distribution = _distribution;
     final goods = _goodsToAdd;
     final gold = _goldToAdd;
@@ -324,6 +346,21 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             gold: gold[e.key] ?? 0,
           ),
     ];
+    // Przejęcie żetonu: po zatwierdzeniu punktów pytamy o nową wielkość
+    // budowli i o gracza, który żeton dostaje.
+    final kind = _tokenKind;
+    TokenChange? tokenChange;
+    if (_takeToken && kind != null) {
+      tokenChange = await showTokenDialog(
+        context,
+        token: kind,
+        players: widget.players,
+        scorer: widget.player,
+        current: widget.tokens[kind],
+        suggestedSize: _tiles,
+      );
+      if (!mounted) return;
+    }
     Navigator.pop(
       context,
       ScoreEvent(
@@ -331,7 +368,19 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         changes,
         category: _type.title(context.l10n),
         type: _type,
+        token: tokenChange,
       ),
+    );
+  }
+
+  Widget _tokenCheck(CrownToken token) {
+    final l = context.l10n;
+    final isKing = token == CrownToken.king;
+    return _check(
+      isKing ? l.takeKingToken : l.takeRobberToken,
+      _takeToken,
+      (v) => _takeToken = v,
+      hint: isKing ? l.takeKingTokenHint : l.takeRobberTokenHint,
     );
   }
 
@@ -514,6 +563,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               max: 6,
               hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
             ),
+          if (_tokenKind == CrownToken.king) _tokenCheck(CrownToken.king),
         ];
 
       case ScoringType.road:
@@ -549,6 +599,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               max: 6,
               hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
             ),
+          if (_tokenKind == CrownToken.robber) _tokenCheck(CrownToken.robber),
         ];
 
       case ScoringType.germanCastle:
@@ -621,8 +672,11 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           if (_has(Expansion.abbeyMayor)) _buildBarnChoice(),
           // Świnka należy do dodatku „Kupcy i budowniczowie"; właściciel
           // stodoły na koniec gry liczy bez świnki.
+          // Przy wspólnych punktach bonus świnki się nie nalicza, więc pole
+          // jest wtedy ukryte (a zaznaczenie zdejmowane przy wyborze gracza).
           if (_has(Expansion.tradersBuilders) &&
-              _farmActive != FarmScoring.barnOwner)
+              _farmActive != FarmScoring.barnOwner &&
+              _shares.isEmpty)
             _check(
               l.pig,
               _bonus,
@@ -866,6 +920,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           value: share != null,
           onChanged: (v) => setState(() {
             if (v == true) {
+              if (_type == ScoringType.meadow) _bonus = false;
               _shares[p] = const PointsShare();
             } else {
               _shares.remove(p);

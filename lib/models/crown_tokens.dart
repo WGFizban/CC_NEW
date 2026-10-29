@@ -1,0 +1,73 @@
+import 'player.dart';
+
+/// Żetony dodatku „Król i Baron rabusiów".
+///
+/// - [king] – żeton Króla: ma go gracz z największym ukończonym miastem;
+///   na koniec gry daje 1 pkt za każdą płytkę w zamkniętych miastach,
+/// - [robber] – żeton Barona rabusiów: ma go gracz z najdłuższą ukończoną
+///   drogą; na koniec gry daje 1 pkt za każdą płytkę w zamkniętych drogach.
+enum CrownToken { king, robber }
+
+/// Największa wielkość budowli, jaką da się wpisać przy przejęciu żetonu.
+const int kMaxTokenSize = 99;
+
+/// Kto aktualnie trzyma żeton i jak duża (w płytkach) jest budowla, dzięki
+/// której go ma. Kolejne przejęcie wymaga budowli większej niż [size].
+class TokenHolding {
+  final String playerId;
+  final int size;
+
+  const TokenHolding(this.playerId, this.size);
+
+  Map<String, dynamic> toJson() => {'playerId': playerId, 'size': size};
+
+  static TokenHolding? fromJson(Object? json) {
+    if (json is! Map) return null;
+    final id = json['playerId'];
+    final size = json['size'];
+    if (id is! String || size is! int) return null;
+    return TokenHolding(id, size);
+  }
+
+  /// Gracz trzymający żeton wśród [players] (`null`, gdy już go nie ma).
+  Player? holder(List<Player> players) {
+    for (final p in players) {
+      if (p.id == playerId) return p;
+    }
+    return null;
+  }
+}
+
+/// Najmniejsza wielkość budowli, która pozwala przejąć żeton, czyli o 1 więcej
+/// niż dotychczasowa (przy braku właściciela – 1).
+int minTokenSize(TokenHolding? current) => (current?.size ?? 0) + 1;
+
+/// Przejęcie żetonu przy jednym zatwierdzeniu punktów: stan przed (do
+/// cofnięcia) i po.
+class TokenChange {
+  final CrownToken token;
+  final TokenHolding? before;
+  final TokenHolding after;
+
+  const TokenChange(this.token, this.before, this.after);
+}
+
+/// Punkty końcowe za żetony: po 1 za płytkę w zamkniętych miastach (Król)
+/// i zamkniętych drogach (Baron rabusiów), dla ich właścicieli.
+Map<Player, int> crownEndPoints({
+  required Map<CrownToken, TokenHolding> tokens,
+  required List<Player> players,
+  required int cityTiles,
+  required int roadTiles,
+}) {
+  final result = <Player, int>{};
+  void add(CrownToken token, int tiles) {
+    final holder = tokens[token]?.holder(players);
+    if (holder == null || tiles <= 0) return;
+    result[holder] = (result[holder] ?? 0) + tiles;
+  }
+
+  add(CrownToken.king, cityTiles);
+  add(CrownToken.robber, roadTiles);
+  return result;
+}
