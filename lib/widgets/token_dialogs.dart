@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../l10n/l10n.dart';
 import '../models/crown_tokens.dart';
 import '../models/player.dart';
+import '../theme/app_theme.dart';
 import 'counter_stepper.dart';
 import 'meeple_icon.dart';
 import 'player_picker.dart';
@@ -229,29 +230,27 @@ class CrownTokenBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Pełne tło w barwie płytki żetonu (beż Króla, zieleń Barona rabusiów)
-    // z ciemnym tekstem i obwódką: czytelne w jasnym i ciemnym motywie,
-    // a wielkość taka sama jak plakietek surowców.
-    const ink = Color(0xFF3B2F2F);
-    final fill = token == CrownToken.king
-        ? const Color(0xFFEBD7A5)
-        : const Color(0xFF8FC46A);
+    // Półprzezroczyste tło i obwódka w barwie żetonu (fiolet Króla, zieleń
+    // Barona rabusiów). Obwódka jest ciemniejsza w jasnym motywie i jaśniejsza
+    // w ciemnym, żeby wyraźnie odcinała się od tła wiersza. Cyfra i rozmiar
+    // jak w plakietkach surowców.
+    final dark = isDark(context);
+    final accent = token == CrownToken.king
+        ? (dark ? const Color(0xFFA68BE8) : const Color(0xFF3F1F9E))
+        : (dark ? const Color(0xFF8FC46A) : const Color(0xFF2F6B1A));
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: fill,
+        color: accent.withValues(alpha: 0.22),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: ink, width: 1.5),
+        border: Border.all(color: accent, width: 2),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           tokenIcon(token, size: 20),
           const SizedBox(width: 4),
-          Text(
-            '$size',
-            style: const TextStyle(fontWeight: FontWeight.bold, color: ink),
-          ),
+          Text('$size', style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
