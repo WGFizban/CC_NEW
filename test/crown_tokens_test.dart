@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cc_new/models/crown_tokens.dart';
+import 'package:cc_new/models/expansion.dart';
 import 'package:cc_new/models/player.dart';
+import 'package:cc_new/models/scoring.dart';
 import 'package:cc_new/models/score_event.dart';
 import 'package:cc_new/services/settings_storage.dart';
 
@@ -23,7 +25,7 @@ void main() {
   });
 
   group('punkty końcowe za żetony', () {
-    test('Król i Baron rabusiów dostają po 1 pkt za płytkę', () {
+    test('Król i Baron rabusiów dostają po 1 pkt za ukończony zamek i drogę', () {
       final ala = _p('Ala');
       final bob = _p('Bob');
 
@@ -33,11 +35,11 @@ void main() {
           CrownToken.robber: TokenHolding(bob.id, 6),
         },
         players: [ala, bob],
-        cityTiles: 21,
-        roadTiles: 14,
+        cities: 6,
+        roads: 4,
       );
 
-      expect(result, {ala: 21, bob: 14});
+      expect(result, {ala: 6, bob: 4});
     });
 
     test('gracz z obydwoma żetonami dostaje obie sumy', () {
@@ -49,25 +51,39 @@ void main() {
           CrownToken.robber: TokenHolding(ala.id, 6),
         },
         players: [ala, _p('Bob')],
-        cityTiles: 10,
-        roadTiles: 5,
+        cities: 3,
+        roads: 2,
       );
 
-      expect(result, {ala: 15});
+      expect(result, {ala: 5});
     });
 
-    test('nieprzejęty żeton i zerowe płytki nic nie dają', () {
+    test('nieprzejęty żeton i zero zamków nic nie daje', () {
       final ala = _p('Ala');
 
       expect(
         crownEndPoints(
           tokens: {CrownToken.king: TokenHolding(ala.id, 8)},
           players: [ala],
-          cityTiles: 0,
-          roadTiles: 12,
+          cities: 0,
+          roads: 12,
         ),
         isEmpty,
       );
+    });
+  });
+
+  group('typy punktacji króla i rabusia', () {
+    test('kafelek jest do wyboru, kolumny podsumowania nie', () {
+      final all = ScoringType.selectableFor({Expansion.kingRobber});
+      expect(all, contains(ScoringType.crown));
+      expect(all, isNot(contains(ScoringType.king)));
+      expect(all, isNot(contains(ScoringType.robber)));
+      expect(
+        ScoringType.availableFor({Expansion.kingRobber}),
+        containsAll([ScoringType.king, ScoringType.robber]),
+      );
+      expect(ScoringType.selectableFor({}), isNot(contains(ScoringType.crown)));
     });
   });
 

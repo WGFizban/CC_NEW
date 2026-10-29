@@ -124,8 +124,8 @@
   "expTower": "Wieża",
   "expTowerDesc": "Wykup uwięzionego mepla: płacisz 3 pkt temu, kto go trzyma. Wymiana mepel za mepel odbywa się bez aplikacji.",
   "expKingRobber": "Król i Baron rabusiów",
-  "expKingRobberDesc": "Żetony Króla (największe ukończone miasto) i Barona rabusiów (najdłuższa ukończona droga). Na koniec gry właściciel każdego żetonu dostaje 1 pkt za płytkę w zamkniętych miastach lub drogach.",
-  "rulesKingRobber": "• Żeton Króla dostaje gracz, który ukończy miasto większe niż dotychczasowy właściciel żetonu; żeton Barona rabusiów – gracz, który ukończy dłuższą drogę.\n• Przy punktowaniu miasta lub drogi zaznacz przejęcie żetonu i podaj nową wielkość budowli w płytkach (musi być większa niż poprzednia).\n• Na koniec gry właściciel żetonu Króla dostaje 1 pkt za każdą płytkę w zamkniętych miastach, a właściciel żetonu Barona rabusiów 1 pkt za każdą płytkę w zamkniętych drogach.",
+  "expKingRobberDesc": "Żetony Króla (największy ukończony zamek) i Barona rabusiów (najdłuższa ukończona droga). Na koniec gry właściciel żetonu dostaje 1 pkt za każdy ukończony zamek (Król) lub każdą ukończoną drogę (Rabuś) na całej planszy.",
+  "rulesKingRobber": "• Żeton Króla dostaje gracz, który ukończy zamek większy niż dotychczasowy właściciel żetonu (pierwszy ukończony zamek też go daje); żeton Barona rabusiów – gracz, który ukończy dłuższą drogę.\n• Przy punktowaniu zamku lub drogi zaznacz przejęcie żetonu i podaj nową wielkość budowli w płytkach (musi być większa niż poprzednia). Żeton możesz też przekazać ręcznie kafelkiem „Król/Rabuś”.\n• Na koniec gry właściciel żetonu Króla dostaje 1 pkt za każdy ukończony zamek na całej planszy (także cudzy), a właściciel żetonu Barona rabusiów 1 pkt za każdą ukończoną drogę – po jednym punkcie za budowlę, niezależnie od liczby płytek. Zamek z dodatku „Mosty, zamki i bazary” nie liczy się jako ukończony zamek.",
   "tokenKing": "Żeton Króla",
   "tokenRobber": "Żeton Barona rabusiów",
   "takeKingToken": "Przejęcie żetonu Króla",
@@ -147,7 +147,7 @@
   },
   "tokenSizeKing": "Wielkość miasta (liczba płytek)",
   "tokenSizeRobber": "Długość drogi (liczba płytek)",
-  "tokenMustExceed": "Co najmniej {min} (więcej niż poprzednio)",
+  "tokenMustExceed": "Co najmniej {min}",
   "@tokenMustExceed": {
     "placeholders": {
       "min": {
@@ -158,11 +158,10 @@
   "tokenWho": "Kto przejmuje żeton?",
   "tokenSkip": "Bez żetonu",
   "crownEndTitle": "Punkty za żetony",
-  "crownEndBody": "Podaj, ile płytek jest w zamkniętych miastach i drogach na planszy. Właściciel żetonu dostaje po 1 punkcie za każdą płytkę.",
-  "crownCityTiles": "Płytki w zamkniętych miastach",
-  "crownRoadTiles": "Płytki w zamkniętych drogach",
-  "crownTilesHelper": "Zostaw puste lub wpisz 0, jeśli nie dopisujesz punktów",
-  "crownEventKing": "Żeton Króla: {name} +{points}",
+  "crownEndBody": "Podaj, ile ukończonych zamków i dróg jest na całej planszy (także tych należących do innych graczy). Za każdy ukończony zamek właściciel żetonu Króla dostaje 1 punkt, a za każdą ukończoną drogę właściciel żetonu Barona rabusiów.",
+  "crownCityTiles": "Ukończone zamki",
+  "crownRoadTiles": "Ukończone drogi",
+  "crownEventKing": "Król: {name} +{points} (ukończone zamki)",
   "@crownEventKing": {
     "placeholders": {
       "name": {
@@ -173,13 +172,33 @@
       }
     }
   },
-  "crownEventRobber": "Żeton Barona rabusiów: {name} +{points}",
+  "crownEventRobber": "Rabuś: {name} +{points} (ukończone drogi)",
   "@crownEventRobber": {
     "placeholders": {
       "name": {
         "type": "String"
       },
       "points": {
+        "type": "int"
+      }
+    }
+  },
+  "crownCountHint": "Wliczaj wszystkie ukończone budowle w grze, nie tylko swoje.",
+  "scCrown": "Król/Rabuś",
+  "tokenKingShort": "Król",
+  "tokenRobberShort": "Rabuś",
+  "crownTransferTitle": "Przekazanie żetonu",
+  "tokenWhich": "Który żeton?",
+  "crownTransferLabel": "Żeton: {token}, {name} ({size} płytek)",
+  "@crownTransferLabel": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "size": {
         "type": "int"
       }
     }

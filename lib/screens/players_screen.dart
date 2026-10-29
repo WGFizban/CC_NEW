@@ -28,6 +28,7 @@ import '../widgets/token_dialogs.dart';
 import 'add_points_screen.dart';
 import 'bazaar_screen.dart';
 import 'circus_screen.dart';
+import 'crown_end_screen.dart';
 import 'end_game_screen.dart';
 import 'flock_screen.dart';
 import 'pyramid_screen.dart';
@@ -246,7 +247,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       MaterialPageRoute(
         builder: (_) => SelectPointsTypeScreen(
           player: player,
-          types: ScoringType.availableFor(_settings.expansions),
+          types: ScoringType.selectableFor(_settings.expansions),
         ),
       ),
     );
@@ -254,6 +255,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
     if (type == ScoringType.fairy) {
       _scoreFairy(player);
+      return;
+    }
+    if (type == ScoringType.crown) {
+      await _passToken(player);
       return;
     }
 
@@ -264,6 +269,32 @@ class _PlayersScreenState extends State<PlayersScreen> {
     if (event == null || !mounted) return;
 
     _applyEvent(event);
+  }
+
+  /// Ręczne przekazanie żetonu Króla lub Barona rabusiów (bez punktów).
+  Future<void> _passToken(Player player) async {
+    final change = await showTokenDialog(
+      context,
+      tokens: Map<CrownToken, TokenHolding>.of(_settings.tokens),
+      players: List<Player>.of(_players),
+      scorer: player,
+    );
+    if (change == null || !mounted) return;
+    final l = context.l10n;
+    final taker = change.after.holder(_players);
+    _applyEvent(
+      ScoreEvent(
+        l.crownTransferLabel(
+          tokenName(context, change.token),
+          taker?.name ?? '',
+          change.after.size,
+        ),
+        const [],
+        category: l.scCrown,
+        type: ScoringType.crown,
+        token: change,
+      ),
+    );
   }
 
   /// Wróżka przy meplu gracza daje 1 pkt na początku jego tury, więc
@@ -393,7 +424,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       final l = context.l10n;
       final names = [
         for (final e in Expansion.values)
-          if (_has(e)) e.label(l),
+          if (_has(e)) e.title(l),
       ];
       final choice = await askStartGame(
         context,
@@ -428,8 +459,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
     await _showEndScreen();
   }
 
-  /// Dodatek „Król i Baron rabusiów": przed końcem gry pyta o liczbę płytek
-  /// w zamkniętych miastach i drogach i dopisuje punkty właścicielom żetonów.
+  /// Dodatek „Król i Baron rabusiów": przed końcem gry pyta o liczbę
+  /// ukończonych zamków i dróg i dopisuje punkty właścicielom żetonów.
   /// Zwraca `false`, gdy użytkownik anulował (gra wtedy się nie kończy).
   Future<bool> _askCrownEndPoints() async {
     if (!_has(Expansion.kingRobber)) return true;
@@ -437,40 +468,37 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final robber = _settings.tokens[CrownToken.robber]?.holder(_players);
     if (king == null && robber == null) return true;
 
-    final tiles = await askCrownTiles(context, king: king, robber: robber);
-    if (tiles == null || !mounted) return false;
+    final counts = await Navigator.push<CrownCounts>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CrownEndScreen(king: king, robber: robber),
+      ),
+    );
+    if (counts == null || !mounted) return false;
 
     final l = context.l10n;
-    final points = crownEndPoints(
-      tokens: _settings.tokens,
-      players: _players,
-      cityTiles: tiles.cityTiles,
-      roadTiles: tiles.roadTiles,
-    );
-    void award(CrownToken token, Player? holder, String label) {
-      final value = points[holder];
-      if (holder == null || value == null || value == 0) return;
-      // Gdy ten sam gracz trzyma oba żetony, punkty są liczone osobno.
-      final own = token == CrownToken.king ? tiles.cityTiles : tiles.roadTiles;
+    // Po 1 punkcie za każdy ukończony zamek (Król) i każdą ukończoną drogę
+    // (Rabuś); gdy ten sam gracz trzyma oba żetony, liczone są osobno.
+    if (king != null && counts.cities > 0) {
       _applyEvent(
         ScoreEvent(
-          label,
-          [ScoreChange(holder, own)],
-          category: l.expKingRobber,
+          l.crownEventKing(king.name, counts.cities),
+          [ScoreChange(king, counts.cities)],
+          category: l.tokenKingShort,
+          type: ScoringType.king,
         ),
       );
     }
-
-    award(
-      CrownToken.king,
-      king,
-      l.crownEventKing(king?.name ?? '', tiles.cityTiles),
-    );
-    award(
-      CrownToken.robber,
-      robber,
-      l.crownEventRobber(robber?.name ?? '', tiles.roadTiles),
-    );
+    if (robber != null && counts.roads > 0) {
+      _applyEvent(
+        ScoreEvent(
+          l.crownEventRobber(robber.name, counts.roads),
+          [ScoreChange(robber, counts.roads)],
+          category: l.tokenRobberShort,
+          type: ScoringType.robber,
+        ),
+      );
+    }
     return true;
   }
 
@@ -726,6 +754,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final total = p.points;
     final hasGoods = _has(Expansion.tradersBuilders) && p.goodsTotal > 0;
     final hasGold = _has(Expansion.goldMines) && p.gold > 0;
+    // Żetony Króla i Barona rabusiów, które trzyma ten gracz.
+    final heldTokens = _has(Expansion.kingRobber)
+        ? [
+            for (final t in CrownToken.values)
+              if (_settings.tokens[t]?.playerId == p.id) t,
+          ]
+        : const <CrownToken>[];
 
     return Card(
       color: playerCardColor(context),
@@ -738,7 +773,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
           p.name,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        subtitle: hasGoods || hasGold
+        subtitle: hasGoods || hasGold || heldTokens.isNotEmpty
             ? Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Wrap(
@@ -747,6 +782,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
                   children: [
                     if (hasGoods) GoodsBadges(player: p, players: _players),
                     if (hasGold) GoldBadge(count: p.gold),
+                    for (final t in heldTokens) tokenIcon(t, size: 30),
                   ],
                 ),
               )

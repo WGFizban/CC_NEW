@@ -66,6 +66,9 @@ extension ScoringTypeLabels on ScoringType {
     ScoringType.monastery => l.scMonastery,
     ScoringType.germanCastle => l.scGermanCastle,
     ScoringType.archbishop => l.scArchbishop,
+    ScoringType.crown => l.scCrown,
+    ScoringType.king => l.tokenKingShort,
+    ScoringType.robber => l.tokenRobberShort,
   };
 }
 

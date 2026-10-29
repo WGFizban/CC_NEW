@@ -356,7 +356,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         token: kind,
         players: widget.players,
         scorer: widget.player,
-        current: widget.tokens[kind],
+        tokens: widget.tokens,
         suggestedSize: _tiles,
       );
       if (!mounted) return;

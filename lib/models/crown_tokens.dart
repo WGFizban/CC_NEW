@@ -3,9 +3,12 @@ import 'player.dart';
 /// Żetony dodatku „Król i Baron rabusiów".
 ///
 /// - [king] – żeton Króla: ma go gracz z największym ukończonym miastem;
-///   na koniec gry daje 1 pkt za każdą płytkę w zamkniętych miastach,
+///   na koniec gry daje 1 pkt za każde ukończone miasto na planszy,
 /// - [robber] – żeton Barona rabusiów: ma go gracz z najdłuższą ukończoną
-///   drogą; na koniec gry daje 1 pkt za każdą płytkę w zamkniętych drogach.
+///   drogą; na koniec gry daje 1 pkt za każdą ukończoną drogę na planszy.
+///
+/// Punkty liczy się za wszystkie ukończone budowle w całej grze (nie tylko
+/// własne), po jednym punkcie za budowlę, bez względu na liczbę płytek.
 enum CrownToken { king, robber }
 
 /// Największa wielkość budowli, jaką da się wpisać przy przejęciu żetonu.
@@ -52,22 +55,22 @@ class TokenChange {
   const TokenChange(this.token, this.before, this.after);
 }
 
-/// Punkty końcowe za żetony: po 1 za płytkę w zamkniętych miastach (Król)
-/// i zamkniętych drogach (Baron rabusiów), dla ich właścicieli.
+/// Punkty końcowe za żetony: po 1 za każde ukończone miasto na planszy
+/// (Król) i każdą ukończoną drogę (Baron rabusiów), dla ich właścicieli.
 Map<Player, int> crownEndPoints({
   required Map<CrownToken, TokenHolding> tokens,
   required List<Player> players,
-  required int cityTiles,
-  required int roadTiles,
+  required int cities,
+  required int roads,
 }) {
   final result = <Player, int>{};
-  void add(CrownToken token, int tiles) {
+  void add(CrownToken token, int count) {
     final holder = tokens[token]?.holder(players);
-    if (holder == null || tiles <= 0) return;
-    result[holder] = (result[holder] ?? 0) + tiles;
+    if (holder == null || count <= 0) return;
+    result[holder] = (result[holder] ?? 0) + count;
   }
 
-  add(CrownToken.king, cityTiles);
-  add(CrownToken.robber, roadTiles);
+  add(CrownToken.king, cities);
+  add(CrownToken.robber, roads);
   return result;
 }

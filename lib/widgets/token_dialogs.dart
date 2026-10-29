@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../l10n/l10n.dart';
@@ -31,13 +30,18 @@ Widget tokenIcon(CrownToken token, {double size = 24}) => SvgPicture.asset(
 
 /// Okno przejęcia żetonu: nowa wielkość budowli (zawsze większa od
 /// zapamiętanej) i gracz, który żeton przejmuje. Zwraca zmianę żetonu albo
-/// `null` po „Bez żetonu".
+/// `null` po „Bez żetonu" (przy [token] = `null` – po „Anuluj").
+///
+/// Z [token] = `null` okno ma przełącznik Król/Rabuś (ręczne przekazanie
+/// żetonu); wtedy [suggestedSize] jest ignorowane. Przy ustalonym [token]
+/// licznik nie zejdzie poniżej [suggestedSize] (wielkości właśnie
+/// punktowanej budowli).
 Future<TokenChange?> showTokenDialog(
   BuildContext context, {
-  required CrownToken token,
+  CrownToken? token,
+  required Map<CrownToken, TokenHolding> tokens,
   required List<Player> players,
   required Player scorer,
-  TokenHolding? current,
   int suggestedSize = 0,
 }) {
   return showDialog<TokenChange>(
@@ -45,26 +49,26 @@ Future<TokenChange?> showTokenDialog(
     barrierDismissible: false,
     builder: (ctx) => _TokenDialog(
       token: token,
+      tokens: tokens,
       players: players,
       scorer: scorer,
-      current: current,
       suggestedSize: suggestedSize,
     ),
   );
 }
 
 class _TokenDialog extends StatefulWidget {
-  final CrownToken token;
+  final CrownToken? token;
+  final Map<CrownToken, TokenHolding> tokens;
   final List<Player> players;
   final Player scorer;
-  final TokenHolding? current;
   final int suggestedSize;
 
   const _TokenDialog({
     required this.token,
+    required this.tokens,
     required this.players,
     required this.scorer,
-    required this.current,
     required this.suggestedSize,
   });
 
@@ -73,30 +77,50 @@ class _TokenDialog extends StatefulWidget {
 }
 
 class _TokenDialogState extends State<_TokenDialog> {
+  late CrownToken _token = widget.token ?? CrownToken.king;
   late int _size;
   late Player _taker;
 
-  int get _min => minTokenSize(widget.current);
+  bool get _choose => widget.token == null;
+  TokenHolding? get _current => widget.tokens[_token];
+
+  /// Najmniejsza dozwolona wielkość: więcej niż u obecnego właściciela i nie
+  /// mniej niż podpowiedziana wielkość budowli.
+  int get _min {
+    final floor = minTokenSize(_current);
+    final suggested = _choose ? 0 : widget.suggestedSize;
+    return (suggested > floor ? suggested : floor).clamp(1, kMaxTokenSize);
+  }
 
   @override
   void initState() {
     super.initState();
-    _size = widget.suggestedSize.clamp(_min, kMaxTokenSize);
+    _size = _min;
     _taker = widget.scorer;
   }
+
+  void _pickToken(CrownToken token) => setState(() {
+    _token = token;
+    _size = _min;
+  });
 
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final holder = widget.current?.holder(widget.players);
-    final isKing = widget.token == CrownToken.king;
+    final current = _current;
+    final holder = current?.holder(widget.players);
+    final isKing = _token == CrownToken.king;
 
     return AlertDialog(
       title: Row(
         children: [
-          tokenIcon(widget.token, size: 32),
+          tokenIcon(_token, size: 32),
           const SizedBox(width: 8),
-          Expanded(child: Text(tokenName(context, widget.token))),
+          Expanded(
+            child: Text(
+              _choose ? l.crownTransferTitle : tokenName(context, _token),
+            ),
+          ),
         ],
       ),
       content: SingleChildScrollView(
@@ -104,6 +128,31 @@ class _TokenDialogState extends State<_TokenDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (_choose) ...[
+              Text(l.tokenWhich),
+              const SizedBox(height: 4),
+              SizedBox(
+                width: double.infinity,
+                child: SegmentedButton<CrownToken>(
+                  showSelectedIcon: false,
+                  segments: [
+                    ButtonSegment(
+                      value: CrownToken.king,
+                      icon: tokenIcon(CrownToken.king, size: 22),
+                      label: Text(l.tokenKingShort),
+                    ),
+                    ButtonSegment(
+                      value: CrownToken.robber,
+                      icon: tokenIcon(CrownToken.robber, size: 22),
+                      label: Text(l.tokenRobberShort),
+                    ),
+                  ],
+                  selected: {_token},
+                  onSelectionChanged: (s) => _pickToken(s.first),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             if (holder == null)
               Text(l.tokenNobody)
             else
@@ -114,7 +163,7 @@ class _TokenDialogState extends State<_TokenDialog> {
                   const SizedBox(width: 4),
                   Flexible(
                     child: Text(
-                      l.tokenCurrentValue(holder.name, widget.current!.size),
+                      l.tokenCurrentValue(holder.name, current!.size),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -151,152 +200,13 @@ class _TokenDialogState extends State<_TokenDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(l.tokenSkip),
+          child: Text(_choose ? l.cancel : l.tokenSkip),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(
             context,
-            TokenChange(
-              widget.token,
-              widget.current,
-              TokenHolding(_taker.id, _size),
-            ),
+            TokenChange(_token, _current, TokenHolding(_taker.id, _size)),
           ),
-          child: Text(l.confirm),
-        ),
-      ],
-    );
-  }
-}
-
-/// Liczba płytek w zamkniętych miastach i drogach na koniec gry.
-typedef CrownTiles = ({int cityTiles, int roadTiles});
-
-/// Okno na koniec gry: ile płytek jest w zamkniętych miastach i zamkniętych
-/// drogach (po 1 punkcie za płytkę dostaje właściciel odpowiedniego żetonu).
-/// Pyta tylko o te żetony, które ktoś ma. Zwraca `null` po „Anuluj".
-Future<CrownTiles?> askCrownTiles(
-  BuildContext context, {
-  required Player? king,
-  required Player? robber,
-}) {
-  return showDialog<CrownTiles>(
-    context: context,
-    barrierDismissible: false,
-    builder: (ctx) => _CrownTilesDialog(king: king, robber: robber),
-  );
-}
-
-class _CrownTilesDialog extends StatefulWidget {
-  final Player? king;
-  final Player? robber;
-
-  const _CrownTilesDialog({required this.king, required this.robber});
-
-  @override
-  State<_CrownTilesDialog> createState() => _CrownTilesDialogState();
-}
-
-class _CrownTilesDialogState extends State<_CrownTilesDialog> {
-  final _city = TextEditingController();
-  final _road = TextEditingController();
-
-  @override
-  void dispose() {
-    _city.dispose();
-    _road.dispose();
-    super.dispose();
-  }
-
-  int _value(TextEditingController c) => int.tryParse(c.text) ?? 0;
-
-  Widget _field(
-    BuildContext context, {
-    required CrownToken token,
-    required Player holder,
-    required String label,
-    required TextEditingController controller,
-  }) {
-    final l = context.l10n;
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              tokenIcon(token, size: 24),
-              const SizedBox(width: 6),
-              Text(
-                tokenName(context, token),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 8),
-              MeepleIcon(color: holder.color, size: 20),
-              const SizedBox(width: 4),
-              Flexible(child: Text(holder.name)),
-            ],
-          ),
-          const SizedBox(height: 6),
-          TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(3),
-            ],
-            decoration: InputDecoration(
-              labelText: label,
-              hintText: '0',
-              helperText: l.crownTilesHelper,
-              border: const OutlineInputBorder(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l = context.l10n;
-    return AlertDialog(
-      title: Text(l.crownEndTitle),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l.crownEndBody),
-            if (widget.king != null)
-              _field(
-                context,
-                token: CrownToken.king,
-                holder: widget.king!,
-                label: l.crownCityTiles,
-                controller: _city,
-              ),
-            if (widget.robber != null)
-              _field(
-                context,
-                token: CrownToken.robber,
-                holder: widget.robber!,
-                label: l.crownRoadTiles,
-                controller: _road,
-              ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l.cancel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, (
-            cityTiles: _value(_city),
-            roadTiles: _value(_road),
-          )),
           child: Text(l.confirm),
         ),
       ],

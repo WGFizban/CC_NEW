@@ -61,6 +61,25 @@ enum ScoringType {
   archbishop(
     'assets/icons/game/archbishop.svg',
     expansion: Expansion.germanCathedrals,
+  ),
+
+  /// Kafelek „Król/Rabuś": ręczne przekazanie żetonu (bez punktów).
+  crown(
+    'assets/icons/game/token_crown.svg',
+    expansion: Expansion.kingRobber,
+  ),
+
+  /// Punkty końcowe za żeton Króla (kolumna w podsumowaniu; nie do wyboru).
+  king(
+    'assets/icons/game/token_king.svg',
+    expansion: Expansion.kingRobber,
+  ),
+
+  /// Punkty końcowe za żeton Barona rabusiów (kolumna w podsumowaniu; nie do
+  /// wyboru).
+  robber(
+    'assets/icons/game/token_robber.svg',
+    expansion: Expansion.kingRobber,
   );
 
   const ScoringType(this.iconAsset, {this.expansion});
@@ -94,6 +113,13 @@ enum ScoringType {
   static List<ScoringType> availableFor(Set<Expansion> enabled) => [
     for (final t in values)
       if (t.expansion == null || enabled.contains(t.expansion)) t,
+  ];
+
+  /// Typy do wyboru na ekranie rodzaju punktacji (bez kolumn podsumowania
+  /// króla i rabusia, które powstają tylko na koniec gry).
+  static List<ScoringType> selectableFor(Set<Expansion> enabled) => [
+    for (final t in availableFor(enabled))
+      if (t != king && t != robber) t,
   ];
 }
 
