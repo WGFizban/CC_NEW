@@ -79,7 +79,7 @@ class _ExpansionsScreenState extends State<ExpansionsScreen> {
           ),
           for (final e in Expansion.values)
             SwitchListTile(
-              title: LabelWithHint(e.label(l), e.description(l)),
+              title: LabelWithHint(e.title(l), e.description(l)),
               value: _expansions.contains(e),
               onChanged: locked ? null : (on) => _setExpansion(e, on),
             ),

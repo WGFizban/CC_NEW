@@ -14,6 +14,7 @@ extension ExpansionLabels on Expansion {
     Expansion.princessDragon => l.expPrincess,
     Expansion.tower => l.expTower,
     Expansion.abbeyMayor => l.expAbbey,
+    Expansion.kingRobber => l.expKingRobber,
     Expansion.bridgesCastlesBazaars => l.expBridges,
     Expansion.hillsSheep => l.expHills,
     Expansion.circus => l.expCircus,
@@ -30,6 +31,7 @@ extension ExpansionLabels on Expansion {
     Expansion.princessDragon => l.expPrincessDesc,
     Expansion.tower => l.expTowerDesc,
     Expansion.abbeyMayor => l.expAbbeyDesc,
+    Expansion.kingRobber => l.expKingRobberDesc,
     Expansion.bridgesCastlesBazaars => l.expBridgesDesc,
     Expansion.hillsSheep => l.expHillsDesc,
     Expansion.circus => l.expCircusDesc,
@@ -64,6 +66,9 @@ extension ScoringTypeLabels on ScoringType {
     ScoringType.monastery => l.scMonastery,
     ScoringType.germanCastle => l.scGermanCastle,
     ScoringType.archbishop => l.scArchbishop,
+    ScoringType.crown => l.scCrown,
+    ScoringType.king => l.tokenKingShort,
+    ScoringType.robber => l.tokenRobberShort,
   };
 }
 

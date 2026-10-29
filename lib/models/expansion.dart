@@ -7,6 +7,7 @@ enum Expansion {
   princessDragon(3),
   tower(4),
   abbeyMayor(5),
+  kingRobber(6),
   bridgesCastlesBazaars(8),
   hillsSheep(9),
   circus(10),

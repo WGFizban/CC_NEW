@@ -54,7 +54,10 @@ class SummaryScreen extends StatelessWidget {
     // z premią i wartością złota, żeby wiersze sumowały się do wyniku.
     final types = [
       for (final t in ScoringType.availableFor(expansions))
-        if (t != ScoringType.goods && t != ScoringType.gold) t,
+        if (t != ScoringType.goods &&
+            t != ScoringType.gold &&
+            t != ScoringType.crown)
+          t,
     ];
     final showGoods = expansions.contains(Expansion.tradersBuilders);
     final showGold = expansions.contains(Expansion.goldMines);

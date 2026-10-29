@@ -7,6 +7,7 @@ import '../l10n/app_language.dart';
 import '../l10n/l10n.dart';
 import '../l10n/labels.dart';
 import '../models/circus.dart';
+import '../models/crown_tokens.dart';
 import '../models/expansion.dart';
 import '../models/fairy.dart';
 import '../models/game_state.dart';
@@ -23,9 +24,11 @@ import '../widgets/game_dialogs.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/player_dialog.dart';
+import '../widgets/token_dialogs.dart';
 import 'add_points_screen.dart';
 import 'bazaar_screen.dart';
 import 'circus_screen.dart';
+import 'crown_end_screen.dart';
 import 'end_game_screen.dart';
 import 'flock_screen.dart';
 import 'pyramid_screen.dart';
@@ -244,7 +247,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       MaterialPageRoute(
         builder: (_) => SelectPointsTypeScreen(
           player: player,
-          types: ScoringType.availableFor(_settings.expansions),
+          types: ScoringType.selectableFor(_settings.expansions),
         ),
       ),
     );
@@ -252,6 +255,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
     if (type == ScoringType.fairy) {
       _scoreFairy(player);
+      return;
+    }
+    if (type == ScoringType.crown) {
+      await _passToken(player);
       return;
     }
 
@@ -262,6 +269,32 @@ class _PlayersScreenState extends State<PlayersScreen> {
     if (event == null || !mounted) return;
 
     _applyEvent(event);
+  }
+
+  /// Ręczne przekazanie żetonu Króla lub Barona rabusiów (bez punktów).
+  Future<void> _passToken(Player player) async {
+    final change = await showTokenDialog(
+      context,
+      tokens: Map<CrownToken, TokenHolding>.of(_settings.tokens),
+      players: List<Player>.of(_players),
+      scorer: player,
+    );
+    if (change == null || !mounted) return;
+    final l = context.l10n;
+    final taker = change.after.holder(_players);
+    _applyEvent(
+      ScoreEvent(
+        l.crownTransferLabel(
+          tokenName(context, change.token),
+          taker?.name ?? '',
+          change.after.size,
+        ),
+        const [],
+        category: l.scCrown,
+        type: ScoringType.crown,
+        token: change,
+      ),
+    );
   }
 
   /// Wróżka przy meplu gracza daje 1 pkt na początku jego tury, więc
@@ -295,6 +328,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         players: players,
         type: type,
         expansions: _settings.expansions,
+        tokens: Map<CrownToken, TokenHolding>.of(_settings.tokens),
       ),
     };
   }
@@ -315,6 +349,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
         _settings.usedAnimals[animal] =
             (_settings.usedAnimals[animal] ?? 0) + 1;
       }
+      final token = event.token;
+      if (token != null) _settings.tokens[token.token] = token.after;
       _sortPlayers();
     });
     _save();
@@ -329,6 +365,15 @@ class _PlayersScreenState extends State<PlayersScreen> {
       event.revert();
       final logId = _logIds.remove(event);
       if (logId != null) _log.removeWhere((e) => e.id == logId);
+      final token = event.token;
+      if (token != null) {
+        final before = token.before;
+        if (before == null) {
+          _settings.tokens.remove(token.token);
+        } else {
+          _settings.tokens[token.token] = before;
+        }
+      }
       final animal = event.animal;
       if (animal != null) {
         final left = (_settings.usedAnimals[animal] ?? 0) - 1;
@@ -363,6 +408,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       _logIds.clear();
       _log.clear();
       _settings.usedAnimals.clear();
+      _settings.tokens.clear();
       _settings.startedAt = null;
       _settings.endedAt = null;
       _stage = GameStage.setup;
@@ -378,7 +424,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       final l = context.l10n;
       final names = [
         for (final e in Expansion.values)
-          if (_has(e)) e.label(l),
+          if (_has(e)) e.title(l),
       ];
       final choice = await askStartGame(
         context,
@@ -404,11 +450,56 @@ class _PlayersScreenState extends State<PlayersScreen> {
   Future<void> _onEndGame() async {
     final ok = await askYesNo(context, title: context.l10n.endGameQuestion);
     if (!ok || !mounted) return;
+    if (!await _askCrownEndPoints()) return;
+    if (!mounted) return;
     setState(() {
       _settings.endedAt = DateTime.now();
       _setStage(GameStage.finished);
     });
     await _showEndScreen();
+  }
+
+  /// Dodatek „Król i Baron rabusiów": przed końcem gry pyta o liczbę
+  /// ukończonych zamków i dróg i dopisuje punkty właścicielom żetonów.
+  /// Zwraca `false`, gdy użytkownik anulował (gra wtedy się nie kończy).
+  Future<bool> _askCrownEndPoints() async {
+    if (!_has(Expansion.kingRobber)) return true;
+    final king = _settings.tokens[CrownToken.king]?.holder(_players);
+    final robber = _settings.tokens[CrownToken.robber]?.holder(_players);
+    if (king == null && robber == null) return true;
+
+    final counts = await Navigator.push<CrownCounts>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CrownEndScreen(king: king, robber: robber),
+      ),
+    );
+    if (counts == null || !mounted) return false;
+
+    final l = context.l10n;
+    // Po 1 punkcie za każdy ukończony zamek (Król) i każdą ukończoną drogę
+    // (Rabuś); gdy ten sam gracz trzyma oba żetony, liczone są osobno.
+    if (king != null && counts.cities > 0) {
+      _applyEvent(
+        ScoreEvent(
+          l.crownEventKing(king.name, counts.cities),
+          [ScoreChange(king, counts.cities)],
+          category: l.tokenKingShort,
+          type: ScoringType.king,
+        ),
+      );
+    }
+    if (robber != null && counts.roads > 0) {
+      _applyEvent(
+        ScoreEvent(
+          l.crownEventRobber(robber.name, counts.roads),
+          [ScoreChange(robber, counts.roads)],
+          category: l.tokenRobberShort,
+          type: ScoringType.robber,
+        ),
+      );
+    }
+    return true;
   }
 
   /// Podsumowanie gry; jedyne wyjście to „Nowa gra".
@@ -663,6 +754,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final total = p.points;
     final hasGoods = _has(Expansion.tradersBuilders) && p.goodsTotal > 0;
     final hasGold = _has(Expansion.goldMines) && p.gold > 0;
+    // Żetony Króla i Barona rabusiów, które trzyma ten gracz.
+    final heldTokens = _has(Expansion.kingRobber)
+        ? [
+            for (final t in CrownToken.values)
+              if (_settings.tokens[t]?.playerId == p.id)
+                (t, _settings.tokens[t]!.size),
+          ]
+        : const <(CrownToken, int)>[];
 
     return Card(
       color: playerCardColor(context),
@@ -675,7 +774,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
           p.name,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        subtitle: hasGoods || hasGold
+        subtitle: hasGoods || hasGold || heldTokens.isNotEmpty
             ? Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Wrap(
@@ -684,6 +783,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
                   children: [
                     if (hasGoods) GoodsBadges(player: p, players: _players),
                     if (hasGold) GoldBadge(count: p.gold),
+                    for (final (t, size) in heldTokens)
+                      CrownTokenBadge(token: t, size: size),
                   ],
                 ),
               )

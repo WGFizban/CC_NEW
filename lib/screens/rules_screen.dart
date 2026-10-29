@@ -14,6 +14,7 @@ class RulesScreen extends StatelessWidget {
     Expansion.princessDragon => l.rulesPrincess,
     Expansion.tower => l.rulesTower,
     Expansion.abbeyMayor => l.rulesAbbey,
+    Expansion.kingRobber => l.rulesKingRobber,
     Expansion.bridgesCastlesBazaars => l.rulesBridges,
     Expansion.hillsSheep => l.rulesHills,
     Expansion.circus => l.rulesCircus,

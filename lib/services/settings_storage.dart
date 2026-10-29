@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_language.dart';
 import '../models/circus.dart';
+import '../models/crown_tokens.dart';
 import '../models/expansion.dart';
 import '../models/game_state.dart';
 
@@ -15,6 +16,10 @@ class GameSettings {
 
   /// Ile żetonów zwierząt cyrku zostało już odkrytych i zużytych.
   final Map<CircusAnimal, int> usedAnimals;
+
+  /// Kto trzyma żetony Króla i Barona rabusiów (dodatek „Król i Baron
+  /// rabusiów"); brak wpisu oznacza, że nikt jeszcze nie przejął żetonu.
+  final Map<CrownToken, TokenHolding> tokens;
 
   /// Czy nie wygaszać ekranu, gdy aplikacja jest otwarta.
   bool keepScreenOn;
@@ -38,6 +43,7 @@ class GameSettings {
   GameSettings({
     Set<Expansion>? expansions,
     Map<CircusAnimal, int>? usedAnimals,
+    Map<CrownToken, TokenHolding>? tokens,
     this.keepScreenOn = true,
     this.themeMode = ThemeMode.system,
     this.language = AppLanguage.pl,
@@ -46,7 +52,8 @@ class GameSettings {
     this.startedAt,
     this.endedAt,
   }) : expansions = expansions ?? <Expansion>{},
-       usedAnimals = usedAnimals ?? {};
+       usedAnimals = usedAnimals ?? {},
+       tokens = tokens ?? {};
 
   /// Ile żetonów danego zwierzęcia zostało jeszcze w stosie.
   int remaining(CircusAnimal animal) =>
@@ -57,6 +64,7 @@ class SettingsStorage {
   static const _expansionsKey = 'expansions';
   static const _seenKey = 'expansions_seen';
   static const _usedAnimalsKey = 'circus_used';
+  static const _tokensKey = 'crown_tokens';
   static const _keepScreenOnKey = 'keep_screen_on';
   static const _themeKey = 'theme_mode';
   static const _languageKey = 'language';
@@ -115,9 +123,24 @@ class SettingsStorage {
       }
     }
 
+    final tokens = <CrownToken, TokenHolding>{};
+    final rawTokens = prefs.getString(_tokensKey);
+    if (rawTokens != null) {
+      try {
+        final decoded = json.decode(rawTokens) as Map<String, dynamic>;
+        for (final token in CrownToken.values) {
+          final holding = TokenHolding.fromJson(decoded[token.name]);
+          if (holding != null) tokens[token] = holding;
+        }
+      } catch (_) {
+        // Uszkodzone dane – żetony wracają do puli.
+      }
+    }
+
     return GameSettings(
       expansions: expansions,
       usedAnimals: used,
+      tokens: tokens,
       keepScreenOn: prefs.getBool(_keepScreenOnKey) ?? true,
       themeMode: ThemeMode.values.firstWhere(
         (m) => m.name == prefs.getString(_themeKey),
@@ -151,6 +174,12 @@ class SettingsStorage {
     await _writeString(prefs, _stageKey, settings.stage?.name);
     await _writeString(prefs, _startedKey, settings.startedAt?.toIso8601String());
     await _writeString(prefs, _endedKey, settings.endedAt?.toIso8601String());
+    await prefs.setString(
+      _tokensKey,
+      json.encode({
+        for (final e in settings.tokens.entries) e.key.name: e.value.toJson(),
+      }),
+    );
     await prefs.setString(
       _usedAnimalsKey,
       json.encode({

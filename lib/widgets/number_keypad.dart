@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
 /// Nowa wartość po naciśnięciu klawisza: cyfra '0'–'9', 'C' (zerowanie)
 /// albo '<' (kasowanie ostatniej cyfry). Wynik nie przekracza [max].
 int applyKey(int value, String key, {int max = 999}) => switch (key) {
@@ -18,6 +20,18 @@ class NumberKeypad extends StatelessWidget {
     ['7', '8', '9'],
     ['C', '0', '<'],
   ];
+
+  /// Kolory klawiszy specjalnych: bursztyn dla „C” (zerowanie) i błękit dla
+  /// „<” (cofnięcie cyfry). To nasycone, jasne barwy, czytelne na ciemnym i
+  /// jasnym motywie, a różne od czerwieni „Anuluj” i zieleni „Zatwierdź”.
+  static const Color clearColor = Color(0xFFF2A93B);
+  static const Color backspaceColor = Color(0xFF5BB5D6);
+
+  static Color? _colorOf(String key) => switch (key) {
+    'C' => clearColor,
+    '<' => backspaceColor,
+    _ => null,
+  };
 
   final ValueChanged<String> onKey;
 
@@ -42,6 +56,10 @@ class NumberKeypad extends StatelessWidget {
                         horizontal: 20,
                       ),
                       textStyle: const TextStyle(fontSize: 18),
+                      backgroundColor: _colorOf(key),
+                      foregroundColor: _colorOf(key) == null
+                          ? null
+                          : foregroundOn(_colorOf(key)!),
                     ),
                     child: Text(key),
                   ),
