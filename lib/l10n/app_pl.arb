@@ -125,14 +125,27 @@
   "expTowerDesc": "Wykup uwięzionego mepla: płacisz 3 pkt temu, kto go trzyma. Wymiana mepel za mepel odbywa się bez aplikacji.",
   "expKingRobber": "Król i Baron rabusiów",
   "expKingRobberDesc": "Żetony Króla (największy ukończony zamek) i Barona rabusiów (najdłuższa ukończona droga). Na koniec gry właściciel żetonu dostaje 1 pkt za każdy ukończony zamek (Król) lub każdą ukończoną drogę (Rabuś) na całej planszy.",
-  "rulesKingRobber": "• Żeton Króla dostaje gracz, który ukończy zamek większy niż dotychczasowy właściciel żetonu (pierwszy ukończony zamek też go daje); żeton Barona rabusiów – gracz, który ukończy dłuższą drogę.\n• Przy punktowaniu zamku lub drogi zaznacz przejęcie żetonu i podaj nową wielkość budowli w płytkach (musi być większa niż poprzednia). Żeton możesz też przekazać ręcznie kafelkiem „Król/Rabuś”.\n• Na koniec gry właściciel żetonu Króla dostaje 1 pkt za każdy ukończony zamek na całej planszy (także cudzy), a właściciel żetonu Barona rabusiów 1 pkt za każdą ukończoną drogę – po jednym punkcie za budowlę, niezależnie od liczby płytek. Zamek z dodatku „Mosty, zamki i bazary” nie liczy się jako ukończony zamek.",
+  "rulesKingRobber": "• Żeton Króla dostaje gracz, który ukończy zamek większy niż dotychczasowy (pierwszy ukończony zamek też go daje); żeton Barona rabusiów – gracz, który ukończy dłuższą drogę.\n• Żeton przechodzi automatycznie: przy punktowaniu ukończonego zamku lub drogi większej niż dotychczasowa pojawia się „Przejęcie żetonu”, a po zatwierdzeniu wybierasz, kto go przejmuje (wielkości nie da się zmienić). Zamek lub drogę, której nie punktujesz, dopiszesz kafelkiem „Król/Rabuś”.\n• Na koniec gry właściciel żetonu Króla dostaje 1 pkt za każdy ukończony zamek na planszy, a właściciel żetonu Barona rabusiów 1 pkt za każdą ukończoną drogę – po jednym punkcie za budowlę, niezależnie od liczby płytek. Zamek z dodatku „Mosty, zamki i bazary” nie liczy się jako ukończony zamek.",
   "tokenKing": "Żeton Króla",
   "tokenRobber": "Żeton Barona rabusiów",
-  "takeKingToken": "Przejęcie żetonu Króla",
-  "takeKingTokenHint": "Zaznacz, jeśli to miasto jest większe niż miasto, dzięki któremu obecny właściciel ma żeton Króla. Po zatwierdzeniu podasz nową wielkość miasta i wybierzesz, kto przejmuje żeton.",
-  "takeRobberToken": "Przejęcie żetonu Barona rabusiów",
-  "takeRobberTokenHint": "Zaznacz, jeśli ta droga jest dłuższa niż droga, dzięki której obecny właściciel ma żeton Barona rabusiów. Po zatwierdzeniu podasz nową długość drogi i wybierzesz, kto przejmuje żeton.",
   "tokenNobody": "Nikt jeszcze nie ma tego żetonu.",
+  "takeTokenInfo": "Przejęcie żetonu",
+  "tokenMinHintKing": "Punktowane miasto powinno mieć wielkość co najmniej {min}, żeby przejąć żeton.",
+  "@tokenMinHintKing": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "tokenMinHintRobber": "Punktowana droga powinna mieć wielkość co najmniej {min}, żeby przejąć żeton.",
+  "@tokenMinHintRobber": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
   "tokenCurrent": "Obecnie ma go:",
   "tokenCurrentValue": "{name} ({size} płytek)",
   "@tokenCurrentValue": {
@@ -147,18 +160,9 @@
   },
   "tokenSizeKing": "Wielkość miasta (liczba płytek)",
   "tokenSizeRobber": "Długość drogi (liczba płytek)",
-  "tokenMustExceed": "Co najmniej {min}",
-  "@tokenMustExceed": {
-    "placeholders": {
-      "min": {
-        "type": "int"
-      }
-    }
-  },
   "tokenWho": "Kto przejmuje żeton?",
-  "tokenSkip": "Bez żetonu",
   "crownEndTitle": "Punkty za żetony",
-  "crownEndBody": "Podaj, ile ukończonych zamków i dróg jest na całej planszy (także tych należących do innych graczy). Za każdy ukończony zamek właściciel żetonu Króla dostaje 1 punkt, a za każdą ukończoną drogę właściciel żetonu Barona rabusiów.",
+  "crownEndBody": "Podaj liczbę ukończonych zamków i dróg na planszy. Właściciel żetonu Króla dostaje 1 punkt za każdy ukończony zamek, a właściciel żetonu Barona rabusiów 1 punkt za każdą ukończoną drogę.",
   "crownCityTiles": "Ukończone zamki",
   "crownRoadTiles": "Ukończone drogi",
   "crownEventKing": "Król: {name} +{points} (ukończone zamki)",
@@ -183,7 +187,6 @@
       }
     }
   },
-  "crownCountHint": "Wliczaj wszystkie ukończone budowle w grze, nie tylko swoje.",
   "scCrown": "Król/Rabuś",
   "tokenKingShort": "Król",
   "tokenRobberShort": "Rabuś",

@@ -6,7 +6,7 @@
 <path d="M4 4 L92 4 L4 92 Z" fill="#EBD7A5"/>
 <path d="M92 4 L4 92" stroke="#3B2F2F" stroke-width="3" stroke-linecap="round"/>
 </g>
-<g transform="translate(-4 -2) scale(0.5)"><g transform="translate(0 6)" stroke="#3B2F2F" stroke-linejoin="round" stroke-linecap="round" stroke-width="3">
+<g transform="translate(9 8) scale(0.48)"><g transform="translate(0 6)" stroke="#3B2F2F" stroke-linejoin="round" stroke-linecap="round" stroke-width="3">
 <path d="M22 62 L25 34 L38 47 L48 26 L58 47 L71 34 L74 62 Z" fill="#F2C230"/>
 <rect x="22" y="62" width="52" height="11" rx="2" fill="#D4A017"/>
 <circle cx="25" cy="32" r="4" fill="#C8433A"/><circle cx="48" cy="24" r="4.5" fill="#3E8AA0"/><circle cx="71" cy="32" r="4" fill="#C8433A"/>

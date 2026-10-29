@@ -72,7 +72,7 @@ void main() {
     expect(result, (cities: 12, roads: 7));
   });
 
-  testWidgets('okno żetonu: licznik nie zejdzie poniżej podpowiedzi', (
+  testWidgets('okno żetonu przy punktowaniu: wielkość jest narzucona', (
     tester,
   ) async {
     TokenChange? result;
@@ -90,7 +90,7 @@ void main() {
                     tokens: const {},
                     players: [ala],
                     scorer: ala,
-                    suggestedSize: 5,
+                    fixedSize: 5,
                   );
                 },
                 child: const Text('otwórz'),
@@ -103,9 +103,9 @@ void main() {
     await tester.tap(find.text('otwórz'));
     await tester.pumpAndSettle();
 
-    final stepper = tester.widget<CounterStepper>(find.byType(CounterStepper));
-    expect(stepper.value, 5);
-    expect(stepper.min, 5);
+    // Brak licznika +/-: wielkość jest tylko wyświetlona.
+    expect(find.byType(CounterStepper), findsNothing);
+    expect(find.text('5'), findsOneWidget);
 
     await tester.tap(find.text('Zatwierdź'));
     await tester.pumpAndSettle();

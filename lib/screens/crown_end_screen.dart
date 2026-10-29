@@ -4,6 +4,7 @@ import '../l10n/l10n.dart';
 import '../models/crown_tokens.dart';
 import '../models/player.dart';
 import '../theme/app_theme.dart';
+import '../widgets/info_hint.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/number_keypad.dart';
 import '../widgets/scoring_app_bar.dart';
@@ -142,19 +143,13 @@ class _CrownEndScreenState extends State<CrownEndScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    Text(
+                    LabelWithHint(
                       l.crownEndTitle,
+                      l.crownEndBody,
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(l.crownEndBody),
-                    const SizedBox(height: 4),
-                    Text(
-                      l.crownCountHint,
-                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 16),
                     if (widget.king != null)

@@ -75,7 +75,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool _ringmaster = false;
 
   /// Gracz przejmuje żeton Króla (miasto) albo Barona rabusiów (droga).
-  bool _takeToken = false;
   int _circusTiles = 0;
   bool _fairy = false;
   _Field _active = _Field.tiles;
@@ -312,16 +311,19 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     ].join(' · ');
   }
 
-  /// Żeton, który można przejąć przy tym punktowaniu (Król przy mieście,
-  /// Baron rabusiów przy drodze); `null`, gdy dodatek jest wyłączony albo
-  /// budowla nie jest ukończona.
+  /// Żeton, który przechodzi przy tym punktowaniu (Król przy mieście, Baron
+  /// rabusiów przy drodze): ukończona budowla większa niż ta, dzięki której
+  /// żeton ma obecny właściciel (albo nikt jeszcze go nie ma). `null`, gdy
+  /// dodatek jest wyłączony, budowla jest nieukończona lub za mała.
   CrownToken? get _tokenKind {
-    if (!_has(Expansion.kingRobber)) return null;
-    return switch (_type) {
-      ScoringType.city => _completed ? CrownToken.king : null,
+    if (!_has(Expansion.kingRobber) || !_completed || _tiles <= 0) return null;
+    final kind = switch (_type) {
+      ScoringType.city => CrownToken.king,
       ScoringType.road => CrownToken.robber,
       _ => null,
     };
+    if (kind == null) return null;
+    return _tiles >= minTokenSize(widget.tokens[kind]) ? kind : null;
   }
 
   Future<void> _confirm() async {
@@ -346,20 +348,21 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             gold: gold[e.key] ?? 0,
           ),
     ];
-    // Przejęcie żetonu: po zatwierdzeniu punktów pytamy o nową wielkość
-    // budowli i o gracza, który żeton dostaje.
+    // Przejęcie żetonu jest automatyczne: po zatwierdzeniu punktów pytamy
+    // tylko, kto żeton dostaje (wielkość budowli jest narzucona). „Anuluj”
+    // wraca na ekran punktacji.
     final kind = _tokenKind;
     TokenChange? tokenChange;
-    if (_takeToken && kind != null) {
+    if (kind != null) {
       tokenChange = await showTokenDialog(
         context,
         token: kind,
         players: widget.players,
         scorer: widget.player,
         tokens: widget.tokens,
-        suggestedSize: _tiles,
+        fixedSize: _tiles,
       );
-      if (!mounted) return;
+      if (!mounted || tokenChange == null) return;
     }
     Navigator.pop(
       context,
@@ -373,14 +376,23 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     );
   }
 
-  Widget _tokenCheck(CrownToken token) {
+  /// Informacja, że przy tym punktowaniu przechodzi żeton (bez pola wyboru).
+  Widget _tokenInfo(CrownToken token) {
     final l = context.l10n;
-    final isKing = token == CrownToken.king;
-    return _check(
-      isKing ? l.takeKingToken : l.takeRobberToken,
-      _takeToken,
-      (v) => _takeToken = v,
-      hint: isKing ? l.takeKingTokenHint : l.takeRobberTokenHint,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Flexible(
+            child: Text(
+              l.takeTokenInfo,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ),
+          const SizedBox(width: 8),
+          tokenIcon(token, size: 32),
+        ],
+      ),
     );
   }
 
@@ -563,7 +575,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               max: 6,
               hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
             ),
-          if (_tokenKind == CrownToken.king) _tokenCheck(CrownToken.king),
+          if (_tokenKind == CrownToken.king) _tokenInfo(CrownToken.king),
         ];
 
       case ScoringType.road:
@@ -599,7 +611,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               max: 6,
               hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
             ),
-          if (_tokenKind == CrownToken.robber) _tokenCheck(CrownToken.robber),
+          if (_tokenKind == CrownToken.robber) _tokenInfo(CrownToken.robber),
         ];
 
       case ScoringType.germanCastle:

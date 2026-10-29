@@ -5,6 +5,7 @@ import '../l10n/l10n.dart';
 import '../models/crown_tokens.dart';
 import '../models/player.dart';
 import 'counter_stepper.dart';
+import 'info_hint.dart';
 import 'meeple_icon.dart';
 import 'player_picker.dart';
 
@@ -28,21 +29,21 @@ Widget tokenIcon(CrownToken token, {double size = 24}) => SvgPicture.asset(
   height: size,
 );
 
-/// Okno przejęcia żetonu: nowa wielkość budowli (zawsze większa od
-/// zapamiętanej) i gracz, który żeton przejmuje. Zwraca zmianę żetonu albo
-/// `null` po „Bez żetonu" (przy [token] = `null` – po „Anuluj").
+/// Okno przejęcia żetonu: wielkość budowli i gracz, który żeton przejmuje.
+/// Zwraca zmianę żetonu albo `null` po „Anuluj".
 ///
-/// Z [token] = `null` okno ma przełącznik Król/Rabuś (ręczne przekazanie
-/// żetonu); wtedy [suggestedSize] jest ignorowane. Przy ustalonym [token]
-/// licznik nie zejdzie poniżej [suggestedSize] (wielkości właśnie
-/// punktowanej budowli).
+/// - Z ustalonym [token] i [fixedSize] (przejęcie przy punktowaniu ukończonej
+///   budowli) wielkość jest narzucona i nie da się jej zmienić.
+/// - Z [token] = `null` (kafelek „Król/Rabuś") okno ma przełącznik Król/Rabuś
+///   i licznik +/-, który nie zejdzie poniżej wielkości potrzebnej do
+///   przejęcia żetonu.
 Future<TokenChange?> showTokenDialog(
   BuildContext context, {
   CrownToken? token,
   required Map<CrownToken, TokenHolding> tokens,
   required List<Player> players,
   required Player scorer,
-  int suggestedSize = 0,
+  int? fixedSize,
 }) {
   return showDialog<TokenChange>(
     context: context,
@@ -52,7 +53,7 @@ Future<TokenChange?> showTokenDialog(
       tokens: tokens,
       players: players,
       scorer: scorer,
-      suggestedSize: suggestedSize,
+      fixedSize: fixedSize,
     ),
   );
 }
@@ -62,14 +63,14 @@ class _TokenDialog extends StatefulWidget {
   final Map<CrownToken, TokenHolding> tokens;
   final List<Player> players;
   final Player scorer;
-  final int suggestedSize;
+  final int? fixedSize;
 
   const _TokenDialog({
     required this.token,
     required this.tokens,
     required this.players,
     required this.scorer,
-    required this.suggestedSize,
+    required this.fixedSize,
   });
 
   @override
@@ -84,18 +85,14 @@ class _TokenDialogState extends State<_TokenDialog> {
   bool get _choose => widget.token == null;
   TokenHolding? get _current => widget.tokens[_token];
 
-  /// Najmniejsza dozwolona wielkość: więcej niż u obecnego właściciela i nie
-  /// mniej niż podpowiedziana wielkość budowli.
-  int get _min {
-    final floor = minTokenSize(_current);
-    final suggested = _choose ? 0 : widget.suggestedSize;
-    return (suggested > floor ? suggested : floor).clamp(1, kMaxTokenSize);
-  }
+  /// Najmniejsza wielkość, która pozwala przejąć żeton (o 1 większa niż
+  /// u obecnego właściciela).
+  int get _min => minTokenSize(_current).clamp(1, kMaxTokenSize);
 
   @override
   void initState() {
     super.initState();
-    _size = _min;
+    _size = widget.fixedSize ?? _min;
     _taker = widget.scorer;
   }
 
@@ -170,22 +167,33 @@ class _TokenDialogState extends State<_TokenDialog> {
                 ],
               ),
             const SizedBox(height: 16),
-            Text(isKing ? l.tokenSizeKing : l.tokenSizeRobber),
-            const SizedBox(height: 4),
-            Center(
-              child: CounterStepper(
-                value: _size,
-                min: _min,
-                max: kMaxTokenSize,
-                onChanged: (v) => setState(() => _size = v),
+            if (_choose) ...[
+              LabelWithHint(
+                isKing ? l.tokenSizeKing : l.tokenSizeRobber,
+                isKing ? l.tokenMinHintKing(_min) : l.tokenMinHintRobber(_min),
               ),
-            ),
-            Center(
-              child: Text(
-                l.tokenMustExceed(_min),
-                style: Theme.of(context).textTheme.bodySmall,
+              const SizedBox(height: 4),
+              Center(
+                child: CounterStepper(
+                  value: _size,
+                  min: _min,
+                  max: kMaxTokenSize,
+                  onChanged: (v) => setState(() => _size = v),
+                ),
               ),
-            ),
+            ] else ...[
+              Text(isKing ? l.tokenSizeKing : l.tokenSizeRobber),
+              const SizedBox(height: 4),
+              Center(
+                child: Text(
+                  '$_size',
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             Text(l.tokenWho),
             const SizedBox(height: 4),
@@ -200,7 +208,7 @@ class _TokenDialogState extends State<_TokenDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(_choose ? l.cancel : l.tokenSkip),
+          child: Text(l.cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(
