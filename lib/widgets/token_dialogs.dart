@@ -218,8 +218,8 @@ class _TokenDialogState extends State<_TokenDialog> {
   }
 }
 
-/// Plakietka żetonu w wierszu gracza (jak plakietki surowców): grafika
-/// żetonu i wyraźna cyfra – wielkość najwyższej ukończonej budowli, dzięki
+/// Plakietka żetonu w wierszu gracza (taka sama jak plakietki surowców):
+/// grafika żetonu i wyraźna cyfra – wielkość najwyższej ukończonej budowli, dzięki
 /// której gracz ma żeton.
 class CrownTokenBadge extends StatelessWidget {
   final CrownToken token;
@@ -229,27 +229,28 @@ class CrownTokenBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Barwy żetonów: fiolet Króla i zieleń Barona rabusiów, spójne z ich
-    // grafikami; cyfra w kolorze tekstu motywu, żeby była czytelna w jasnym
-    // i ciemnym motywie.
-    final accent = token == CrownToken.king
-        ? const Color(0xFF7A5CC8)
-        : const Color(0xFF5E9B3E);
+    // Pełne tło w barwie płytki żetonu (beż Króla, zieleń Barona rabusiów)
+    // z ciemnym tekstem i obwódką: czytelne w jasnym i ciemnym motywie,
+    // a wielkość taka sama jak plakietek surowców.
+    const ink = Color(0xFF3B2F2F);
+    final fill = token == CrownToken.king
+        ? const Color(0xFFEBD7A5)
+        : const Color(0xFF8FC46A);
     return Container(
-      padding: const EdgeInsets.fromLTRB(4, 2, 12, 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.22),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent, width: 2),
+        color: fill,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ink, width: 1.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          tokenIcon(token, size: 30),
-          const SizedBox(width: 6),
+          tokenIcon(token, size: 20),
+          const SizedBox(width: 4),
           Text(
             '$size',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+            style: const TextStyle(fontWeight: FontWeight.bold, color: ink),
           ),
         ],
       ),
