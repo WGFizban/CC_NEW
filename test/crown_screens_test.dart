@@ -21,6 +21,10 @@ void main() {
   testWidgets('ekran końcowy: klawiatura wpisuje liczby do wybranego pola', (
     tester,
   ) async {
+    // Wysoki ekran, żeby oba pola zmieściły się nad klawiaturą.
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 1400);
+    addTearDown(tester.view.reset);
     CrownCounts? result;
     await tester.pumpWidget(
       _app(
