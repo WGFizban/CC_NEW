@@ -40,6 +40,7 @@ Future<Uint8List> _build({Uint8List? photo}) {
     photo: photo,
     regularFont: File('assets/fonts/DejaVuSans.ttf').readAsBytesSync(),
     boldFont: File('assets/fonts/DejaVuSans-Bold.ttf').readAsBytesSync(),
+    loadSvg: (asset) async => File(asset).readAsString(),
   );
 }
 
@@ -73,6 +74,27 @@ void main() {
     final bytes = await _build();
     expect(String.fromCharCodes(bytes.take(5)), '%PDF-');
     expect(bytes.length, greaterThan(1000));
+  });
+
+  test('PDF powstaje także, gdy ikon SVG nie da się wczytać', () async {
+    final l = AppLocalizationsPl();
+    final table = SummaryTable.build(
+      l: l,
+      players: [_p('Ala', 10, 0xFFE53935)],
+      log: const [],
+      expansions: const {},
+    );
+    final bytes = await buildSummaryPdf(
+      l: l,
+      table: table,
+      expansions: const {},
+      elapsed: Duration.zero,
+      date: DateTime(2026, 10, 31),
+      regularFont: File('assets/fonts/DejaVuSans.ttf').readAsBytesSync(),
+      boldFont: File('assets/fonts/DejaVuSans-Bold.ttf').readAsBytesSync(),
+      loadSvg: (asset) async => throw Exception('brak pliku'),
+    );
+    expect(String.fromCharCodes(bytes.take(5)), '%PDF-');
   });
 
   test('zdjęcie planszy dodaje kolejną stronę', () async {
