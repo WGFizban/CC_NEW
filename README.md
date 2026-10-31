@@ -120,8 +120,8 @@ końca; **Nowa gra** w menu wraca do przygotowania.
   **Opat**). Klasztor z mnichem punktuje jak zwykły klasztor.
 
 ### Zamki w Niemczech (mini dodatek 6)
-- Pan zamku: ukończony zamek daje 12 pkt, nieukończony na koniec gry 2 pkt za
-  płytkę zamku i 1 pkt za każdą otaczającą płytkę (kafelek **Zamek niemiecki**).
+- Lord na zamku: ukończony zamek daje 12 pkt, nieukończony na koniec gry 2 pkt za
+  płytkę zamku i 1 pkt za każdą otaczającą płytkę (kafelek **Lord na zamku**).
 - Ukończona droga lub miasto z zamkiem na końcu daje graczom z przewagą po
   3 pkt za każdy zamek (licznik w punktacji miasta i drogi, po modyfikacjach
   z karczmy i katedry).

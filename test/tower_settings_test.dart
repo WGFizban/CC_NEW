@@ -404,7 +404,7 @@ void main() {
       );
     });
 
-    test('pan zamku: 12 pkt albo 2 pkt plus płytki wokół na koniec gry', () {
+    test('lord na zamku: 12 pkt albo 2 pkt plus płytki wokół na koniec gry', () {
       expect(calculatePoints(ScoringType.germanCastle), 12);
       expect(
         calculatePoints(ScoringType.germanCastle, completed: false, tiles: 6),

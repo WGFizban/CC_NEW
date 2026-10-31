@@ -125,7 +125,7 @@
   "expTowerDesc": "Wykup uwięzionego mepla: płacisz 3 pkt temu, kto go trzyma. Wymiana mepel za mepel odbywa się bez aplikacji.",
   "expKingRobber": "Król i Baron rabusiów",
   "expKingRobberDesc": "Żetony Króla (największy ukończony zamek) i Barona rabusiów (najdłuższa ukończona droga). Na koniec gry właściciel żetonu dostaje 1 pkt za każdy ukończony zamek (Król) lub każdą ukończoną drogę (Rabuś) na całej planszy.",
-  "rulesKingRobber": "• Żeton Króla dostaje gracz, który ukończy zamek większy niż dotychczasowy (pierwszy ukończony zamek też go daje); żeton Barona rabusiów – gracz, który ukończy dłuższą drogę.\n• Żeton przechodzi automatycznie: przy punktowaniu ukończonego zamku lub drogi większej niż dotychczasowa pojawia się „Przejęcie żetonu”, a po zatwierdzeniu wybierasz, kto go przejmuje (wielkości nie da się zmienić). Zamek lub drogę, której nie punktujesz, dopiszesz kafelkiem „Król/Rabuś”.\n• Na koniec gry właściciel żetonu Króla dostaje 1 pkt za każdy ukończony zamek na planszy, a właściciel żetonu Barona rabusiów 1 pkt za każdą ukończoną drogę – po jednym punkcie za budowlę, niezależnie od liczby płytek. Zamek z dodatku „Mosty, zamki i bazary” nie liczy się jako ukończony zamek.",
+  "rulesKingRobber": "• Żeton Króla otrzymuje gracz, który ukończy zamek większy niż dotychczasowy posiadacz żetonu (pierwszy ukończony zamek także go daje). Żeton Barona rabusiów otrzymuje gracz, który ukończy dłuższą drogę.\n• Na koniec gry posiadacz żetonu Króla otrzymuje 1 pkt za każdy ukończony zamek na planszy, a posiadacz żetonu Barona rabusiów 1 pkt za każdą ukończoną drogę – po jednym punkcie za budowlę, niezależnie od liczby płytek.\n• Zamek z dodatku „Mosty, zamki i bazary” nie liczy się jako ukończony zamek.",
   "tokenKing": "Żeton Króla",
   "tokenRobber": "Żeton Barona rabusiów",
   "tokenNobody": "Nikt jeszcze nie ma tego żetonu.",
@@ -805,16 +805,16 @@
   "enableExpansions": "Włącz dodatki",
   "rulesTitle": "Skrót zasad",
   "rulesMenuHint": "Najważniejsze zasady punktowania w podziale na dodatki.",
-  "rulesBase": "• Miasto: ukończone daje 2 pkt za płytkę i za sztandar, nieukończone (na koniec gry) 1 pkt.\n• Droga: 1 pkt za płytkę, ukończona lub nie.\n• Klasztor: ukończony 9 pkt (klasztor i 8 płytek wokół), nieukończony 1 pkt za płytkę razem z klasztorem.\n• Pola: na koniec gry 3 pkt za każde ukończone miasto przy polu.\n• Punkty dostaje gracz z największą liczbą mepli; przy remisie każdy z remisujących dostaje pełne punkty.\n• Wynik w trakcie gry to punkty z planszy. Premia za surowce i wartość złota doliczane są dopiero w podsumowaniu końcowym.",
-  "rulesInns": "• Katedra: ukończone miasto z katedrą daje 3 pkt za płytkę i sztandar, nieukończone 0 pkt.\n• Karczma: ukończona droga z karczmą daje 2 pkt za płytkę, nieukończona 0 pkt.\n• Duży mepel liczy się jak dwa meple przy ustalaniu większości, ale punktów nie podwaja.",
-  "rulesTraders": "• Surowce: za ukończone miasto z symbolem dostajesz żeton wina, zboża lub sukna (dostaje go gracz, który domknął miasto).\n• Na koniec gry za każdy rodzaj surowca gracz z największą liczbą żetonów dostaje 10 pkt (przy remisie każdy 10 pkt).\n• Świnka: ze świnką każde ukończone miasto przy polu daje 4 pkt zamiast 3.\n• Budowniczy i świnia nie liczą się do większości.",
-  "rulesPrincess": "• Wróżka: na początku swojej tury dostajesz 1 pkt, jeśli wróżka stoi przy twoim meplu.\n• Gdy punktowana jest budowla z meplem przy wróżce, jego właściciel dostaje dodatkowe 3 pkt, także na koniec gry.\n• Smok i księżniczka nie zmieniają punktacji w aplikacji.",
-  "rulesTower": "• Okup za uwięzionego mepla to 3 pkt, które dostaje gracz trzymający jeńca. Za dużego mepla też 3 pkt.\n• Wykupić można mepla, dużego mepla, wóz i burmistrza. Budowniczego i świni nie da się uwięzić.\n• Wykup robisz w swojej turze, raz na turę. Bez 3 punktów nie możesz wykupić mepla.\n• Wymiana mepel za mepel (dwaj gracze trzymają sobie nawzajem jeńców) odbywa się automatycznie, bez punktów i bez aplikacji.",
-  "rulesAbbey": "• Opactwo punktuje jak klasztor: ukończone 9 pkt, nieukończone 1 pkt za płytkę.\n• Stodoła, zwykłe punktowanie pola: 3 pkt za miasto.\n• Pole połączone ze stodołą: rolnicy dostają 1 pkt za miasto (2 ze świnką), 2 pkt za zamek.\n• Właściciel stodoły na koniec gry: 4 pkt za miasto i 5 za zamek, bez świnki.",
-  "rulesBridges": "• Zamek: jego właściciel dostaje punkty ukończonego miasta, drogi lub klasztoru, przy którym stoi. Zamek na końcu gry nie punktuje.\n• Zamek na polu jest wart 4 pkt zamiast 3 (5 ze świnką).\n• Bazar: wybierający płytkę kupuje ją od najwyżej licytującego (płaci mu cenę) albo mu ją sprzedaje (dostaje cenę). Gdy licytował tylko on, płaci cenę i nikt nie zyskuje.\n• Mosty nie zmieniają punktacji.",
-  "rulesHills": "• Winnice: ukończony klasztor dostaje 3 pkt za każdą winnicę na płytkach wokół.\n• Owce: stado z żetonów 1–4 owce, wszyscy pasterze w polu dostają punkty za całe stado. Wilk rozpędza stado. Owce nie punktują na koniec gry.",
-  "rulesCircus": "• Cyrk: odkryj żeton zwierzęcia. Każdy mepel na płytce cyrku i ośmiu sąsiednich daje właścicielowi tyle punktów, ile wynosi zwierzę (słoń 7, lew 6, niedźwiedź 5, foka 4, małpka 3, pchła 1). Meple zostają.\n• Akrobaci: ukończona piramida (3 meple) – każdy akrobata 5 pkt i wraca do puli. Na koniec gry 5 pkt za każdego akrobatę na planszy.\n• Dyrektor cyrku: 2 pkt za każdą płytkę cyrku lub akrobatów obok niego, także na koniec gry.",
-  "rulesGold": "• Złoto: 16 sztabek. Za ukończoną budowlę sztabki z jej płytek dostaje gracz z przewagą (rolnicy nie).\n• Na koniec gry sztabka jest warta: 1–3 sztabki po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.",
+  "rulesBase": "• Miasto: ukończone daje 2 pkt za każdą płytkę i każdy sztandar; nieukończone (na koniec gry) 1 pkt za każdą płytkę i sztandar.\n• Droga: 1 pkt za każdą płytkę, ukończona lub nie.\n• Klasztor: ukończony 9 pkt (klasztor i 8 otaczających płytek); nieukończony 1 pkt za każdą płytkę, wraz z płytką klasztoru.\n• Pola: na koniec gry 3 pkt za każde ukończone miasto graniczące z polem.\n• Punkty otrzymuje gracz mający najwięcej mepli w budowli lub na polu; przy remisie każdy z remisujących otrzymuje pełną liczbę punktów.",
+  "rulesInns": "• Katedra: ukończone miasto z katedrą daje 3 pkt za każdą płytkę i sztandar; nieukończone 0 pkt.\n• Karczma: ukończona droga z karczmą daje 2 pkt za każdą płytkę; nieukończona 0 pkt.\n• Duży mepel liczy się jako dwa meple przy ustalaniu większości, ale nie podwaja punktów.",
+  "rulesTraders": "• Surowce: za ukończone miasto z symbolem gracz, który je ukończył, otrzymuje żeton wina, zboża lub sukna.\n• Na koniec gry za każdy rodzaj surowca gracz z największą liczbą żetonów otrzymuje 10 pkt (przy remisie każdy z remisujących otrzymuje 10 pkt).\n• Świnka: ukończone miasto graniczące z polem ze świnką daje 4 pkt zamiast 3.\n• Na potrzeby ustalania przewagi w budowli lub na polu pionki świnki i budowniczego nie są liczone do większości.",
+  "rulesPrincess": "• Wróżka: na początku tury gracz otrzymuje 1 pkt, jeśli jego mepel stoi przy wróżce.\n• Przy punktowaniu budowli z meplem stojącym przy wróżce jego właściciel otrzymuje dodatkowe 3 pkt, także przy punktowaniu końcowym.\n• Smok i księżniczka nie zmieniają punktacji.",
+  "rulesTower": "• Okup za uwięzionego mepla (także dużego) wynosi 3 pkt i otrzymuje go gracz przetrzymujący jeńca.\n• Wykupić można mepla, dużego mepla, wóz i burmistrza; budowniczego i świni nie można uwięzić.\n• Wykupu dokonuje się w swojej turze, raz na turę, i wymaga on posiadania co najmniej 3 pkt.\n• Wymiana jeńców (dwaj gracze przetrzymują nawzajem swoje meple) odbywa się bez punktów.",
+  "rulesAbbey": "• Opactwo punktuje jak klasztor: ukończone 9 pkt, nieukończone 1 pkt za każdą płytkę.\n• Pole niepołączone ze stodołą: zwykłe punktowanie, 3 pkt za każde ukończone miasto.\n• Pole połączone ze stodołą: rolnicy otrzymują 1 pkt za miasto (2 ze świnką) i 2 pkt za zamek.\n• Właściciel stodoły na koniec gry: 4 pkt za miasto i 5 pkt za zamek, bez premii za świnkę.",
+  "rulesBridges": "• Zamek: jego właściciel otrzymuje punkty ukończonego miasta, drogi lub klasztoru, przy którym stoi. Zamek nie punktuje na koniec gry.\n• Przy punktowaniu pola zamek jest wart 4 pkt zamiast 3 (5 ze świnką).\n• Bazar: gracz wybierający płytkę kupuje ją od najwyżej licytującego (płaci mu cenę) albo mu ją sprzedaje (otrzymuje cenę). Gdy licytował tylko on, płaci cenę, której nikt nie otrzymuje.\n• Mosty nie zmieniają punktacji.",
+  "rulesHills": "• Winnice: za ukończony klasztor jego właściciel otrzymuje dodatkowo 3 pkt za każdą winnicę na otaczających płytkach.\n• Owce: stado składa się z żetonów 1–4 owiec; wszyscy pasterze na polu otrzymują punkty za całe stado. Wilk rozpędza stado. Owce nie punktują na koniec gry.",
+  "rulesCircus": "• Cyrk: po odkryciu żetonu zwierzęcia każdy mepel na płytce cyrku i na ośmiu sąsiednich płytkach daje właścicielowi tyle punktów, ile wynosi wartość zwierzęcia (słoń 7, lew 6, niedźwiedź 5, foka 4, małpka 3, pchła 1). Meple pozostają na planszy.\n• Akrobaci: ukończona piramida (3 meple) daje po 5 pkt za każdego akrobatę, który wraca do puli. Na koniec gry 5 pkt za każdego akrobatę na planszy.\n• Dyrektor cyrku: 2 pkt za każdą płytkę cyrku lub akrobatów obok niego, także na koniec gry.",
+  "rulesGold": "• Złoto: w grze jest 16 sztabek. Za ukończoną budowlę sztabki z jej płytek otrzymuje gracz z przewagą (rolnicy ich nie otrzymują).\n• Na koniec gry wartość sztabki zależy od liczby posiadanych: 1–3 sztabki po 1 pkt, 4–6 po 2 pkt, 7–9 po 3 pkt, od 10 po 4 pkt.",
   "gameStartedTitle": "Gra została rozpoczęta!",
   "noPlayersHint2": "Jeśli chcesz edytować gracza, przytrzymaj wiersz z jego imieniem.",
   "summaryTitle": "Podsumowanie",
@@ -837,7 +837,7 @@
       }
     }
   },
-  "rulesMonasteries": "• Klasztory z dodatku: usuń z gry podstawowe klasztory, a nowe płytki wymieszaj ze stosem.\n• Po położeniu płytki możesz wystawić mepla jako mnicha (punktuje jak zwykły klasztor, 9 pkt po ukończeniu) albo jako opata (kładziony na boku).\n• Opat zostaje na płytce do końca gry i punktuje dopiero wtedy: 1 pkt za każdą płytkę w wierszu i kolumnie klasztoru oraz 1 pkt za sam klasztor.\n• Pusta przestrzeń przerywa liczenie w danym kierunku.",
+  "rulesMonasteries": "• Klasztory z dodatku zastępują klasztory z gry podstawowej; nowe płytki miesza się ze stosem.\n• Po położeniu płytki gracz może wystawić mepla jako mnicha (punktuje jak zwykły klasztor, 9 pkt po ukończeniu) albo jako opata (kładzionego na boku).\n• Opat pozostaje na płytce do końca gry i punktuje dopiero wtedy: 1 pkt za każdą płytkę w wierszu i kolumnie klasztoru oraz 1 pkt za sam klasztor.\n• Pusta przestrzeń przerywa liczenie w danym kierunku.",
   "menuTutorial": "Samouczek",
   "menuAbout": "Info o aplikacji",
   "tutorialTitle": "Jak to działa",
@@ -883,10 +883,10 @@
   "newGameNewPlayers": "Nowi gracze",
   "addMorePlayers": "Do gry potrzeba co najmniej dwóch graczy. Dodaj kolejnego przyciskiem",
   "expGermanCastles": "Niemieckie zamki",
-  "expGermanCastlesDesc": "Podwójne płytki niemieckich zamków. Pan zamku dostaje 12 pkt za ukończony zamek, a każdy zamek na końcu ukończonej drogi lub miasta daje graczom z przewagą dodatkowe 3 pkt.",
+  "expGermanCastlesDesc": "Podwójne płytki niemieckich zamków. Lord na zamku dostaje 12 pkt za ukończony zamek, a każdy zamek na końcu ukończonej drogi lub miasta daje graczom z przewagą dodatkowe 3 pkt.",
   "expGermanCathedrals": "Niemieckie katedry",
   "expGermanCathedralsDesc": "Płytki z niemieckimi katedrami na polach. Zbój na drodze do katedry dostaje podwójne punkty za każdy odcinek drogi, także nieukończonej na koniec gry, a arcybiskup 1 pkt za każdy odcinek dróg, ale tylko gdy wszystkie są zamknięte.",
-  "scGermanCastle": "Zamek niemiecki",
+  "scGermanCastle": "Lord na zamku",
   "scArchbishop": "Arcybiskup",
   "germanCastlesAtFeature": "Zamki niemieckie przy budowli",
   "germanCastlesAtFeatureHint": "Ustaw liczbę niemieckich zamków na końcach ukończonej budowli: za każdy gracze z przewagą dostają dodatkowo {points} pkt, niezależnie od tego, czy zamek jest zajęty. Premia jest doliczana po modyfikacjach z katedry i karczmy. Droga, która zaczyna i kończy się na tym samym zamku, liczy go raz.",
@@ -900,7 +900,7 @@
   "roadToCathedral": "Czy prowadzi do katedry",
   "roadToCathedralHint": "Zaznacz, jeśli którykolwiek koniec drogi (także rondo z kilkoma końcami) leży na płytce niemieckiej katedry (zbój); wiele katedr nie zwiększa premii: dostaje podwójne punkty, czyli 2 pkt za płytkę (3 z karczmą), także gdy jest nieukończona na koniec gry.",
   "completedGermanCastle": "Czy ukończony",
-  "germanCastleHint": "Zaznacz, jeśli zamek jest otoczony ze wszystkich stron: pan zamku dostaje {completed} pkt. Odznacz, jeśli punktujesz go na koniec gry: {base} pkt za płytkę zamku i 1 pkt za każdą otaczającą płytkę.",
+  "germanCastleHint": "Zaznacz, jeśli zamek jest otoczony ze wszystkich stron: lord na zamku dostaje {completed} pkt. Odznacz, jeśli punktujesz go na koniec gry: {base} pkt za płytkę zamku i 1 pkt za każdą otaczającą płytkę.",
   "@germanCastleHint": {
     "placeholders": {
       "completed": {
@@ -914,6 +914,32 @@
   "tilesAroundCastle": "Płytki wokół zamku",
   "archbishopRoadTiles": "Odcinki dróg przy katedrze",
   "archbishopInnHint": "Zaznacz, jeśli drogi mają karczmę: arcybiskup dostaje 2 pkt za odcinek zamiast 1.",
-  "rulesGermanCastles": "• Każdy gracz dostaje 1 zamek (przy 2–3 graczach 2). Zamek kładziesz zamiast dociągnięcia płytki; nie może dotykać innych zamków, także rogiem.\n• Pan zamku: ukończony zamek (otoczony jak klasztor) daje 12 pkt. Na koniec gry nieukończony: 2 pkt za płytkę zamku i 1 pkt za każdą otaczającą płytkę.\n• Ukończona droga lub miasto z zamkiem na końcu daje graczom z przewagą po 3 pkt za każdy zamek, także nieobsadzony. Premia jest doliczana po modyfikacjach z karczmy i katedry.",
-  "rulesGermanCathedrals": "• 6 płytek z katedrami na polach, z 3 lub 4 drogami od katedry.\n• Zbój na drodze do katedry: podwójne punkty za każdy odcinek, czyli 2 pkt za płytkę (z karczmą 3). Dotyczy też drogi nieukończonej na koniec gry (z karczmą 0).\n• Arcybiskup na katedrze punktuje tylko wtedy, gdy zamknięte są wszystkie drogi od katedry: 1 pkt za każdy odcinek drogi (z karczmą 2), każdy odcinek na płytce katedry osobno. Jeśli któraś droga zostanie otwarta do końca gry, arcybiskup nie dostaje nic."
+  "rulesGermanCastles": "• Każdy gracz otrzymuje 1 zamek (przy 2–3 graczach 2). Zamek kładzie się zamiast dociągnięcia płytki i nie może dotykać innych zamków, także rogiem.\n• Lord na zamku: ukończony zamek (otoczony jak klasztor) daje 12 pkt. Nieukończony na koniec gry daje 2 pkt za płytkę zamku i 1 pkt za każdą otaczającą płytkę.\n• Ukończona droga lub miasto z zamkiem na końcu daje graczom z przewagą po 3 pkt za każdy zamek, także nieobsadzony. Premia jest doliczana po modyfikacjach z karczmy i katedry.\n• Zamki nie dają premii +3 przy budowlach nieukończonych (na koniec gry).\n• Zamek nie liczy się jako miasto przy punktowaniu pól ani stodoły: nie przynosi punktów rolnikom ani właścicielowi stodoły.",
+  "rulesGermanCathedrals": "• Dodatek zawiera 6 płytek z katedrami na polach, z 3 lub 4 drogami wychodzącymi z katedry.\n• Zbój na drodze do katedry: podwójne punkty za każdy odcinek, czyli 2 pkt za płytkę (3 z karczmą). Dotyczy to także drogi nieukończonej na koniec gry (z karczmą 0).\n• Arcybiskup na katedrze punktuje tylko wtedy, gdy zamknięte są wszystkie drogi wychodzące z katedry: 1 pkt za każdy odcinek drogi (2 z karczmą), przy czym każdy odcinek na płytce katedry liczy się osobno. Jeśli któraś droga pozostanie otwarta do końca gry, arcybiskup nie otrzymuje punktów.",
+  "savePdf": "Zapisz PDF z gry",
+  "pdfPhotoTitle": "Dodać zdjęcie planszy?",
+  "pdfPhotoBody": "Zdjęcie zostanie dodane do dokumentu jako ostatnia strona.",
+  "pdfNoPhoto": "Bez zdjęcia",
+  "pdfAddPhoto": "Zrób zdjęcie",
+  "pdfBoardPage": "Plansza",
+  "pdfDate": "Data gry: {date}",
+  "@pdfDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfExpansions": "Dodatki: {list}",
+  "@pdfExpansions": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "pdfSaved": "Zapisano plik PDF.",
+  "pdfNoPhotoTaken": "Nie zrobiono zdjęcia, plik PDF nie został zapisany.",
+  "pdfCameraError": "Nie udało się uruchomić aparatu.",
+  "pdfSaveError": "Nie udało się zapisać pliku PDF."
 }
