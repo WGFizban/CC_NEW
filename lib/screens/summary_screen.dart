@@ -204,18 +204,27 @@ class SummaryScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columnSpacing: 18,
-              horizontalMargin: 12,
-              dataRowMinHeight: 44,
-              dataRowMaxHeight: 52,
-              columns: [
-                DataColumn(label: Text(l.colPlayer)),
-                for (final c in table.columns) column(c),
-              ],
-              rows: rows,
+          // Wąska tabela (mało dodatków) jest wyśrodkowana, a szeroka nadal
+          // przewija się poziomo.
+          LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                child: Center(
+                  child: DataTable(
+                    columnSpacing: 18,
+                    horizontalMargin: 12,
+                    dataRowMinHeight: 44,
+                    dataRowMaxHeight: 52,
+                    columns: [
+                      DataColumn(label: Text(l.colPlayer)),
+                      for (final c in table.columns) column(c),
+                    ],
+                    rows: rows,
+                  ),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 24),
