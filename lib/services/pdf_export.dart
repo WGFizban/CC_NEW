@@ -250,18 +250,8 @@ pw.Widget _table(
     return pw.Container(
       alignment: pw.Alignment.center,
       padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      child: pw.Column(
-        mainAxisSize: pw.MainAxisSize.min,
-        children: [
-          icon,
-          pw.SizedBox(height: 3),
-          pw.Text(
-            c.title,
-            textAlign: pw.TextAlign.center,
-            style: pw.TextStyle(font: bold, fontSize: fontSize - 1.5),
-          ),
-        ],
-      ),
+      // Sama ikona, bez podpisu: tak jak w aplikacji (podpisy się zawijały).
+      child: icon,
     );
   }
 
