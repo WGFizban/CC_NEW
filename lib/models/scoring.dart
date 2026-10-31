@@ -230,7 +230,7 @@ int calculatePoints(
       base = 0;
 
     case ScoringType.germanCastle:
-      // Pan zamku: ukończony 12 pkt, nieukończony na koniec gry 2 pkt za
+      // Lord na zamku: ukończony 12 pkt, nieukończony na koniec gry 2 pkt za
       // płytkę zamku i 1 za każdą płytkę wokół.
       base = completed ? kGermanCastleCompleted : kGermanCastleTileBase + tiles;
 
