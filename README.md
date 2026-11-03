@@ -17,7 +17,7 @@ i tabletach (w pionie i w poziomie).
 - punktacja miasta, drogi, klasztoru i pól, także z punktami wspólnymi
   dla kilku graczy,
 - punktacja elementów włączonych dodatków,
-- cofanie ostatniego zatwierdzenia i historia punktów,
+- cofanie ostatniego zatwierdzenia punktów,
 - ekran końca gry z rankingiem i podsumowaniem punktów z każdego źródła,
 - skrót zasad i krótki samouczek wbudowany w aplikację,
 - motyw jasny, ciemny lub systemowy oraz wybór języka,
@@ -34,8 +34,9 @@ i tabletach (w pionie i w poziomie).
 - Kopalnie złota
 - Cyrk objazdowy
 - Owce i wzgórza
-- Mini dodatki: Klasztory niemieckie i holenderskie, Zamki w Niemczech,
-  Katedry w Niemczech
+- Klasztory niemieckie i holenderskie
+- Zamki w Niemczech
+- Katedry w Niemczech
 
 ## Uruchomienie
 
@@ -44,8 +45,3 @@ flutter pub get
 flutter run
 flutter test
 ```
-
-## Wydania
-
-Każdy merge do `master` uruchamia workflow **Release APK**: testy, budowa APK
-i wydanie na GitHubie z kolejnym numerem wersji (v1, v2, v3…).

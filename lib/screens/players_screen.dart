@@ -653,7 +653,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final showStart = _inSetup && canStartGame(_players.length);
     // Na szerokim ekranie (tablet, poziom) lista i przyciski mają ograniczoną
     // szerokość i są wyśrodkowane, zamiast rozciągać się na cały ekran.
-    final wide = MediaQuery.sizeOf(context).width > kMaxContentWidth;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final wide = screenWidth > kMaxContentWidth;
+    // Gdy po bokach listy jest dość miejsca na przyciski, stoją przy krawędziach
+    // ekranu, poza listą, i nie zasłaniają wierszy graczy.
+    final buttonsOutside = screenWidth >= kMaxContentWidth + 2 * 88;
 
     return Scaffold(
       appBar: AppBar(
@@ -665,11 +669,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
           ),
         ],
       ),
-      floatingActionButtonLocation: wide
+      floatingActionButtonLocation: wide && !buttonsOutside
           ? FloatingActionButtonLocation.centerFloat
           : FloatingActionButtonLocation.endFloat,
       floatingActionButton: SizedBox(
-        width: wide ? kMaxContentWidth : double.infinity,
+        width: wide && !buttonsOutside ? kMaxContentWidth : double.infinity,
         child: Padding(
           padding: const EdgeInsets.only(left: 32),
           child: Row(
