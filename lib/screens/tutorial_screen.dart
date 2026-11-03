@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
 import '../models/scoring.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/game_icon.dart';
 import '../widgets/tutorial_animations.dart';
 
@@ -93,7 +94,11 @@ class _TutorialScreenState extends State<TutorialScreen> {
                   Padding(
                     padding: const EdgeInsets.all(24),
                     child: Center(
-                      child: SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: kMaxContentWidth,
+                        ),
+                        child: SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -112,6 +117,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                               style: const TextStyle(fontSize: 17, height: 1.4),
                             ),
                           ],
+                        ),
                         ),
                       ),
                     ),
@@ -137,17 +143,19 @@ class _TutorialScreenState extends State<TutorialScreen> {
                 ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () => _next(steps.length),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
-                  shape: const StadiumBorder(),
+          ContentWidth(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => _next(steps.length),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                    shape: const StadiumBorder(),
+                  ),
+                  child: Text(last ? l.tutorialDone : l.tutorialNext),
                 ),
-                child: Text(last ? l.tutorialDone : l.tutorialNext),
               ),
             ),
           ),

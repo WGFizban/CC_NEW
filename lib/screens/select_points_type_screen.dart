@@ -7,6 +7,7 @@ import '../models/player.dart';
 import '../models/scoring.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/auto_size_text.dart';
 import '../widgets/game_icon.dart';
 import '../widgets/meeple_header.dart';
@@ -19,10 +20,18 @@ class SelectPointsTypeScreen extends StatelessWidget {
   /// Typy dostępne przy włączonych dodatkach.
   final List<ScoringType> types;
 
+  /// Czy pokazywać tytuły dodatków nad kafelkami.
+  final bool showGroupTitles;
+
+  /// Czy każdy dodatek zaczyna się od nowej linii (inaczej kafelki płyną).
+  final bool groupsOnNewLines;
+
   const SelectPointsTypeScreen({
     super.key,
     required this.player,
     required this.types,
+    this.showGroupTitles = true,
+    this.groupsOnNewLines = false,
   });
 
   /// Typy pogrupowane według dodatku: gra podstawowa pierwsza, potem dodatki
@@ -44,41 +53,105 @@ class SelectPointsTypeScreen extends StatelessWidget {
     ];
   }
 
-  List<Widget> _buildGroup(
-    BuildContext context,
-    String title,
-    List<ScoringType> group,
-  ) {
-    return [
-      Padding(
-        padding: const EdgeInsets.only(top: 8, bottom: 8),
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
-          ),
+  /// Wysokość miejsca na tytuł grupy nad kafelkami (dwie linie).
+  static const double _titleHeight = 40;
+  static const double _gap = 12;
+
+  /// Domyślnie grupy płyną jedna za drugą w tych samych rzędach (przy
+  /// [groupsOnNewLines] każda zaczyna nową linię): dodatek z jednym
+  /// kafelkiem zajmuje jedno miejsce i ma tytuł nad sobą, a większy (np. cyrk)
+  /// zajmuje kilka. Kolejna grupa zaczyna się zaraz za ostatnim kafelkiem
+  /// poprzedniej, jeśli w rzędzie jest jeszcze miejsce.
+  Widget _buildFlow(BuildContext context, double width, AppLocalizations l) {
+    // Co najmniej trzy kolumny (telefon w pionie); na szerszym ekranie przybywa
+    // kolumn zamiast rozciągania kafelków.
+    final cols = ((width + _gap) / (130 + _gap)).floor().clamp(3, 12);
+    final tile = (width - _gap * (cols - 1)) / cols;
+    final primary = Theme.of(context).colorScheme.primary;
+
+    Widget chunk(String? title, List<ScoringType> types) {
+      final w = types.length * tile + (types.length - 1) * _gap;
+      return SizedBox(
+        width: w,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title != null)
+              SizedBox(
+                // Tytuł jest wyśrodkowany nad pierwszym kafelkiem grupy.
+                width: tile,
+                height: _titleHeight,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.15,
+                      fontWeight: FontWeight.bold,
+                      color: primary,
+                    ),
+                  ),
+                  ),
+                ),
+              ),
+            Wrap(
+              spacing: _gap,
+              children: [
+                for (final type in types)
+                  SizedBox(
+                    width: tile,
+                    height: tile,
+                    child: _TypeButton(
+                      type: type,
+                      onTap: () => Navigator.pop(context, type),
+                    ),
+                  ),
+              ],
+            ),
+          ],
         ),
+      );
+    }
+
+    final chunks = <Widget>[];
+    for (final (title, group) in _groups(l)) {
+      for (var i = 0; i < group.length; i += cols) {
+        chunks.add(
+          chunk(
+            i == 0 && showGroupTitles ? title : null,
+            group.sublist(i, (i + cols).clamp(0, group.length)),
+          ),
+        );
+      }
+      // Pusty element na całą szerokość wymusza początek kolejnego dodatku
+      // w nowej linii.
+      if (groupsOnNewLines) chunks.add(SizedBox(width: width));
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Wrap(
+        spacing: _gap,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.end,
+        children: chunks,
       ),
-      GridView.count(
-        crossAxisCount: 3,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          for (final type in group)
-            _TypeButton(type: type, onTap: () => Navigator.pop(context, type)),
-        ],
-      ),
-    ];
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
     final color = player.color;
+    // W poziomie na telefonie wysokość jest mała, więc oszczędzamy miejsce na
+    // kafelki: bez osobnego nagłówka „Wybierz rodzaj punktacji”.
+    final compact = MediaQuery.sizeOf(context).height < 480;
 
     return Scaffold(
       // Ramka w kolorze gracza obejmuje cały ekran, razem z tytułem;
@@ -93,29 +166,39 @@ class SelectPointsTypeScreen extends StatelessWidget {
               width: 4,
             ),
           ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
+          padding: EdgeInsets.all(compact ? 8 : 16),
+          child: ContentWidth(
+            child: Column(
             children: [
               MeepleHeader(
                 color: color,
-                size: 44,
+                size: compact ? 32 : 44,
                 child: AppBarTitle(
-                  l.addPointsTitle(player.name),
+                  // Niski ekran: tytuł w jednym wierszu, żeby zostało miejsce
+                  // na kafelki.
+                  compact
+                      ? l.addPointsTitle(player.name).replaceAll('\n', ' ')
+                      : l.addPointsTitle(player.name),
+                  maxLines: compact ? 1 : 2,
                   textAlign: TextAlign.center,
                 ),
               ),
+              SizedBox(height: compact ? 8 : 16),
+            if (!compact) ...[
+              Text(
+                l.chooseScoring,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 16),
-            Text(
-              l.chooseScoring,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
+            ],
             Expanded(
-              child: ListView(
-                children: [
-                  for (final group in _groups(l))
-                    ..._buildGroup(context, group.$1, group.$2),
-                ],
+              child: LayoutBuilder(
+                builder: (context, c) => ListView(
+                  children: [_buildFlow(context, c.maxWidth, l)],
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -126,7 +209,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
                 style: FilledButton.styleFrom(
                   backgroundColor: kCancelColor,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(52),
+                  minimumSize: Size.fromHeight(compact ? 40 : 52),
                   shape: const StadiumBorder(),
                   textStyle: const TextStyle(
                     fontSize: 18,
@@ -137,6 +220,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
         ),
       ),

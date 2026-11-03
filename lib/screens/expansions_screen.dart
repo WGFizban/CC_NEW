@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 import '../l10n/labels.dart';
 import '../models/expansion.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/info_hint.dart';
 
 /// Wybór dodatków. Zmiany są zgłaszane od razu przez [onChanged]. Po
@@ -55,7 +56,7 @@ class _ExpansionsScreenState extends State<ExpansionsScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l.expansionsSection)),
-      body: ListView(
+      body: ContentWidth(child: ListView(
         children: [
           if (locked)
             Padding(
@@ -84,7 +85,7 @@ class _ExpansionsScreenState extends State<ExpansionsScreen> {
               onChanged: locked ? null : (on) => _setExpansion(e, on),
             ),
         ],
-      ),
+      )),
     );
   }
 }

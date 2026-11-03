@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../widgets/adaptive_layout.dart';
 import '../l10n/labels.dart';
 import '../models/expansion.dart';
 
@@ -45,7 +46,7 @@ class RulesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l.rulesTitle)),
-      body: ListView(
+      body: ContentWidth(child: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
@@ -54,7 +55,7 @@ class RulesScreen extends StatelessWidget {
           section(l.baseGame, l.rulesBase, open: true),
           for (final e in expansions) section(e.title(l), _rules(l, e)),
         ],
-      ),
+      )),
     );
   }
 }

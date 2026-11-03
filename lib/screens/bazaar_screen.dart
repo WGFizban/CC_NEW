@@ -5,6 +5,7 @@ import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../theme/app_theme.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/number_keypad.dart';
@@ -106,77 +107,93 @@ class _BazaarScreenState extends State<BazaarScreen> {
               right: frameSide,
             ),
           ),
-          child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(
-            l.whoPickedTile,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // W poziomie klawiatura stoi w panelu obok formularza.
+              final side = useSideKeypad(constraints);
+              final keypad = NumberKeypad(
+                onKey: (key) =>
+                    setState(() => _price = applyKey(_price, key, max: 9999)),
+              );
+              final list = ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Text(
+                    l.whoPickedTile,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  PlayerPicker(
+                    players: widget.players,
+                    selected: _chooser,
+                    onSelected: (p) => setState(() {
+                      _chooser = p;
+                      if (_bidder == p) _bidder = null;
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  LabelWithHint(
+                    l.auctionSettledQ,
+                    l.auctionHint,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<_Deal>(
+                    segments: [
+                      ButtonSegment(
+                        value: _Deal.buy,
+                        label: Text(l.dealBuys),
+                      ),
+                      ButtonSegment(
+                        value: _Deal.sell,
+                        label: Text(l.dealSells),
+                      ),
+                      ButtonSegment(
+                        value: _Deal.solo,
+                        label: Text(l.dealSole),
+                      ),
+                    ],
+                    selected: {_deal},
+                    onSelectionChanged: (s) => setState(() => _deal = s.first),
+                  ),
+                  if (_needsBidder) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      l.whoOfferedHighest,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    PlayerPicker(
+                      players: widget.players,
+                      selected: _bidder,
+                      exclude: _chooser,
+                      onSelected: (p) => setState(() => _bidder = p),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  Center(
+                    child: Text(
+                      l.priceValue(_price),
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(child: Text(_description, textAlign: TextAlign.center)),
+                  const SizedBox(height: 12),
+                  if (!side) keypad,
+                ],
+              );
+              if (side) {
+                return Row(
+                  children: [
+                    Expanded(child: ContentWidth(child: list)),
+                    SideKeypadPanel(child: Center(child: keypad)),
+                  ],
+                );
+              }
+              return ContentWidth(child: list);
+            },
           ),
-          const SizedBox(height: 8),
-          PlayerPicker(
-            players: widget.players,
-            selected: _chooser,
-            onSelected: (p) => setState(() {
-              _chooser = p;
-              if (_bidder == p) _bidder = null;
-            }),
-          ),
-          const SizedBox(height: 16),
-          LabelWithHint(
-            l.auctionSettledQ,
-            l.auctionHint,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          SegmentedButton<_Deal>(
-            segments: [
-              ButtonSegment(
-                value: _Deal.buy,
-                label: Text(l.dealBuys),
-              ),
-              ButtonSegment(
-                value: _Deal.sell,
-                label: Text(l.dealSells),
-              ),
-              ButtonSegment(
-                value: _Deal.solo,
-                label: Text(l.dealSole),
-              ),
-            ],
-            selected: {_deal},
-            onSelectionChanged: (s) => setState(() => _deal = s.first),
-          ),
-          if (_needsBidder) ...[
-            const SizedBox(height: 16),
-            Text(
-              l.whoOfferedHighest,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            PlayerPicker(
-              players: widget.players,
-              selected: _bidder,
-              exclude: _chooser,
-              onSelected: (p) => setState(() => _bidder = p),
-            ),
-          ],
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              l.priceValue(_price),
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Center(child: Text(_description, textAlign: TextAlign.center)),
-          const SizedBox(height: 12),
-          NumberKeypad(
-            onKey: (key) =>
-                setState(() => _price = applyKey(_price, key, max: 9999)),
-          ),
-        ],
-      ),
         ),
       ),
     );

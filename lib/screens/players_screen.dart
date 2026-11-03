@@ -20,6 +20,7 @@ import '../services/players_storage.dart';
 import '../services/settings_storage.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/game_dialogs.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/meeple_icon.dart';
@@ -248,6 +249,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
         builder: (_) => SelectPointsTypeScreen(
           player: player,
           types: ScoringType.selectableFor(_settings.expansions),
+          showGroupTitles: _settings.showGroupTitles,
+          groupsOnNewLines: _settings.groupsOnNewLines,
         ),
       ),
     );
@@ -554,11 +557,15 @@ class _PlayersScreenState extends State<PlayersScreen> {
       MaterialPageRoute(
         builder: (_) => SettingsScreen(
           keepScreenOn: _settings.keepScreenOn,
+          showGroupTitles: _settings.showGroupTitles,
+          groupsOnNewLines: _settings.groupsOnNewLines,
           themeMode: _settings.themeMode,
           language: _settings.language,
           onChanged: (values) {
             setState(() {
               _settings.keepScreenOn = values.keepScreenOn;
+              _settings.showGroupTitles = values.showGroupTitles;
+              _settings.groupsOnNewLines = values.groupsOnNewLines;
               _settings.themeMode = values.themeMode;
               _settings.language = values.language;
             });
@@ -650,6 +657,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final showStart = _inSetup && canStartGame(_players.length);
+    // Na szerokim ekranie (tablet, poziom) lista i przyciski mają ograniczoną
+    // szerokość i są wyśrodkowane, zamiast rozciągać się na cały ekran.
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final wide = screenWidth > kMaxContentWidth;
+    // Gdy po bokach listy jest dość miejsca na przyciski, stoją przy krawędziach
+    // ekranu, poza listą, i nie zasłaniają wierszy graczy.
+    final buttonsOutside = screenWidth >= kMaxContentWidth + 2 * 88;
 
     return Scaffold(
       appBar: AppBar(
@@ -661,9 +675,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
           ),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: wide && !buttonsOutside
+          ? FloatingActionButtonLocation.centerFloat
+          : FloatingActionButtonLocation.endFloat,
       floatingActionButton: SizedBox(
-        width: double.infinity,
+        width: wide && !buttonsOutside ? kMaxContentWidth : double.infinity,
         child: Padding(
           padding: const EdgeInsets.only(left: 32),
           child: Row(
@@ -717,7 +733,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 ),
               ),
             )
-          : ListView.builder(
+          : ContentWidth(
+              child: ListView.builder(
               padding: const EdgeInsets.only(bottom: 88),
               itemCount: _players.length + 1,
               itemBuilder: (context, index) {
@@ -746,6 +763,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 }
                 return const SizedBox.shrink();
               },
+            ),
             ),
     );
   }

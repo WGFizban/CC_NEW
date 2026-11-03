@@ -385,6 +385,22 @@ void main() {
       expect(restored.keepScreenOn, isFalse);
     });
 
+    test('ekran rodzaju punktacji: domyślne i zapamiętane ustawienia', () async {
+      SharedPreferences.setMockInitialValues({});
+      final storage = SettingsStorage();
+
+      final defaults = await storage.load();
+      expect(defaults.showGroupTitles, isTrue);
+      expect(defaults.groupsOnNewLines, isFalse);
+
+      await storage.save(
+        GameSettings(showGroupTitles: false, groupsOnNewLines: true),
+      );
+      final restored = await storage.load();
+      expect(restored.showGroupTitles, isFalse);
+      expect(restored.groupsOnNewLines, isTrue);
+    });
+
     test('stary zapis: wróżka, katedra i karczma zostają włączone, nowe są '
         'wyłączone', () async {
       // Zapis sprzed wprowadzenia dodatków: wybrany tylko cyrk.

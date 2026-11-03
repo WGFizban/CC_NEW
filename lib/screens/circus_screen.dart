@@ -7,6 +7,7 @@ import '../models/player.dart';
 import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../theme/app_theme.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
@@ -94,7 +95,7 @@ class _CircusScreenState extends State<CircusScreen> {
               right: frameSide,
             ),
           ),
-          child: ListView(
+          child: ContentWidth(child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
@@ -146,7 +147,7 @@ class _CircusScreenState extends State<CircusScreen> {
               onChanged: (v) => setState(() => _meeples[p] = v),
             ),
         ],
-      ),
+      )),
         ),
       ),
     );

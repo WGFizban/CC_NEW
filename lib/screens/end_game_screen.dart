@@ -5,6 +5,7 @@ import '../models/expansion.dart';
 import '../models/history_entry.dart';
 import '../models/player.dart';
 import '../models/standings.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/player_label.dart';
 import '../widgets/game_dialogs.dart';
 import 'summary_screen.dart';
@@ -47,7 +48,7 @@ class EndGameScreen extends StatelessWidget {
         ),
         body: players.isEmpty
             ? Center(child: Text(l.noPlayersDot))
-            : ListView(
+            : ContentWidth(child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
                   _winnerBanner(context, winners, best),
@@ -79,7 +80,7 @@ class EndGameScreen extends StatelessWidget {
                     label: Text(l.newGame),
                   ),
                 ],
-              ),
+              )),
       ),
     );
   }

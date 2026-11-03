@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_language.dart';
 import '../l10n/l10n.dart';
+import '../widgets/adaptive_layout.dart';
 
 /// Zestaw ustawień zgłaszany przez [SettingsScreen].
 typedef SettingsValues = ({
   bool keepScreenOn,
+  bool showGroupTitles,
+  bool groupsOnNewLines,
   ThemeMode themeMode,
   AppLanguage language,
 });
@@ -14,6 +17,8 @@ typedef SettingsValues = ({
 /// od razu przez [onChanged], a ekran tylko pokazuje przełączniki.
 class SettingsScreen extends StatefulWidget {
   final bool keepScreenOn;
+  final bool showGroupTitles;
+  final bool groupsOnNewLines;
   final ThemeMode themeMode;
   final AppLanguage language;
 
@@ -22,6 +27,8 @@ class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
     super.key,
     required this.keepScreenOn,
+    required this.showGroupTitles,
+    required this.groupsOnNewLines,
     required this.themeMode,
     required this.language,
     required this.onChanged,
@@ -33,14 +40,25 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late bool _keepScreenOn = widget.keepScreenOn;
+  late bool _showGroupTitles = widget.showGroupTitles;
+  late bool _groupsOnNewLines = widget.groupsOnNewLines;
   late ThemeMode _themeMode = widget.themeMode;
   late AppLanguage _language = widget.language;
 
   void _notify() => widget.onChanged((
     keepScreenOn: _keepScreenOn,
+    showGroupTitles: _showGroupTitles,
+    groupsOnNewLines: _groupsOnNewLines,
     themeMode: _themeMode,
     language: _language,
   ));
+
+  /// Etykieta segmentu w jednej linii; przy bardzo wąskim ekranie zmniejsza się
+  /// zamiast łamać słowo.
+  Widget _oneLine(String text) => FittedBox(
+    fit: BoxFit.scaleDown,
+    child: Text(text, maxLines: 1, softWrap: false),
+  );
 
   Widget _header(String text) {
     return Padding(
@@ -62,7 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l.settings)),
-      body: ListView(
+      body: ContentWidth(child: ListView(
         children: [
           _header(l.appearance),
           Padding(
@@ -75,21 +93,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<ThemeMode>(
+                    // Ikona zaznaczenia i ikony motywów zabierały miejsce, przez
+                    // co na wąskim telefonie „Systemowy" łamał się do nowej linii.
+                    showSelectedIcon: false,
                     segments: [
                       ButtonSegment(
                         value: ThemeMode.system,
-                        icon: const Icon(Icons.brightness_auto),
-                        label: Text(l.themeSystem),
+                        label: _oneLine(l.themeSystem),
                       ),
                       ButtonSegment(
                         value: ThemeMode.light,
-                        icon: const Icon(Icons.light_mode),
-                        label: Text(l.themeLight),
+                        label: _oneLine(l.themeLight),
                       ),
                       ButtonSegment(
                         value: ThemeMode.dark,
-                        icon: const Icon(Icons.dark_mode),
-                        label: Text(l.themeDark),
+                        label: _oneLine(l.themeDark),
                       ),
                     ],
                     selected: {_themeMode},
@@ -105,6 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<AppLanguage>(
+                    showSelectedIcon: false,
                     segments: [
                       for (final l in AppLanguage.values)
                         ButtonSegment(value: l, label: Text(l.nativeName)),
@@ -130,8 +149,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _notify();
             },
           ),
+          const Divider(),
+          _header(l.typeScreenSection),
+          SwitchListTile(
+            title: Text(l.showGroupTitles),
+            value: _showGroupTitles,
+            onChanged: (on) {
+              setState(() => _showGroupTitles = on);
+              _notify();
+            },
+          ),
+          SwitchListTile(
+            title: Text(l.groupsOnNewLines),
+            subtitle: Text(l.groupsOnNewLinesHint),
+            value: _groupsOnNewLines,
+            onChanged: (on) {
+              setState(() => _groupsOnNewLines = on);
+              _notify();
+            },
+          ),
         ],
-      ),
+      )),
     );
   }
 }

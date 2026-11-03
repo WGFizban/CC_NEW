@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../l10n/l10n.dart';
+import '../widgets/adaptive_layout.dart';
 import '../models/app_version.dart';
 
 /// Autor aplikacji (pokazywany na ekranie „Info o aplikacji").
@@ -28,7 +29,7 @@ class AboutScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l.aboutTitle)),
-      body: ListView(
+      body: ContentWidth(child: ListView(
         padding: const EdgeInsets.all(24),
         children: [
           Center(
@@ -82,7 +83,7 @@ class AboutScreen extends StatelessWidget {
             label: Text(l.aboutLicenses),
           ),
         ],
-      ),
+      )),
     );
   }
 }

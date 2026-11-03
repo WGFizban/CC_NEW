@@ -6,6 +6,7 @@ import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../models/sheep.dart';
 import '../theme/app_theme.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/info_hint.dart';
@@ -79,7 +80,7 @@ class _FlockScreenState extends State<FlockScreen> {
               right: frameSide,
             ),
           ),
-          child: ListView(
+          child: ContentWidth(child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           LabelWithHint(
@@ -150,7 +151,7 @@ class _FlockScreenState extends State<FlockScreen> {
             ],
           ),
         ],
-      ),
+      )),
         ),
       ),
     );
