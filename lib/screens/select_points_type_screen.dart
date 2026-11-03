@@ -100,15 +100,20 @@ class SelectPointsTypeScreen extends StatelessWidget {
               width: 4,
             ),
           ),
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(compact ? 8 : 16),
           child: ContentWidth(
             child: Column(
             children: [
               MeepleHeader(
                 color: color,
-                size: 44,
+                size: compact ? 32 : 44,
                 child: AppBarTitle(
-                  l.addPointsTitle(player.name),
+                  // Niski ekran: tytuł w jednym wierszu, żeby zostało miejsce
+                  // na kafelki.
+                  compact
+                      ? l.addPointsTitle(player.name).replaceAll('\n', ' ')
+                      : l.addPointsTitle(player.name),
+                  maxLines: compact ? 1 : 2,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -139,7 +144,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
                 style: FilledButton.styleFrom(
                   backgroundColor: kCancelColor,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(52),
+                  minimumSize: Size.fromHeight(compact ? 40 : 52),
                   shape: const StadiumBorder(),
                   textStyle: const TextStyle(
                     fontSize: 18,
