@@ -151,20 +151,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           _header(l.typeScreenSection),
-          CheckboxListTile(
+          SwitchListTile(
             title: Text(l.showGroupTitles),
             value: _showGroupTitles,
             onChanged: (on) {
-              setState(() => _showGroupTitles = on ?? true);
+              setState(() => _showGroupTitles = on);
               _notify();
             },
           ),
-          CheckboxListTile(
+          SwitchListTile(
             title: Text(l.groupsOnNewLines),
             subtitle: Text(l.groupsOnNewLinesHint),
             value: _groupsOnNewLines,
             onChanged: (on) {
-              setState(() => _groupsOnNewLines = on ?? false);
+              setState(() => _groupsOnNewLines = on);
               _notify();
             },
           ),
