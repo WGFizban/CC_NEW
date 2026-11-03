@@ -75,6 +75,11 @@ class NumberKeypad extends StatelessWidget {
                           minimumSize: fitted
                               ? Size(keyWidth ?? 56, rowHeight!)
                               : null,
+                          // Domyślny obszar dotyku (48 dp) podnosiłby klawisze
+                          // ponad wyliczoną wysokość i powodował przepełnienie.
+                          tapTargetSize: fitted
+                              ? MaterialTapTargetSize.shrinkWrap
+                              : null,
                           textStyle: const TextStyle(fontSize: 18),
                           backgroundColor: _colorOf(key),
                           foregroundColor: _colorOf(key) == null
