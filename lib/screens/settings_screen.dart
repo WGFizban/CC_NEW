@@ -43,6 +43,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     language: _language,
   ));
 
+  /// Etykieta segmentu w jednej linii; przy bardzo wąskim ekranie zmniejsza się
+  /// zamiast łamać słowo.
+  Widget _oneLine(String text) => FittedBox(
+    fit: BoxFit.scaleDown,
+    child: Text(text, maxLines: 1, softWrap: false),
+  );
+
   Widget _header(String text) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
@@ -76,21 +83,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<ThemeMode>(
+                    // Ikona zaznaczenia i ikony motywów zabierały miejsce, przez
+                    // co na wąskim telefonie „Systemowy" łamał się do nowej linii.
+                    showSelectedIcon: false,
                     segments: [
                       ButtonSegment(
                         value: ThemeMode.system,
-                        icon: const Icon(Icons.brightness_auto),
-                        label: Text(l.themeSystem),
+                        label: _oneLine(l.themeSystem),
                       ),
                       ButtonSegment(
                         value: ThemeMode.light,
-                        icon: const Icon(Icons.light_mode),
-                        label: Text(l.themeLight),
+                        label: _oneLine(l.themeLight),
                       ),
                       ButtonSegment(
                         value: ThemeMode.dark,
-                        icon: const Icon(Icons.dark_mode),
-                        label: Text(l.themeDark),
+                        label: _oneLine(l.themeDark),
                       ),
                     ],
                     selected: {_themeMode},
@@ -106,6 +113,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: SegmentedButton<AppLanguage>(
+                    showSelectedIcon: false,
                     segments: [
                       for (final l in AppLanguage.values)
                         ButtonSegment(value: l, label: Text(l.nativeName)),
