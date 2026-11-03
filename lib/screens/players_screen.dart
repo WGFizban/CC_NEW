@@ -249,6 +249,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
         builder: (_) => SelectPointsTypeScreen(
           player: player,
           types: ScoringType.selectableFor(_settings.expansions),
+          showGroupTitles: _settings.showGroupTitles,
+          groupsOnNewLines: _settings.groupsOnNewLines,
         ),
       ),
     );
@@ -555,11 +557,15 @@ class _PlayersScreenState extends State<PlayersScreen> {
       MaterialPageRoute(
         builder: (_) => SettingsScreen(
           keepScreenOn: _settings.keepScreenOn,
+          showGroupTitles: _settings.showGroupTitles,
+          groupsOnNewLines: _settings.groupsOnNewLines,
           themeMode: _settings.themeMode,
           language: _settings.language,
           onChanged: (values) {
             setState(() {
               _settings.keepScreenOn = values.keepScreenOn;
+              _settings.showGroupTitles = values.showGroupTitles;
+              _settings.groupsOnNewLines = values.groupsOnNewLines;
               _settings.themeMode = values.themeMode;
               _settings.language = values.language;
             });

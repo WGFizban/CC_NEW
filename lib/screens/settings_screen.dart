@@ -7,6 +7,8 @@ import '../widgets/adaptive_layout.dart';
 /// Zestaw ustawień zgłaszany przez [SettingsScreen].
 typedef SettingsValues = ({
   bool keepScreenOn,
+  bool showGroupTitles,
+  bool groupsOnNewLines,
   ThemeMode themeMode,
   AppLanguage language,
 });
@@ -15,6 +17,8 @@ typedef SettingsValues = ({
 /// od razu przez [onChanged], a ekran tylko pokazuje przełączniki.
 class SettingsScreen extends StatefulWidget {
   final bool keepScreenOn;
+  final bool showGroupTitles;
+  final bool groupsOnNewLines;
   final ThemeMode themeMode;
   final AppLanguage language;
 
@@ -23,6 +27,8 @@ class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
     super.key,
     required this.keepScreenOn,
+    required this.showGroupTitles,
+    required this.groupsOnNewLines,
     required this.themeMode,
     required this.language,
     required this.onChanged,
@@ -34,11 +40,15 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late bool _keepScreenOn = widget.keepScreenOn;
+  late bool _showGroupTitles = widget.showGroupTitles;
+  late bool _groupsOnNewLines = widget.groupsOnNewLines;
   late ThemeMode _themeMode = widget.themeMode;
   late AppLanguage _language = widget.language;
 
   void _notify() => widget.onChanged((
     keepScreenOn: _keepScreenOn,
+    showGroupTitles: _showGroupTitles,
+    groupsOnNewLines: _groupsOnNewLines,
     themeMode: _themeMode,
     language: _language,
   ));
@@ -136,6 +146,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
             value: _keepScreenOn,
             onChanged: (on) {
               setState(() => _keepScreenOn = on);
+              _notify();
+            },
+          ),
+          const Divider(),
+          _header(l.typeScreenSection),
+          CheckboxListTile(
+            title: Text(l.showGroupTitles),
+            value: _showGroupTitles,
+            onChanged: (on) {
+              setState(() => _showGroupTitles = on ?? true);
+              _notify();
+            },
+          ),
+          CheckboxListTile(
+            title: Text(l.groupsOnNewLines),
+            subtitle: Text(l.groupsOnNewLinesHint),
+            value: _groupsOnNewLines,
+            onChanged: (on) {
+              setState(() => _groupsOnNewLines = on ?? false);
               _notify();
             },
           ),

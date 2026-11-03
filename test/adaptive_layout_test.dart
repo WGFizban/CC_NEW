@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cc_new/l10n/app_localizations.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/scoring.dart';
+import 'package:cc_new/models/expansion.dart';
 import 'package:cc_new/screens/add_points_screen.dart';
+import 'package:cc_new/screens/select_points_type_screen.dart';
 import 'package:cc_new/widgets/adaptive_layout.dart';
 import 'package:cc_new/widgets/number_keypad.dart';
 
@@ -126,5 +128,32 @@ void main() {
       await tester.pump();
       expect(find.text('Wynik: 56 pkt'), findsOneWidget);
     });
+  }
+
+  for (final newLines in [false, true]) {
+    for (final titles in [false, true]) {
+      testWidgets(
+        'wybór punktacji (nowe linie: $newLines, tytuły: $titles) bez błędów',
+        (tester) async {
+          tester.view.devicePixelRatio = 1;
+          tester.view.physicalSize = const Size(400, 800);
+          addTearDown(tester.view.reset);
+
+          await tester.pumpWidget(
+            _app(
+              SelectPointsTypeScreen(
+                player: _p('Ala'),
+                types: ScoringType.selectableFor(Expansion.values.toSet()),
+                showGroupTitles: titles,
+                groupsOnNewLines: newLines,
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
   }
 }

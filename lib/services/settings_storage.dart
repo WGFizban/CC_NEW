@@ -24,6 +24,13 @@ class GameSettings {
   /// Czy nie wygaszać ekranu, gdy aplikacja jest otwarta.
   bool keepScreenOn;
 
+  /// Czy na ekranie wyboru punktacji pokazywać tytuły dodatków nad kafelkami.
+  bool showGroupTitles;
+
+  /// Czy każdy dodatek na ekranie wyboru punktacji zaczyna się od nowej linii
+  /// (wyłączone: kafelki różnych dodatków płyną w tych samych rzędach).
+  bool groupsOnNewLines;
+
   /// Motyw aplikacji (domyślnie zgodny z systemem).
   ThemeMode themeMode;
 
@@ -45,6 +52,8 @@ class GameSettings {
     Map<CircusAnimal, int>? usedAnimals,
     Map<CrownToken, TokenHolding>? tokens,
     this.keepScreenOn = true,
+    this.showGroupTitles = true,
+    this.groupsOnNewLines = false,
     this.themeMode = ThemeMode.system,
     this.language = AppLanguage.pl,
     this.stage,
@@ -66,6 +75,8 @@ class SettingsStorage {
   static const _usedAnimalsKey = 'circus_used';
   static const _tokensKey = 'crown_tokens';
   static const _keepScreenOnKey = 'keep_screen_on';
+  static const _showGroupTitlesKey = 'show_group_titles';
+  static const _groupsOnNewLinesKey = 'groups_on_new_lines';
   static const _themeKey = 'theme_mode';
   static const _languageKey = 'language';
   static const _tutorialKey = 'tutorial_seen';
@@ -142,6 +153,8 @@ class SettingsStorage {
       usedAnimals: used,
       tokens: tokens,
       keepScreenOn: prefs.getBool(_keepScreenOnKey) ?? true,
+      showGroupTitles: prefs.getBool(_showGroupTitlesKey) ?? true,
+      groupsOnNewLines: prefs.getBool(_groupsOnNewLinesKey) ?? false,
       themeMode: ThemeMode.values.firstWhere(
         (m) => m.name == prefs.getString(_themeKey),
         orElse: () => ThemeMode.system,
@@ -168,6 +181,8 @@ class SettingsStorage {
       for (final e in Expansion.values) e.name,
     ]);
     await prefs.setBool(_keepScreenOnKey, settings.keepScreenOn);
+    await prefs.setBool(_showGroupTitlesKey, settings.showGroupTitles);
+    await prefs.setBool(_groupsOnNewLinesKey, settings.groupsOnNewLines);
     await prefs.setString(_themeKey, settings.themeMode.name);
     await prefs.setString(_languageKey, settings.language.code);
     await prefs.setBool(_tutorialKey, settings.tutorialSeen);

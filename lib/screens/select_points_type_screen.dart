@@ -20,10 +20,18 @@ class SelectPointsTypeScreen extends StatelessWidget {
   /// Typy dostępne przy włączonych dodatkach.
   final List<ScoringType> types;
 
+  /// Czy pokazywać tytuły dodatków nad kafelkami.
+  final bool showGroupTitles;
+
+  /// Czy każdy dodatek zaczyna się od nowej linii (inaczej kafelki płyną).
+  final bool groupsOnNewLines;
+
   const SelectPointsTypeScreen({
     super.key,
     required this.player,
     required this.types,
+    this.showGroupTitles = true,
+    this.groupsOnNewLines = false,
   });
 
   /// Typy pogrupowane według dodatku: gra podstawowa pierwsza, potem dodatki
@@ -49,7 +57,8 @@ class SelectPointsTypeScreen extends StatelessWidget {
   static const double _titleHeight = 40;
   static const double _gap = 12;
 
-  /// Grupy płyną jedna za drugą w tych samych rzędach: dodatek z jednym
+  /// Domyślnie grupy płyną jedna za drugą w tych samych rzędach (przy
+  /// [groupsOnNewLines] każda zaczyna nową linię): dodatek z jednym
   /// kafelkiem zajmuje jedno miejsce i ma tytuł nad sobą, a większy (np. cyrk)
   /// zajmuje kilka. Kolejna grupa zaczyna się zaraz za ostatnim kafelkiem
   /// poprzedniej, jeśli w rzędzie jest jeszcze miejsce.
@@ -116,11 +125,14 @@ class SelectPointsTypeScreen extends StatelessWidget {
       for (var i = 0; i < group.length; i += cols) {
         chunks.add(
           chunk(
-            i == 0 ? title : null,
+            i == 0 && showGroupTitles ? title : null,
             group.sublist(i, (i + cols).clamp(0, group.length)),
           ),
         );
       }
+      // Pusty element na całą szerokość wymusza początek kolejnego dodatku
+      // w nowej linii.
+      if (groupsOnNewLines) chunks.add(SizedBox(width: width));
     }
     return Padding(
       padding: const EdgeInsets.only(top: 4),
