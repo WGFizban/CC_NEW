@@ -4,6 +4,7 @@ import '../l10n/l10n.dart';
 import '../models/crown_tokens.dart';
 import '../models/player.dart';
 import '../theme/app_theme.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/number_keypad.dart';
@@ -137,31 +138,25 @@ class _CrownEndScreenState extends State<CrownEndScreen> {
           decoration: BoxDecoration(
             border: Border(top: frameSide, left: frameSide, right: frameSide),
           ),
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    LabelWithHint(
-                      l.crownEndTitle,
-                      l.crownEndBody,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    if (widget.king != null)
-                      _field(CrownToken.king, widget.king!),
-                    if (widget.robber != null)
-                      _field(CrownToken.robber, widget.robber!),
-                  ],
+          child: KeypadLayout(
+            form: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                LabelWithHint(
+                  l.crownEndTitle,
+                  l.crownEndBody,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              NumberKeypad(onKey: _onKey),
-              const SizedBox(height: 8),
-            ],
+                const SizedBox(height: 16),
+                if (widget.king != null) _field(CrownToken.king, widget.king!),
+                if (widget.robber != null)
+                  _field(CrownToken.robber, widget.robber!),
+              ],
+            ),
+            keypad: (side) => keypadBlock(side: side, onKey: _onKey),
           ),
         ),
       ),

@@ -9,6 +9,7 @@ import '../theme/app_colors.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/number_keypad.dart';
 import '../widgets/meeple_header.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 
 /// Punkty opata z klasztoru liniowego (dodatek „Klasztory niemieckie
@@ -62,42 +63,38 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
             right: frameSide,
           ),
         ),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  LabelWithHint(
-                    l.monasteryPointsLabel,
-                    l.monasteryHint,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  MeepleHeader(
-                    color: color,
-                    size: 48,
-                    child: Text(
-                      '$_points',
-                      style: const TextStyle(
-                        fontSize: 56,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
+        child: KeypadLayout(
+          form: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              LabelWithHint(
+                l.monasteryPointsLabel,
+                l.monasteryHint,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            NumberKeypad(
-              onKey: (k) => setState(
-                () => _points = applyKey(_points, k, max: kMaxMonasteryPoints),
+              const SizedBox(height: 16),
+              MeepleHeader(
+                color: color,
+                size: 48,
+                child: Text(
+                  '$_points',
+                  style: const TextStyle(
+                    fontSize: 56,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
+            ],
+          ),
+          keypad: (side) => keypadBlock(
+            side: side,
+            onKey: (k) => setState(
+              () => _points = applyKey(_points, k, max: kMaxMonasteryPoints),
             ),
-            const SizedBox(height: 8),
-          ],
+          ),
         ),
       ),
       ),

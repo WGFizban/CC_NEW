@@ -39,34 +39,56 @@ class NumberKeypad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (final row in _keys)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              for (final key in row)
-                Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: ElevatedButton(
-                    onPressed: () => onKey(key),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 20,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // W ograniczonej wysokości (panel z boku w poziomie) klawisze dopasowują
+        // się do miejsca: wypełniają panel, ale nie rosną bez końca. W pionie
+        // wysokość jest nieograniczona i wygląd zostaje taki jak dotąd.
+        final fitted = constraints.hasBoundedHeight;
+        final rowHeight = fitted
+            ? ((constraints.maxHeight - 8 * _keys.length) / _keys.length).clamp(
+                34.0,
+                56.0,
+              )
+            : null;
+        final keyWidth = fitted && constraints.hasBoundedWidth
+            ? ((constraints.maxWidth - 16 - 8 * 3) / 3).clamp(56.0, 96.0)
+            : null;
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final row in _keys)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (final key in row)
+                    Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ElevatedButton(
+                        onPressed: () => onKey(key),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            vertical: fitted ? 0 : 12,
+                            horizontal: 20,
+                          ),
+                          minimumSize: fitted
+                              ? Size(keyWidth ?? 56, rowHeight!)
+                              : null,
+                          textStyle: const TextStyle(fontSize: 18),
+                          backgroundColor: _colorOf(key),
+                          foregroundColor: _colorOf(key) == null
+                              ? null
+                              : foregroundOn(_colorOf(key)!),
+                        ),
+                        child: Text(key),
                       ),
-                      textStyle: const TextStyle(fontSize: 18),
-                      backgroundColor: _colorOf(key),
-                      foregroundColor: _colorOf(key) == null
-                          ? null
-                          : foregroundOn(_colorOf(key)!),
                     ),
-                    child: Text(key),
-                  ),
-                ),
-            ],
-          ),
-      ],
+                ],
+              ),
+          ],
+        );
+      },
     );
   }
 }

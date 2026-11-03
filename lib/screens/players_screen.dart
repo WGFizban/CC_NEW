@@ -20,6 +20,7 @@ import '../services/players_storage.dart';
 import '../services/settings_storage.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/game_dialogs.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/meeple_icon.dart';
@@ -650,6 +651,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final showStart = _inSetup && canStartGame(_players.length);
+    // Na szerokim ekranie (tablet, poziom) lista i przyciski mają ograniczoną
+    // szerokość i są wyśrodkowane, zamiast rozciągać się na cały ekran.
+    final wide = MediaQuery.sizeOf(context).width > kMaxContentWidth;
 
     return Scaffold(
       appBar: AppBar(
@@ -661,9 +665,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
           ),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: wide
+          ? FloatingActionButtonLocation.centerFloat
+          : FloatingActionButtonLocation.endFloat,
       floatingActionButton: SizedBox(
-        width: double.infinity,
+        width: wide ? kMaxContentWidth : double.infinity,
         child: Padding(
           padding: const EdgeInsets.only(left: 32),
           child: Row(
@@ -717,7 +723,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 ),
               ),
             )
-          : ListView.builder(
+          : ContentWidth(
+              child: ListView.builder(
               padding: const EdgeInsets.only(bottom: 88),
               itemCount: _players.length + 1,
               itemBuilder: (context, index) {
@@ -746,6 +753,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 }
                 return const SizedBox.shrink();
               },
+            ),
             ),
     );
   }

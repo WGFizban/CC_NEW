@@ -17,6 +17,7 @@ import '../models/sheep.dart';
 import '../models/standings.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/token_dialogs.dart';
 import '../widgets/counter_stepper.dart';
@@ -431,71 +432,93 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             right: frameSide,
           ),
         ),
-        child: Column(
-          children: [
-            // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.
-            if (!neutral && _type != ScoringType.goods)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                child: MeepleHeader(
-                  color: color,
-                  child: Column(
-                    children: [
-                      Text(
-                        l.scoreLabel(points),
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if (distribution.length > 1)
-                        // Pod wynikiem: mepel w kolorze gracza i jego punkty
-                        // z podziału (współdzielenie, zamek).
-                        Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: PlayerLabels(
-                            alignment: WrapAlignment.center,
-                            items: [
-                              for (final e in distribution.entries)
-                                if (e.key != widget.player)
-                                  (
-                                    player: e.key,
-                                    text: '${e.key.name} +${e.value}',
-                                  ),
-                            ],
-                            empty: '',
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // W poziomie na szerokim ekranie klawiatura stoi w panelu obok
+            // formularza (jest wtedy zawsze widoczna), a nie pod nim.
+            final side = _usesKeypad && useSideKeypad(constraints);
+            final form = Column(
+              children: [
+                // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.
+                if (!neutral && _type != ScoringType.goods)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    child: MeepleHeader(
+                      color: color,
+                      child: Column(
+                        children: [
+                          Text(
+                            l.scoreLabel(points),
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                    ],
+                          if (distribution.length > 1)
+                            // Pod wynikiem: mepel w kolorze gracza i jego
+                            // punkty z podziału (współdzielenie, zamek).
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: PlayerLabels(
+                                alignment: WrapAlignment.center,
+                                items: [
+                                  for (final e in distribution.entries)
+                                    if (e.key != widget.player)
+                                      (
+                                        player: e.key,
+                                        text: '${e.key.name} +${e.value}',
+                                      ),
+                                ],
+                                empty: '',
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                Expanded(
+                  // Stuknięcie w puste miejsce zwija klawiaturę (tylko pod
+                  // formularzem). Kontrolki (pola, checkboxy) obsługują
+                  // stuknięcie same i jej nie chowają.
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: _keypadVisible && !side
+                        ? () => setState(() => _keypadOpen = false)
+                        : null,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          ..._buildInputs(),
+                          if (_castleOk) ..._buildCastleMode(),
+                          if (_showFairy) ..._buildFairy(),
+                          if (_showRingmaster) ..._buildRingmaster(),
+                          if (_showSharing) _buildSharing(),
+                          if (_showGold) _buildGold(),
+                          if (_showGoods) _buildGoods(),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            Expanded(
-              // Stuknięcie w puste miejsce zwija klawiaturę. Kontrolki
-              // (pola, checkboxy) obsługują stuknięcie same i jej nie chowają.
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: _keypadVisible
-                    ? () => setState(() => _keypadOpen = false)
-                    : null,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      ..._buildInputs(),
-                      if (_castleOk) ..._buildCastleMode(),
-                      if (_showFairy) ..._buildFairy(),
-                      if (_showRingmaster) ..._buildRingmaster(),
-                      if (_showSharing) _buildSharing(),
-                      if (_showGold) _buildGold(),
-                      if (_showGoods) _buildGoods(),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            _buildKeypadPanel(),
-          ],
+              ],
+            );
+
+            if (side) {
+              return Row(
+                children: [
+                  Expanded(child: ContentWidth(child: form)),
+                  SideKeypadPanel(child: _buildKeypadContent(side: true)),
+                ],
+              );
+            }
+            return Column(
+              children: [
+                Expanded(child: ContentWidth(child: form)),
+                _buildKeypadPanel(),
+              ],
+            );
+          },
         ),
       ),
       ),
@@ -521,26 +544,78 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               ),
               child: SafeArea(
                 top: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                        tooltip: context.l10n.collapseKeypad,
-                        visualDensity: VisualDensity.compact,
-                        iconSize: 24,
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                        onPressed: () => setState(() => _keypadOpen = false),
-                      ),
-                    ),
-                    NumberKeypad(onKey: _onKey),
-                    const SizedBox(height: 8),
-                  ],
-                ),
+                child: _buildKeypadContent(side: false),
               ),
             )
           : const SizedBox(width: double.infinity),
+    );
+  }
+
+  /// Zawartość panelu klawiatury: pasek (przełącznik pola i przycisk zwijania)
+  /// oraz klawisze. Pod formularzem ([side] = false) panel można zwinąć,
+  /// a w panelu z boku jest zawsze widoczny, więc przycisku zwijania nie ma.
+  Widget _buildKeypadContent({required bool side}) {
+    final showSwitch = _type == ScoringType.city;
+    final header = showSwitch || !side
+        ? Row(
+            children: [
+              if (showSwitch)
+                Padding(
+                  padding: const EdgeInsets.only(left: 12),
+                  child: _buildFieldSwitch(),
+                ),
+              const Spacer(),
+              if (!side)
+                IconButton(
+                  tooltip: context.l10n.collapseKeypad,
+                  visualDensity: VisualDensity.compact,
+                  iconSize: 24,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  onPressed: () => setState(() => _keypadOpen = false),
+                ),
+            ],
+          )
+        : const SizedBox.shrink();
+
+    if (side) {
+      return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: header,
+          ),
+          Expanded(child: Center(child: NumberKeypad(onKey: _onKey))),
+          const SizedBox(height: 8),
+        ],
+      );
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        header,
+        NumberKeypad(onKey: _onKey),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  /// Przełącznik pola, które wypełnia klawiatura (miasto: płytki lub
+  /// sztandary). Leży w pustym lewym rogu paska nad klawiszami, więc nie
+  /// zmienia układu, a pozwala przeskakiwać między polami bez sięgania wyżej.
+  Widget _buildFieldSwitch() {
+    final l = context.l10n;
+    return SegmentedButton<_Field>(
+      showSelectedIcon: false,
+      style: const ButtonStyle(
+        visualDensity: VisualDensity.compact,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      segments: [
+        ButtonSegment(value: _Field.tiles, label: Text(l.tiles)),
+        ButtonSegment(value: _Field.banners, label: Text(l.pennants)),
+      ],
+      selected: {_active == _Field.banners ? _Field.banners : _Field.tiles},
+      onSelectionChanged: (s) => setState(() => _active = s.first),
     );
   }
 

@@ -7,6 +7,7 @@ import '../models/player.dart';
 import '../models/scoring.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/auto_size_text.dart';
 import '../widgets/game_icon.dart';
 import '../widgets/meeple_header.dart';
@@ -61,8 +62,11 @@ class SelectPointsTypeScreen extends StatelessWidget {
           ),
         ),
       ),
-      GridView.count(
-        crossAxisCount: 3,
+      // Kafelki mają stały maksymalny rozmiar: na telefonie w pionie są
+      // trzy w rzędzie, a na szerszym ekranie (poziom, tablet) przybywa kolumn
+      // zamiast rozciągania kafelków.
+      GridView.extent(
+        maxCrossAxisExtent: 130,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
         shrinkWrap: true,
@@ -79,6 +83,9 @@ class SelectPointsTypeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final color = player.color;
+    // W poziomie na telefonie wysokość jest mała, więc oszczędzamy miejsce na
+    // kafelki: bez osobnego nagłówka „Wybierz rodzaj punktacji”.
+    final compact = MediaQuery.sizeOf(context).height < 480;
 
     return Scaffold(
       // Ramka w kolorze gracza obejmuje cały ekran, razem z tytułem;
@@ -94,7 +101,8 @@ class SelectPointsTypeScreen extends StatelessWidget {
             ),
           ),
           padding: const EdgeInsets.all(16),
-          child: Column(
+          child: ContentWidth(
+            child: Column(
             children: [
               MeepleHeader(
                 color: color,
@@ -104,12 +112,17 @@ class SelectPointsTypeScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
+              SizedBox(height: compact ? 8 : 16),
+            if (!compact) ...[
+              Text(
+                l.chooseScoring,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 16),
-            Text(
-              l.chooseScoring,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
+            ],
             Expanded(
               child: ListView(
                 children: [
@@ -137,6 +150,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
         ),
       ),

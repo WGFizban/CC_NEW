@@ -6,6 +6,7 @@ import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../models/tower.dart';
 import '../theme/app_theme.dart';
+import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/player_picker.dart';
@@ -76,7 +77,7 @@ class _TowerScreenState extends State<TowerScreen> {
               right: frameSide,
             ),
           ),
-          child: ListView(
+          child: ContentWidth(child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
@@ -132,7 +133,7 @@ class _TowerScreenState extends State<TowerScreen> {
               ),
             ),
         ],
-      ),
+      )),
         ),
       ),
     );
