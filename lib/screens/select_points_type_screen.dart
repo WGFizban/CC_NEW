@@ -45,38 +45,86 @@ class SelectPointsTypeScreen extends StatelessWidget {
     ];
   }
 
-  List<Widget> _buildGroup(
-    BuildContext context,
-    String title,
-    List<ScoringType> group,
-  ) {
-    return [
-      Padding(
-        padding: const EdgeInsets.only(top: 8, bottom: 8),
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
-          ),
+  /// Wysokość miejsca na tytuł grupy nad kafelkami (dwie linie).
+  static const double _titleHeight = 34;
+  static const double _gap = 12;
+
+  /// Grupy płyną jedna za drugą w tych samych rzędach: dodatek z jednym
+  /// kafelkiem zajmuje jedno miejsce i ma tytuł nad sobą, a większy (np. cyrk)
+  /// zajmuje kilka. Kolejna grupa zaczyna się zaraz za ostatnim kafelkiem
+  /// poprzedniej, jeśli w rzędzie jest jeszcze miejsce.
+  Widget _buildFlow(BuildContext context, double width, AppLocalizations l) {
+    // Co najmniej trzy kolumny (telefon w pionie); na szerszym ekranie przybywa
+    // kolumn zamiast rozciągania kafelków.
+    final cols = ((width + _gap) / (130 + _gap)).floor().clamp(3, 12);
+    final tile = (width - _gap * (cols - 1)) / cols;
+    final primary = Theme.of(context).colorScheme.primary;
+
+    Widget chunk(String? title, List<ScoringType> types) {
+      final w = types.length * tile + (types.length - 1) * _gap;
+      return SizedBox(
+        width: w,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title != null)
+              SizedBox(
+                height: _titleHeight,
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.15,
+                      fontWeight: FontWeight.bold,
+                      color: primary,
+                    ),
+                  ),
+                ),
+              ),
+            Wrap(
+              spacing: _gap,
+              children: [
+                for (final type in types)
+                  SizedBox(
+                    width: tile,
+                    height: tile,
+                    child: _TypeButton(
+                      type: type,
+                      onTap: () => Navigator.pop(context, type),
+                    ),
+                  ),
+              ],
+            ),
+          ],
         ),
+      );
+    }
+
+    final chunks = <Widget>[];
+    for (final (title, group) in _groups(l)) {
+      for (var i = 0; i < group.length; i += cols) {
+        chunks.add(
+          chunk(
+            i == 0 ? title : null,
+            group.sublist(i, (i + cols).clamp(0, group.length)),
+          ),
+        );
+      }
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Wrap(
+        spacing: _gap,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.end,
+        children: chunks,
       ),
-      // Kafelki mają stały maksymalny rozmiar: na telefonie w pionie są
-      // trzy w rzędzie, a na szerszym ekranie (poziom, tablet) przybywa kolumn
-      // zamiast rozciągania kafelków.
-      GridView.extent(
-        maxCrossAxisExtent: 130,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          for (final type in group)
-            _TypeButton(type: type, onTap: () => Navigator.pop(context, type)),
-        ],
-      ),
-    ];
+    );
   }
 
   @override
@@ -129,11 +177,10 @@ class SelectPointsTypeScreen extends StatelessWidget {
               const SizedBox(height: 16),
             ],
             Expanded(
-              child: ListView(
-                children: [
-                  for (final group in _groups(l))
-                    ..._buildGroup(context, group.$1, group.$2),
-                ],
+              child: LayoutBuilder(
+                builder: (context, c) => ListView(
+                  children: [_buildFlow(context, c.maxWidth, l)],
+                ),
               ),
             ),
             const SizedBox(height: 8),
