@@ -7,7 +7,8 @@ import 'number_keypad.dart';
 /// na cały ekran i pozostają czytelne.
 const double kMaxContentWidth = 640;
 
-/// Szerokość panelu z klawiaturą numeryczną, gdy stoi obok formularza.
+/// Szerokość panelu z klawiaturą numeryczną, gdy stoi obok formularza
+/// (na bardzo szerokich ekranach panel jest odpowiednio szerszy).
 const double kSideKeypadWidth = 340;
 
 /// Czy ekran jest na tyle szeroki i niski (telefon lub tablet w poziomie),
@@ -91,7 +92,10 @@ class SideKeypadPanel extends StatelessWidget {
       color: Theme.of(context).colorScheme.surfaceContainerHigh,
       borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
       child: SizedBox(
-        width: kSideKeypadWidth,
+        width: (MediaQuery.sizeOf(context).width * 0.3).clamp(
+          kSideKeypadWidth,
+          kSideKeypadWidth + 100,
+        ),
         height: double.infinity,
         child: SafeArea(left: false, top: false, bottom: false, child: child),
       ),

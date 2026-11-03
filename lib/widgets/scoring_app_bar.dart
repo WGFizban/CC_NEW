@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
 import '../theme/app_colors.dart';
+import 'adaptive_layout.dart';
 
 /// Czerwień przycisków „Anuluj".
 const Color kCancelColor = Color(0xFFC62828);
@@ -54,7 +55,13 @@ Widget scoringBottomBar(
         top: false,
         child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-        child: Row(
+        // Na szerokim ekranie przyciski mają ograniczoną szerokość i są
+        // wyśrodkowane, jak treść ekranu.
+        child: Center(
+          heightFactor: 1,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: kMaxContentWidth),
+            child: Row(
           children: [
             Expanded(
               child: FilledButton(
@@ -89,6 +96,8 @@ Widget scoringBottomBar(
               ),
             ),
           ],
+        ),
+          ),
         ),
         ),
       ),

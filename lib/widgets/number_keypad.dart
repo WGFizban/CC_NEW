@@ -35,7 +35,18 @@ class NumberKeypad extends StatelessWidget {
 
   final ValueChanged<String> onKey;
 
-  const NumberKeypad({super.key, required this.onKey});
+  /// Opcjonalny pasek bezpośrednio nad klawiszami (np. przełącznik pola).
+  /// Ma dokładnie szerokość klawiszy i jest wyśrodkowany jak one.
+  final Widget? top;
+
+  const NumberKeypad({super.key, required this.onKey, this.top});
+
+  /// Szerokość klawisza poza panelem z ograniczoną wysokością (domyślne
+  /// minimum przycisku Material).
+  static const double _defaultKeyWidth = 64;
+
+  /// Wysokość paska [top] razem z odstępem.
+  static const double _topHeight = 48;
 
   @override
   Widget build(BuildContext context) {
@@ -45,19 +56,27 @@ class NumberKeypad extends StatelessWidget {
         // się do miejsca: wypełniają panel, ale nie rosną bez końca. W pionie
         // wysokość jest nieograniczona i wygląd zostaje taki jak dotąd.
         final fitted = constraints.hasBoundedHeight;
+        final available =
+            constraints.maxHeight - (top == null ? 0 : _topHeight);
         final rowHeight = fitted
-            ? ((constraints.maxHeight - 8 * _keys.length) / _keys.length).clamp(
-                34.0,
-                56.0,
-              )
+            ? ((available - 8 * _keys.length) / _keys.length).clamp(34.0, 72.0)
             : null;
         final keyWidth = fitted && constraints.hasBoundedWidth
-            ? ((constraints.maxWidth - 16 - 8 * 3) / 3).clamp(56.0, 96.0)
-            : null;
+            ? ((constraints.maxWidth - 16 - 8 * 3) / 3).clamp(56.0, 120.0)
+            : _defaultKeyWidth;
+        final fontSize = rowHeight != null && rowHeight >= 60 ? 22.0 : 18.0;
 
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (top != null)
+              Padding(
+                padding: const EdgeInsets.all(4),
+                child: SizedBox(
+                  width: 3 * (keyWidth + 8) - 8,
+                  child: top,
+                ),
+              ),
             for (final row in _keys)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -72,15 +91,13 @@ class NumberKeypad extends StatelessWidget {
                             vertical: fitted ? 0 : 12,
                             horizontal: 20,
                           ),
-                          minimumSize: fitted
-                              ? Size(keyWidth ?? 56, rowHeight!)
-                              : null,
+                          minimumSize: Size(keyWidth, fitted ? rowHeight! : 40),
                           // Domyślny obszar dotyku (48 dp) podnosiłby klawisze
                           // ponad wyliczoną wysokość i powodował przepełnienie.
                           tapTargetSize: fitted
                               ? MaterialTapTargetSize.shrinkWrap
                               : null,
-                          textStyle: const TextStyle(fontSize: 18),
+                          textStyle: TextStyle(fontSize: fontSize),
                           backgroundColor: _colorOf(key),
                           foregroundColor: _colorOf(key) == null
                               ? null

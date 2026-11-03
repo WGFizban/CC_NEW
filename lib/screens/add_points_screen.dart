@@ -551,40 +551,20 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     );
   }
 
-  /// Zawartość panelu klawiatury: pasek (przełącznik pola i przycisk zwijania)
-  /// oraz klawisze. Pod formularzem ([side] = false) panel można zwinąć,
-  /// a w panelu z boku jest zawsze widoczny, więc przycisku zwijania nie ma.
+  /// Zawartość panelu klawiatury: klawisze, a nad nimi (tylko przy mieście)
+  /// przełącznik pola o szerokości klawiszy. Pod formularzem ([side] = false)
+  /// panel ma jeszcze pasek z przyciskiem zwijania; w panelu z boku jest
+  /// zawsze widoczny, więc przycisku zwijania nie ma.
   Widget _buildKeypadContent({required bool side}) {
-    final showSwitch = _type == ScoringType.city;
-    final header = showSwitch || !side
-        ? Row(
-            children: [
-              if (showSwitch)
-                Padding(
-                  padding: const EdgeInsets.only(left: 12),
-                  child: _buildFieldSwitch(),
-                ),
-              const Spacer(),
-              if (!side)
-                IconButton(
-                  tooltip: context.l10n.collapseKeypad,
-                  visualDensity: VisualDensity.compact,
-                  iconSize: 24,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  onPressed: () => setState(() => _keypadOpen = false),
-                ),
-            ],
-          )
-        : const SizedBox.shrink();
+    final keypad = NumberKeypad(
+      onKey: _onKey,
+      top: _type == ScoringType.city ? _buildFieldSwitch() : null,
+    );
 
     if (side) {
       return Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: header,
-          ),
-          Expanded(child: Center(child: NumberKeypad(onKey: _onKey))),
+          Expanded(child: Center(child: keypad)),
           const SizedBox(height: 8),
         ],
       );
@@ -592,16 +572,25 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        header,
-        NumberKeypad(onKey: _onKey),
+        Align(
+          alignment: Alignment.centerRight,
+          child: IconButton(
+            tooltip: context.l10n.collapseKeypad,
+            visualDensity: VisualDensity.compact,
+            iconSize: 24,
+            icon: const Icon(Icons.keyboard_arrow_down),
+            onPressed: () => setState(() => _keypadOpen = false),
+          ),
+        ),
+        keypad,
         const SizedBox(height: 8),
       ],
     );
   }
 
   /// Przełącznik pola, które wypełnia klawiatura (miasto: płytki lub
-  /// sztandary). Leży w pustym lewym rogu paska nad klawiszami, więc nie
-  /// zmienia układu, a pozwala przeskakiwać między polami bez sięgania wyżej.
+  /// sztandary). Leży bezpośrednio nad klawiszami, na ich szerokości, więc
+  /// pozwala przeskakiwać między polami bez sięgania wyżej.
   Widget _buildFieldSwitch() {
     final l = context.l10n;
     return SegmentedButton<_Field>(
