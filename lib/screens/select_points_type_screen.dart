@@ -46,7 +46,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
   }
 
   /// Wysokość miejsca na tytuł grupy nad kafelkami (dwie linie).
-  static const double _titleHeight = 34;
+  static const double _titleHeight = 40;
   static const double _gap = 12;
 
   /// Grupy płyną jedna za drugą w tych samych rzędach: dodatek z jednym
@@ -70,11 +70,16 @@ class SelectPointsTypeScreen extends StatelessWidget {
           children: [
             if (title != null)
               SizedBox(
+                // Tytuł jest wyśrodkowany nad pierwszym kafelkiem grupy.
+                width: tile,
                 height: _titleHeight,
                 child: Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Text(
                     title,
+                    textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -83,6 +88,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: primary,
                     ),
+                  ),
                   ),
                 ),
               ),
