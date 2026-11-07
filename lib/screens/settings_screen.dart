@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../l10n/app_language.dart';
@@ -138,17 +139,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-          const Divider(),
-          _header(l.screenSection),
-          SwitchListTile(
-            title: Text(l.keepScreenOn),
-            subtitle: Text(l.keepScreenOnHint),
-            value: _keepScreenOn,
-            onChanged: (on) {
-              setState(() => _keepScreenOn = on);
-              _notify();
-            },
-          ),
+          // W przeglądarce nie wygaszamy ekranu na życzenie: sekcja ukryta.
+          if (!kIsWeb) ...[
+            const Divider(),
+            _header(l.screenSection),
+            SwitchListTile(
+              title: Text(l.keepScreenOn),
+              subtitle: Text(l.keepScreenOnHint),
+              value: _keepScreenOn,
+              onChanged: (on) {
+                setState(() => _keepScreenOn = on);
+                _notify();
+              },
+            ),
+          ],
           const Divider(),
           _header(l.typeScreenSection),
           SwitchListTile(

@@ -38,10 +38,9 @@ i tabletach (w pionie i w poziomie).
 - Zamki w Niemczech
 - Katedry w Niemczech
 
-## Uruchomienie
+## Pobierz
 
-```bash
-flutter pub get
-flutter run
-flutter test
-```
+[Przetestuj w przeglądarce](https://wgfizban.github.io/CC_NEW/)
+
+[Pobierz najnowszy plik APK](https://github.com/WGFizban/CC_NEW/releases/latest/download/CarcassonneCounter.apk)
+([wszystkie wydania](https://github.com/WGFizban/CC_NEW/releases)).
