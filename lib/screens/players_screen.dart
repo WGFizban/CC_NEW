@@ -59,6 +59,18 @@ class PlayersScreen extends StatefulWidget {
   State<PlayersScreen> createState() => _PlayersScreenState();
 }
 
+/// Miejsce przycisków na całą szerokość ekranu (od lewego do prawego paska
+/// systemowego), na wysokości zwykłego `endFloat`.
+class _SpanFabLocation extends FloatingActionButtonLocation {
+  const _SpanFabLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry geometry) => Offset(
+    geometry.minInsets.left,
+    FloatingActionButtonLocation.endFloat.getOffset(geometry).dy,
+  );
+}
+
 class _PlayersScreenState extends State<PlayersScreen> {
   final _storage = PlayersStorage();
   final _settingsStorage = SettingsStorage();
@@ -672,6 +684,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     // Gdy po bokach listy jest dość miejsca na przyciski, stoją przy krawędziach
     // ekranu, poza listą, i nie zasłaniają wierszy graczy.
     final buttonsOutside = screenWidth >= kMaxContentWidth + 2 * 88;
+    final sideInsets = MediaQuery.paddingOf(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -683,13 +696,23 @@ class _PlayersScreenState extends State<PlayersScreen> {
           ),
         ],
       ),
-      floatingActionButtonLocation: wide && !buttonsOutside
+      floatingActionButtonLocation: buttonsOutside
+          ? const _SpanFabLocation()
+          : wide
           ? FloatingActionButtonLocation.centerFloat
           : FloatingActionButtonLocation.endFloat,
       floatingActionButton: SizedBox(
-        width: wide && !buttonsOutside ? kMaxContentWidth : double.infinity,
+        // Przy przyciskach przy krawędziach szerokość odejmuje paski systemowe
+        // po bokach (np. nawigację w poziomie), żeby nic nie wychodziło poza ekran.
+        width: buttonsOutside
+            ? screenWidth - sideInsets.left - sideInsets.right
+            : wide
+            ? kMaxContentWidth
+            : double.infinity,
         child: Padding(
-          padding: const EdgeInsets.only(left: 32),
+          padding: buttonsOutside
+              ? const EdgeInsets.symmetric(horizontal: 16)
+              : const EdgeInsets.only(left: 32),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
