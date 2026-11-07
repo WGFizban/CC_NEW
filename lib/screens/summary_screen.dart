@@ -40,7 +40,10 @@ class SummaryScreen extends StatelessWidget {
     final l = context.l10n;
     final messenger = ScaffoldMessenger.of(context);
 
-    final addPhoto = await showDialog<bool>(
+    // W przeglądarce nie ma aparatu: zapisujemy od razu, bez pytania o zdjęcie.
+    final addPhoto = kIsWeb
+        ? false
+        : await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l.pdfPhotoTitle),
