@@ -429,9 +429,17 @@ class _PlayersScreenState extends State<PlayersScreen> {
         for (final e in Expansion.values)
           if (_has(e)) e.title(l),
       ];
+      // W poziomie okno jest niskie: dodatki w jednym zdaniu (po przecinku),
+      // żeby pytanie i ostrzeżenie zmieściły się bez przewijania.
+      final landscape =
+          MediaQuery.orientationOf(context) == Orientation.landscape;
       final choice = await askStartGame(
         context,
-        expansionsList: names.isEmpty ? l.noneCap : '\n${names.join('\n')}',
+        expansionsList: names.isEmpty
+            ? l.noneCap
+            : landscape
+            ? names.join(', ')
+            : '\n${names.join('\n')}',
       );
       if (!mounted) return;
       if (choice == StartChoice.expansions) {
