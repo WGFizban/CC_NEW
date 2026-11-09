@@ -83,7 +83,7 @@ extension GoodsLabels on Goods {
 extension CircusAnimalLabels on CircusAnimal {
   String title(AppLocalizations l) => switch (this) {
     CircusAnimal.elephant => l.animalElephant,
-    CircusAnimal.lion => l.animalLion,
+    CircusAnimal.tiger => l.animalTiger,
     CircusAnimal.bear => l.animalBear,
     CircusAnimal.seal => l.animalSeal,
     CircusAnimal.monkey => l.animalMonkey,

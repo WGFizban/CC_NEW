@@ -11,13 +11,13 @@ const int kRingmasterPointsPerTile = 2;
 /// siebie: obszar 3×3 to najwyżej 9 płytek.
 const int kMaxRingmasterTiles = 9;
 
-/// Żetony zwierząt z dodatku „Cyrk objazdowy" (polska edycja).
+/// Żetony zwierząt z dodatku „Cyrk objazdowy".
 ///
 /// [value] to punkty za każdego mepla na płytce cyrku i ośmiu sąsiednich,
 /// [count] to liczba takich żetonów w grze (razem 16).
 enum CircusAnimal {
   elephant(7, 1),
-  lion(6, 2),
+  tiger(6, 2),
   bear(5, 3),
   seal(4, 5),
   monkey(3, 4),
