@@ -185,7 +185,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       _isFeature && _has(Expansion.circus) && !_castleMode;
 
   bool get _showFairy =>
-      _isFeature && _has(Expansion.princessDragon) && !_castleMode;
+      _type.supportsFairy && _has(Expansion.princessDragon) && !_castleMode;
 
   bool get _showSharing =>
       _isFeature &&

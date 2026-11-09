@@ -241,7 +241,7 @@
   "bothSegment": "Both",
   "chosenCastleAndShares": "{name} (shares + castle ×{count})",
   "fairyOption": "Fairy next to a meeple (+{points} pts)",
-  "fairyHint": "Check it if the fairy stands next to a meeple in the scored feature (city, road, cloister or farm): its owner gets {points} pts regardless of the normal scoring. This also applies to end-of-game scoring.",
+  "fairyHint": "Check it if the fairy stands next to a meeple in the scored feature (city, road, cloister, farm, German cathedral, German castle or line monastery): its owner gets {points} pts regardless of the normal scoring. This also applies to end-of-game scoring.",
   "goodsInCity": "Goods in the city",
   "goodsCityHint": "Expand the section to add the goods from this city and pick the player who completed it – they get the goods, even without a meeple in the city.",
   "ringmasterHint": "Check it if the ringmaster scores: he adds {points} pts for each circus or acrobat tile he stands on or that is next to him.",

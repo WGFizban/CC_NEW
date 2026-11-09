@@ -485,6 +485,34 @@ void main() {
       );
     });
 
+    test('wróżka (+3) przy arcybiskupie i lordzie na zamku, nie przy owcach', () {
+      expect(
+        calculatePoints(
+          ScoringType.archbishop,
+          cathedralRoads: const [CathedralRoad(tiles: 5)],
+          withFairy: true,
+        ),
+        8,
+      );
+      expect(
+        calculatePoints(ScoringType.germanCastle, withFairy: true),
+        kGermanCastleCompleted + 3,
+      );
+      expect(
+        calculatePoints(
+          ScoringType.germanCastle,
+          completed: false,
+          tiles: 6,
+          withFairy: true,
+        ),
+        kGermanCastleTileBase + 6 + 3,
+      );
+      expect(ScoringType.monastery.supportsFairy, isTrue);
+      expect(ScoringType.sheep.supportsFairy, isFalse);
+      expect(ScoringType.pyramid.supportsFairy, isFalse);
+      expect(ScoringType.city.supportsFairy, isTrue);
+    });
+
     test('dodatki są mini dodatkami 6 i 7', () {
       expect(Expansion.germanCastles.number, 6);
       expect(Expansion.germanCathedrals.number, 7);

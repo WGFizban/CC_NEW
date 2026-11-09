@@ -241,7 +241,7 @@
   "bothSegment": "Les deux",
   "chosenCastleAndShares": "{name} (partage + château ×{count})",
   "fairyOption": "Fée à côté d'un meeple (+{points} pts)",
-  "fairyHint": "Cochez si la fée se trouve à côté d'un meeple de l'élément décompté (ville, route, monastère ou pré) : son propriétaire reçoit {points} pts, indépendamment du décompte normal. Cela vaut aussi pour le décompte de fin de partie.",
+  "fairyHint": "Cochez si la fée se trouve à côté d'un meeple de l'élément décompté (ville, route, monastère, pré, cathédrale allemande, château allemand ou monastère en ligne) : son propriétaire reçoit {points} pts, indépendamment du décompte normal. Cela vaut aussi pour le décompte de fin de partie.",
   "goodsInCity": "Marchandises dans la ville",
   "goodsCityHint": "Développez la section pour ajouter les marchandises de cette ville et choisir le joueur qui l'a achevée – il reçoit les marchandises, même sans meeple dans la ville.",
   "ringmasterHint": "Cochez si le directeur de piste marque : il ajoute {points} pts pour chaque tuile de cirque ou d'acrobates sur laquelle il se trouve ou qui est voisine.",

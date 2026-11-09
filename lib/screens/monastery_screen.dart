@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../models/expansion.dart';
+import '../models/fairy.dart';
 import '../models/monastery.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
@@ -16,15 +18,27 @@ import '../widgets/scoring_app_bar.dart';
 /// i holenderskie"): jedno pole z klawiaturą na punkty końcowe.
 class MonasteryScreen extends StatefulWidget {
   final Player player;
+  final Set<Expansion> expansions;
 
-  const MonasteryScreen({super.key, required this.player});
+  const MonasteryScreen({
+    super.key,
+    required this.player,
+    this.expansions = const {},
+  });
 
   @override
   State<MonasteryScreen> createState() => _MonasteryScreenState();
 }
 
 class _MonasteryScreenState extends State<MonasteryScreen> {
-  int _points = 0;
+  int _line = 0;
+  bool _fairy = false;
+
+  bool get _showFairy => widget.expansions.contains(Expansion.princessDragon);
+
+  /// Punkty opata plus 3 pkt za wróżkę przy jego meplu.
+  int get _points =>
+      _line + (_showFairy && _fairy ? kFairyFeaturePoints : 0);
 
   void _confirm() {
     final l = context.l10n;
@@ -87,12 +101,21 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
                   ),
                 ),
               ),
+              if (_showFairy)
+                CheckboxListTile(
+                  title: LabelWithHint(
+                    l.fairyOption(kFairyFeaturePoints),
+                    l.fairyHint(kFairyFeaturePoints),
+                  ),
+                  value: _fairy,
+                  onChanged: (v) => setState(() => _fairy = v ?? false),
+                ),
             ],
           ),
           keypad: (side) => keypadBlock(
             side: side,
             onKey: (k) => setState(
-              () => _points = applyKey(_points, k, max: kMaxMonasteryPoints),
+              () => _line = applyKey(_line, k, max: kMaxMonasteryPoints),
             ),
           ),
         ),

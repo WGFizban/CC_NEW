@@ -99,6 +99,15 @@ enum ScoringType {
       this == abbey ||
       this == meadow;
 
+  /// Typy, przy których wróżka może dać +3 pkt: budowle z [isFeature] oraz
+  /// punktowania meepla w katedrze niemieckiej (arcybiskup), zamku niemieckim
+  /// (lord) i klasztorze liniowym (opat). Pasterz (owce) wróżki nie ma.
+  bool get supportsFairy =>
+      isFeature ||
+      this == archbishop ||
+      this == germanCastle ||
+      this == monastery;
+
   /// Budowle, przy których może stać zamek z dodatku „Mosty, zamki i bazary":
   /// jego właściciel dostaje punkty ukończonej sąsiedniej budowli (na polach
   /// zamek nie punktuje).
@@ -238,7 +247,7 @@ int calculatePoints(
       // Arcybiskup: każda droga od katedry osobno (patrz archbishopPoints).
       base = archbishopPoints(cathedralRoads);
   }
-  final fairy = withFairy && type.isFeature ? kFairyFeaturePoints : 0;
+  final fairy = withFairy && type.supportsFairy ? kFairyFeaturePoints : 0;
   final castleBonus =
       completed && (type == ScoringType.city || type == ScoringType.road)
       ? germanCastles * kGermanCastleBonus

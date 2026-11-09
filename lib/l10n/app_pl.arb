@@ -748,7 +748,7 @@
       }
     }
   },
-  "fairyHint": "Zaznacz, jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, droga, klasztor lub pole): jego właściciel dostaje {points} pkt niezależnie od zwykłej punktacji. Dotyczy też punktowania na koniec gry.",
+  "fairyHint": "Zaznacz, jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, droga, klasztor, pole, katedra niemiecka, zamek niemiecki lub klasztor liniowy): jego właściciel dostaje {points} pkt niezależnie od zwykłej punktacji. Dotyczy też punktowania na koniec gry.",
   "@fairyHint": {
     "placeholders": {
       "points": {

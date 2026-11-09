@@ -241,7 +241,7 @@
   "bothSegment": "Beides",
   "chosenCastleAndShares": "{name} (teilt + Burg ×{count})",
   "fairyOption": "Fee neben einem Meeple (+{points} Pkt.)",
-  "fairyHint": "Aktiviere dies, wenn die Fee neben einem Meeple im gewerteten Objekt steht (Stadt, Straße, Kloster oder Wiese): Ihr Besitzer erhält {points} Pkt., unabhängig von der normalen Wertung. Das gilt auch für die Wertung am Spielende.",
+  "fairyHint": "Aktiviere dies, wenn die Fee neben einem Meeple im gewerteten Objekt steht (Stadt, Straße, Kloster, Wiese, deutsche Kathedrale, deutsche Burg oder Linienkloster): Ihr Besitzer erhält {points} Pkt., unabhängig von der normalen Wertung. Das gilt auch für die Wertung am Spielende.",
   "goodsInCity": "Waren in der Stadt",
   "goodsCityHint": "Klappe den Bereich auf, um die Waren dieser Stadt hinzuzufügen und den Spieler zu wählen, der sie fertiggestellt hat – er erhält die Waren, auch ohne Meeple in der Stadt.",
   "ringmasterHint": "Aktiviere dies, wenn der Zirkusdirektor wertet: Er bringt {points} Pkt. für jedes Zirkus- oder Akrobatenplättchen, auf dem er steht oder das neben ihm liegt.",
