@@ -517,7 +517,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                         children: [
                           ..._buildInputs(),
                           if (_castleOk) ..._buildCastleMode(),
-                          if (_showFairy) ..._buildFairy(),
+                          // Arcybiskup ma wróżkę zaraz pod liczbą dróg.
+                          if (_showFairy && _type != ScoringType.archbishop)
+                            ..._buildFairy(),
                           if (_showRingmaster) ..._buildRingmaster(),
                           if (_showSharing) _buildSharing(),
                           if (_showGold) _buildGold(),
@@ -739,6 +741,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             max: kMaxCathedralRoads,
             hint: l.archbishopRoadsHint,
           ),
+          // Wróżka dotyczy całej katedry, a nie pojedynczej drogi.
+          if (_showFairy) ..._buildFairy(),
           Container(
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
