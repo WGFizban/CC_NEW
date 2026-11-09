@@ -470,19 +470,6 @@ void main() {
       );
     });
 
-    test('arcybiskup: premia za niemieckie zamki na końcach dróg', () {
-      expect(
-        calculatePoints(
-          ScoringType.archbishop,
-          cathedralRoads: const [
-            CathedralRoad(tiles: 3, castles: 2),
-            CathedralRoad(tiles: 2, inn: true, castles: 1),
-          ],
-        ),
-        (3 + 6) + (4 + 3),
-      );
-    });
-
     test('arcybiskup na koniec gry: otwarte drogi 1 pkt, z karczmą 0', () {
       expect(
         calculatePoints(
@@ -491,8 +478,7 @@ void main() {
             CathedralRoad(tiles: 4, inn: true),
             CathedralRoad(tiles: 3, completed: false),
             CathedralRoad(tiles: 5, inn: true, completed: false),
-            // zamki na nieukończonej drodze nie punktują
-            CathedralRoad(tiles: 2, completed: false, castles: 2),
+            CathedralRoad(tiles: 2, completed: false),
           ],
         ),
         8 + 3 + 0 + 2,

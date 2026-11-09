@@ -74,7 +74,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   final List<int> _roadTiles = List.filled(kMaxCathedralRoads, 0);
   final List<bool> _roadInn = List.filled(kMaxCathedralRoads, false);
   final List<bool> _roadDone = List.filled(kMaxCathedralRoads, true);
-  final List<int> _roadCastles = List.filled(kMaxCathedralRoads, 0);
   int _vineyards = 0;
   bool _completed = true;
 
@@ -127,9 +126,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         tiles: _roadTiles[i],
         inn: _has(Expansion.innsCathedrals) && _roadInn[i],
         completed: _roadDone[i],
-        castles: _has(Expansion.germanCastles) && _roadDone[i]
-            ? _roadCastles[i]
-            : 0,
       ),
   ];
 
@@ -765,9 +761,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             ),
           ),
           for (var i = 0; i < _roadCount; i++) ...[
-            if (_roadCount > 1 &&
-                (_has(Expansion.innsCathedrals) ||
-                    _has(Expansion.germanCastles)))
+            if (_roadCount > 1)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 child: Text(
@@ -788,14 +782,6 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               (v) => _roadDone[i] = v,
               hint: l.archbishopRoadDoneHint,
             ),
-            if (_roadDone[i] && _has(Expansion.germanCastles))
-              _stepperRow(
-                l.germanCastlesAtFeature,
-                _roadCastles[i],
-                (v) => _roadCastles[i] = v,
-                max: 6,
-                hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
-              ),
           ],
         ];
 

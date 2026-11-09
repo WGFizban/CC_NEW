@@ -23,7 +23,6 @@ class CathedralRoad {
     this.tiles = 0,
     this.inn = false,
     this.completed = true,
-    this.castles = 0,
   });
 
   /// Odcinki drogi (razem z odcinkiem na płytce katedry).
@@ -34,21 +33,19 @@ class CathedralRoad {
 
   /// Droga jest zamknięta; otwarta liczy się tylko na koniec gry.
   final bool completed;
-
-  /// Niemieckie zamki na drugim końcu ukończonej drogi (+3 za każdy).
-  final int castles;
 }
 
 /// Punkty arcybiskupa: każda droga osobno, wyniki się sumują.
 ///
-/// Ukończona: 1 pkt za odcinek (2 z karczmą) plus premia za niemieckie zamki.
+/// Ukończona: 1 pkt za odcinek (2 z karczmą). Premia za niemieckie zamki nie
+/// dotyczy arcybiskupa (zasady podają ją tylko dla dróg i miast).
 /// Nieukończona (koniec gry): 1 pkt za odcinek, a z karczmą 0 (zasady
 /// C1/C2/C3).
 int archbishopPoints(Iterable<CathedralRoad> roads) {
   var sum = 0;
   for (final r in roads) {
     if (r.completed) {
-      sum += r.tiles * (r.inn ? 2 : 1) + r.castles * kGermanCastleBonus;
+      sum += r.tiles * (r.inn ? 2 : 1);
     } else {
       sum += r.inn ? 0 : r.tiles;
     }

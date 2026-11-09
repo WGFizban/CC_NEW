@@ -339,7 +339,7 @@
   "tilesAroundCastle": "Tiles around the castle",
   "completedRoad": "Is it completed",
   "archbishopRoads": "Roads at the cathedral",
-  "archbishopRoadsHint": "Set how many roads lead from the cathedral (3 or 4) and enter the number of segments of each. Every road is counted separately (with or without an inn, with or without German castles) and the results are added up. When all the roads are closed, the archbishop gets 1 pt per segment (2 with an inn). At the end of the game he also scores with open roads: a completed one as above, an unfinished one 1 pt per segment (0 with an inn).",
+  "archbishopRoadsHint": "Set how many roads lead from the cathedral (3 or 4) and enter the number of segments of each. Every road is counted separately (with or without an inn) and the results are added up. When all the roads are closed, the archbishop gets 1 pt per segment (2 with an inn). At the end of the game he also scores with open roads: a completed one as above, an unfinished one 1 pt per segment (0 with an inn).",
   "archbishopRoadSegments": "Road {number}: segments",
   "archbishopRoadTitle": "Road {number}",
   "archbishopRoadInnHint": "Check it if this road has an inn: when completed it gives 2 pts per segment instead of 1, and when unfinished at the end of the game 0.",

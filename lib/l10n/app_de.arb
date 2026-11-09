@@ -339,7 +339,7 @@
   "tilesAroundCastle": "Plättchen um die Burg",
   "completedRoad": "Ist sie fertig",
   "archbishopRoads": "Straßen an der Kathedrale",
-  "archbishopRoadsHint": "Gib an, wie viele Straßen von der Kathedrale ausgehen (3 oder 4), und trage die Abschnitte jeder Straße ein. Jede Straße wird einzeln gezählt (mit oder ohne Gasthaus, mit oder ohne deutsche Burgen), die Ergebnisse werden addiert. Sind alle Straßen geschlossen, erhält der Erzbischof 1 Pkt. pro Abschnitt (2 mit Gasthaus). Am Spielende wertet er auch bei offenen Straßen: eine fertige wie oben, eine unfertige 1 Pkt. pro Abschnitt (mit Gasthaus 0).",
+  "archbishopRoadsHint": "Gib an, wie viele Straßen von der Kathedrale ausgehen (3 oder 4), und trage die Abschnitte jeder Straße ein. Jede Straße wird einzeln gezählt (mit oder ohne Gasthaus), die Ergebnisse werden addiert. Sind alle Straßen geschlossen, erhält der Erzbischof 1 Pkt. pro Abschnitt (2 mit Gasthaus). Am Spielende wertet er auch bei offenen Straßen: eine fertige wie oben, eine unfertige 1 Pkt. pro Abschnitt (mit Gasthaus 0).",
   "archbishopRoadSegments": "Straße {number}: Abschnitte",
   "archbishopRoadTitle": "Straße {number}",
   "archbishopRoadInnHint": "Aktiviere dies, wenn diese Straße ein Gasthaus hat: fertig gibt sie 2 Pkt. pro Abschnitt statt 1, unfertig am Spielende 0.",

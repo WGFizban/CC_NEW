@@ -919,7 +919,7 @@
   "tilesAroundCastle": "Płytki wokół zamku",
   "completedRoad": "Czy ukończona",
   "archbishopRoads": "Liczba dróg przy katedrze",
-  "archbishopRoadsHint": "Wskaż, ile dróg wychodzi z katedry (3 lub 4) i wpisz liczbę odcinków każdej z nich. Każda droga jest liczona osobno (z karczmą lub bez, z zamkami niemieckimi lub bez), a wyniki się sumują. Gdy wszystkie drogi są zamknięte, arcybiskup dostaje 1 pkt za odcinek (2 z karczmą). Na koniec gry punktuje także przy otwartych drogach: ukończona jak wyżej, nieukończona 1 pkt za odcinek (z karczmą 0).",
+  "archbishopRoadsHint": "Wskaż, ile dróg wychodzi z katedry (3 lub 4) i wpisz liczbę odcinków każdej z nich. Każda droga jest liczona osobno (z karczmą lub bez), a wyniki się sumują. Gdy wszystkie drogi są zamknięte, arcybiskup dostaje 1 pkt za odcinek (2 z karczmą). Na koniec gry punktuje także przy otwartych drogach: ukończona jak wyżej, nieukończona 1 pkt za odcinek (z karczmą 0).",
   "archbishopRoadSegments": "Droga {number}: odcinki",
   "@archbishopRoadSegments": {
     "placeholders": {
