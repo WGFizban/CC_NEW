@@ -30,7 +30,7 @@ import '../widgets/number_keypad.dart';
 import '../widgets/player_label.dart';
 import '../widgets/player_picker.dart';
 
-enum _Field { tiles, banners }
+enum _Field { tiles, banners, road0, road1, road2, road3 }
 
 /// Ekran liczenia punktów za miasto, drogę, klasztor, pola, zamek, surowce
 /// i dyrektora cyrku. Zwraca [ScoreEvent] przez `Navigator.pop` (albo `null`,
@@ -68,6 +68,13 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   /// Droga prowadzi do niemieckiej katedry (zbój).
   bool _cathedralRoad = false;
+
+  /// Arcybiskup: liczba dróg przy katedrze i dane każdej z nich.
+  int _roadCount = 3;
+  final List<int> _roadTiles = List.filled(kMaxCathedralRoads, 0);
+  final List<bool> _roadInn = List.filled(kMaxCathedralRoads, false);
+  final List<bool> _roadDone = List.filled(kMaxCathedralRoads, true);
+  final List<int> _roadCastles = List.filled(kMaxCathedralRoads, 0);
   int _vineyards = 0;
   bool _completed = true;
 
@@ -107,6 +114,24 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   late Player _goodsRecipient = widget.player;
 
   ScoringType get _type => widget.type;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_type == ScoringType.archbishop) _active = _Field.road0;
+  }
+
+  List<CathedralRoad> get _cathedralRoads => [
+    for (var i = 0; i < _roadCount; i++)
+      CathedralRoad(
+        tiles: _roadTiles[i],
+        inn: _has(Expansion.innsCathedrals) && _roadInn[i],
+        completed: _roadDone[i],
+        castles: _has(Expansion.germanCastles) && _roadDone[i]
+            ? _roadCastles[i]
+            : 0,
+      ),
+  ];
 
   bool _has(Expansion e) => widget.expansions.contains(e);
 
@@ -236,8 +261,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             _has(Expansion.hillsSheep)
         ? _vineyards
         : 0,
-    completed:
-        _type == ScoringType.archbishop || _type == ScoringType.road || _completed,
+    completed: _completed,
+    cathedralRoads: _type == ScoringType.archbishop
+        ? _cathedralRoads
+        : const [],
     germanCastles:
         (_type == ScoringType.city || _type == ScoringType.road) &&
             _has(Expansion.germanCastles)
@@ -257,6 +284,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     setState(() {
       if (_active == _Field.banners && _type == ScoringType.city) {
         _banners = applyKey(_banners, key);
+      } else if (_type == ScoringType.archbishop) {
+        final i = (_active.index - _Field.road0.index).clamp(0, _roadCount - 1);
+        _roadTiles[i] = applyKey(_roadTiles[i], key);
       } else {
         _tiles = applyKey(_tiles, key, max: _tilesMax);
       }
@@ -662,12 +692,18 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             _check(
               l.roadToCathedral,
               _cathedralRoad,
-              (v) => _cathedralRoad = v,
+              (v) {
+                _cathedralRoad = v;
+                if (!v) _completed = true;
+              },
               hint: l.roadToCathedralHint,
             ),
-          // Droga liczy się tak samo ukończona i nie (nieukończoną z karczmą
-          // po prostu się nie dopisuje), więc bez pola „Czy ukończona”.
-          if (_has(Expansion.germanCastles))
+          // Zwykła droga liczy się tak samo ukończona i nie (nieukończoną
+          // z karczmą po prostu się nie dopisuje). Różnicę daje dopiero droga
+          // do katedry: ukończona podwójnie, nieukończona jak zwykła.
+          if (_has(Expansion.germanCathedrals) && _cathedralRoad && !_bonus)
+            _check(l.completedRoad, _completed, (v) => _completed = v),
+          if (_completed && _has(Expansion.germanCastles))
             _stepperRow(
               l.germanCastlesAtFeature,
               _germanCastles,
@@ -695,14 +731,72 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
       case ScoringType.archbishop:
         return [
-          _valueBoxes([_valueBox(l.archbishopRoadTiles, _tiles, _Field.tiles)]),
-          if (_has(Expansion.innsCathedrals))
-            _check(
-              l.inn,
-              _bonus,
-              (v) => _bonus = v,
-              hint: l.archbishopInnHint,
+          _stepperRow(
+            l.archbishopRoads,
+            _roadCount,
+            (v) {
+              _roadCount = v;
+              final last = _Field.road0.index + v - 1;
+              if (_active.index > last) _active = _Field.values[last];
+            },
+            min: 1,
+            max: kMaxCathedralRoads,
+            hint: l.archbishopRoadsHint,
+          ),
+          Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              border: Border.all(color: widget.player.color, width: 3),
+              borderRadius: BorderRadius.circular(12),
             ),
+            child: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                for (var i = 0; i < _roadCount; i++)
+                  _valueBox(
+                    l.archbishopRoadSegments(i + 1),
+                    _roadTiles[i],
+                    _Field.values[_Field.road0.index + i],
+                  ),
+              ],
+            ),
+          ),
+          for (var i = 0; i < _roadCount; i++) ...[
+            if (_roadCount > 1 &&
+                (_has(Expansion.innsCathedrals) ||
+                    _has(Expansion.germanCastles)))
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Text(
+                  l.archbishopRoadTitle(i + 1),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            if (_has(Expansion.innsCathedrals))
+              _check(
+                l.inn,
+                _roadInn[i],
+                (v) => _roadInn[i] = v,
+                hint: l.archbishopRoadInnHint,
+              ),
+            _check(
+              l.completedRoad,
+              _roadDone[i],
+              (v) => _roadDone[i] = v,
+              hint: l.archbishopRoadDoneHint,
+            ),
+            if (_roadDone[i] && _has(Expansion.germanCastles))
+              _stepperRow(
+                l.germanCastlesAtFeature,
+                _roadCastles[i],
+                (v) => _roadCastles[i] = v,
+                max: 6,
+                hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
+              ),
+          ],
         ];
 
       case ScoringType.cloister:

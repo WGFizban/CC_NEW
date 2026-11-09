@@ -152,9 +152,8 @@ enum FarmScoring {
 /// - [germanCastles] – niemieckie zamki na końcach ukończonej drogi lub miasta,
 ///   po 3 pkt za każdy (po modyfikacjach z karczmy i katedry),
 /// - [cathedralRoad] – droga prowadzi do niemieckiej katedry: ukończona daje
-///   2 pkt za płytkę (3 z karczmą), nieukończona bez karczmy też 2 pkt;
-///   w typie [ScoringType.archbishop] liczba
-///   płytek to odcinki wszystkich dróg przy katedrze,
+///   2 pkt za płytkę (3 z karczmą), nieukończona liczy się jak zwykła droga,
+/// - [cathedralRoads] – drogi przy katedrze dla [ScoringType.archbishop],
 /// - [withFairy] – wróżka stoi przy meplu w tej budowli: +3 pkt
 ///   niezależnie od reszty (tylko miasto, droga, klasztor i pole).
 ///
@@ -172,6 +171,7 @@ int calculatePoints(
   bool withFairy = false,
   int germanCastles = 0,
   bool cathedralRoad = false,
+  List<CathedralRoad> cathedralRoads = const [],
 }) {
   final int base;
   switch (type) {
@@ -189,8 +189,8 @@ int calculatePoints(
         base = tiles * (bonus ? (cathedralRoad ? 3 : 2) : (cathedralRoad ? 2 : 1));
       } else {
         // Niedokończona droga z karczmą nie daje punktów; droga do katedry
-        // niemieckiej liczy się podwójnie także nieukończona.
-        base = bonus ? 0 : tiles * (cathedralRoad ? 2 : 1);
+        // niemieckiej nieukończona liczy się jak zwykła.
+        base = bonus ? 0 : tiles;
       }
 
     case ScoringType.cloister:
@@ -235,9 +235,8 @@ int calculatePoints(
       base = completed ? kGermanCastleCompleted : kGermanCastleTileBase + tiles;
 
     case ScoringType.archbishop:
-      // Arcybiskup punktuje tylko po zamknięciu wszystkich dróg od katedry:
-      // 1 pkt za odcinek (2 z karczmą). Nieukończona nie daje nic.
-      base = completed ? tiles * (bonus ? 2 : 1) : 0;
+      // Arcybiskup: każda droga od katedry osobno (patrz archbishopPoints).
+      base = archbishopPoints(cathedralRoads);
   }
   final fairy = withFairy && type.isFeature ? kFairyFeaturePoints : 0;
   final castleBonus =
