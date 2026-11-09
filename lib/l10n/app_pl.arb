@@ -881,6 +881,7 @@
     }
   },
   "aboutDisclaimer": "Aplikacja nieoficjalna, tworzona przez fana. Carcassonne jest znakiem towarowym swoich właścicieli. Wszystkie ikony w aplikacji są autorskie.",
+  "aboutRulesNote": "Licznik liczy punkty według zasad wydań C1/C2/C3. Zmiany zasad z wydania C3.1 (2025) nie są uwzględnione.",
   "aboutLicenses": "Licencje bibliotek",
   "newGameChoiceBody": "Chcesz zagrać jeszcze raz w tym samym składzie, czy ustawić graczy od nowa?\n\nPunkty, surowce i zużyte żetony cyrku zostaną wyzerowane. Dodatki zostają bez zmian, a przed startem nadal możesz je zmienić.",
   "newGameSamePlayers": "Ci sami gracze",

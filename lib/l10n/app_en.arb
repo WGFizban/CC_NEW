@@ -352,5 +352,6 @@
   "pdfSaved": "The PDF file has been saved.",
   "pdfNoPhotoTaken": "No photo was taken, so the PDF file was not saved.",
   "pdfCameraError": "The camera could not be started.",
-  "pdfSaveError": "The PDF file could not be saved."
+  "pdfSaveError": "The PDF file could not be saved.",
+  "aboutRulesNote": "The app scores by the rules of the C1/C2/C3 editions. The rule changes of the C3.1 edition (2025) are not covered."
 }

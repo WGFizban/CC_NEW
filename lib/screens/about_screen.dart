@@ -61,6 +61,12 @@ class AboutScreen extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 16, height: 1.4),
           ),
+          const SizedBox(height: 12),
+          Text(
+            l.aboutRulesNote,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium,
+          ),
           const SizedBox(height: 24),
           Text(
             l.aboutMadeBy(kAuthorName),

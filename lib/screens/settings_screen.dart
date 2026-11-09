@@ -123,15 +123,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 8),
                 SizedBox(
                   width: double.infinity,
-                  child: SegmentedButton<AppLanguage>(
-                    showSelectedIcon: false,
-                    segments: [
-                      for (final l in AppLanguage.values)
-                        ButtonSegment(value: l, label: Text(l.nativeName)),
+                  child: DropdownButtonFormField<AppLanguage>(
+                    initialValue: _language,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    items: [
+                      for (final lang in AppLanguage.values)
+                        DropdownMenuItem(
+                          value: lang,
+                          child: Text(lang.nativeName),
+                        ),
                     ],
-                    selected: {_language},
-                    onSelectionChanged: (s) {
-                      setState(() => _language = s.first);
+                    onChanged: (v) {
+                      if (v == null) return;
+                      setState(() => _language = v);
                       _notify();
                     },
                   ),
