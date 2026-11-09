@@ -331,7 +331,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
       ScoringType.sheep => FlockScreen(player: player, players: players),
       ScoringType.bazaar => BazaarScreen(player: player, players: players),
       ScoringType.tower => TowerScreen(player: player, players: players),
-      ScoringType.monastery => MonasteryScreen(player: player),
+      ScoringType.monastery => MonasteryScreen(
+        player: player,
+        expansions: _settings.expansions,
+      ),
       ScoringType.pyramid => PyramidScreen(players: players),
       ScoringType.circus => CircusScreen(
         player: player,

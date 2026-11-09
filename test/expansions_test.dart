@@ -136,7 +136,7 @@ void main() {
 
     test('wartości zwierząt z polskiej edycji', () {
       expect(CircusAnimal.elephant.value, 7);
-      expect(CircusAnimal.lion.value, 6);
+      expect(CircusAnimal.tiger.value, 6);
       expect(CircusAnimal.bear.value, 5);
       expect(CircusAnimal.seal.value, 4);
       expect(CircusAnimal.monkey.value, 3);

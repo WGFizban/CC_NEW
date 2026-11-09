@@ -1,9 +1,13 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../l10n/l10n.dart';
 import '../widgets/adaptive_layout.dart';
 import '../models/app_version.dart';
+
+/// Wersja pokazywana w przeglądarce: wersja webowa zawsze jest „v1".
+const String kWebVersion = 'v1';
 
 /// Autor aplikacji (pokazywany na ekranie „Info o aplikacji").
 const String kAuthorName = 'WGFizban';
@@ -14,6 +18,7 @@ class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   Future<String> _version() async {
+    if (kIsWeb) return kWebVersion;
     try {
       final info = await PackageInfo.fromPlatform();
       return formatAppVersion(info.version);
@@ -60,6 +65,12 @@ class AboutScreen extends StatelessWidget {
             l.aboutDescription,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 16, height: 1.4),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            l.aboutRulesNote,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium,
           ),
           const SizedBox(height: 24),
           Text(

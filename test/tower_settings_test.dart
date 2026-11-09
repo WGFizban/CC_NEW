@@ -433,6 +433,7 @@ void main() {
         ),
         12,
       );
+      // Nieukończona droga do katedry (koniec gry) liczy się jak zwykła.
       expect(
         calculatePoints(
           ScoringType.road,
@@ -440,7 +441,7 @@ void main() {
           cathedralRoad: true,
           completed: false,
         ),
-        8,
+        4,
       );
       expect(
         calculatePoints(
@@ -454,22 +455,62 @@ void main() {
       );
     });
 
-    test('arcybiskup: 1 pkt za odcinek, z karczmą 2, nieukończona 0', () {
-      expect(calculatePoints(ScoringType.archbishop, tiles: 8), 8);
-      expect(calculatePoints(ScoringType.archbishop, tiles: 8, bonus: true), 16);
-      expect(
-        calculatePoints(ScoringType.archbishop, tiles: 5, completed: false),
-        0,
-      );
+    test('arcybiskup: każda droga osobno, z karczmą lub bez', () {
+      // 4 + 2 + 4 odcinki, dwie drogi z karczmą: 8 + 2 + 8 = 18.
       expect(
         calculatePoints(
           ScoringType.archbishop,
-          tiles: 5,
-          completed: false,
-          bonus: true,
+          cathedralRoads: const [
+            CathedralRoad(tiles: 4, inn: true),
+            CathedralRoad(tiles: 2),
+            CathedralRoad(tiles: 4, inn: true),
+          ],
         ),
-        0,
+        18,
       );
+    });
+
+    test('arcybiskup na koniec gry: otwarte drogi 1 pkt, z karczmą 0', () {
+      expect(
+        calculatePoints(
+          ScoringType.archbishop,
+          cathedralRoads: const [
+            CathedralRoad(tiles: 4, inn: true),
+            CathedralRoad(tiles: 3, completed: false),
+            CathedralRoad(tiles: 5, inn: true, completed: false),
+            CathedralRoad(tiles: 2, completed: false),
+          ],
+        ),
+        8 + 3 + 0 + 2,
+      );
+    });
+
+    test('wróżka (+3) przy arcybiskupie i lordzie na zamku, nie przy owcach', () {
+      expect(
+        calculatePoints(
+          ScoringType.archbishop,
+          cathedralRoads: const [CathedralRoad(tiles: 5)],
+          withFairy: true,
+        ),
+        8,
+      );
+      expect(
+        calculatePoints(ScoringType.germanCastle, withFairy: true),
+        kGermanCastleCompleted + 3,
+      );
+      expect(
+        calculatePoints(
+          ScoringType.germanCastle,
+          completed: false,
+          tiles: 6,
+          withFairy: true,
+        ),
+        kGermanCastleTileBase + 6 + 3,
+      );
+      expect(ScoringType.monastery.supportsFairy, isTrue);
+      expect(ScoringType.sheep.supportsFairy, isFalse);
+      expect(ScoringType.pyramid.supportsFairy, isFalse);
+      expect(ScoringType.city.supportsFairy, isTrue);
     });
 
     test('dodatki są mini dodatkami 6 i 7', () {

@@ -222,7 +222,7 @@
   "goodsGrain": "Zboże",
   "goodsCloth": "Sukno",
   "animalElephant": "Słoń",
-  "animalLion": "Lew",
+  "animalTiger": "Tygrys",
   "animalBear": "Niedźwiedź",
   "animalSeal": "Foka",
   "animalMonkey": "Małpka",
@@ -748,7 +748,7 @@
       }
     }
   },
-  "fairyHint": "Zaznacz, jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, droga, klasztor lub pole): jego właściciel dostaje {points} pkt niezależnie od zwykłej punktacji. Dotyczy też punktowania na koniec gry.",
+  "fairyHint": "Zaznacz, jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, droga, klasztor, pole, katedra niemiecka, zamek niemiecki lub klasztor liniowy): jego właściciel dostaje {points} pkt niezależnie od zwykłej punktacji. Dotyczy też punktowania na koniec gry.",
   "@fairyHint": {
     "placeholders": {
       "points": {
@@ -813,11 +813,11 @@
   "rulesInns": "• Katedra: ukończone miasto z katedrą daje 3 pkt za każdą płytkę i sztandar; nieukończone 0 pkt.\n• Karczma: ukończona droga z karczmą daje 2 pkt za każdą płytkę; nieukończona 0 pkt.\n• Duży mepel liczy się jako dwa meple przy ustalaniu większości, ale nie podwaja punktów.",
   "rulesTraders": "• Surowce: za ukończone miasto z symbolem gracz, który je ukończył, otrzymuje żeton wina, zboża lub sukna.\n• Na koniec gry za każdy rodzaj surowca gracz z największą liczbą żetonów otrzymuje 10 pkt (przy remisie każdy z remisujących otrzymuje 10 pkt).\n• Świnka: ukończone miasto graniczące z polem ze świnką daje 4 pkt zamiast 3.\n• Na potrzeby ustalania przewagi w budowli lub na polu pionki świnki i budowniczego nie są liczone do większości.",
   "rulesPrincess": "• Wróżka: na początku tury gracz otrzymuje 1 pkt, jeśli jego mepel stoi przy wróżce.\n• Przy punktowaniu budowli z meplem stojącym przy wróżce jego właściciel otrzymuje dodatkowe 3 pkt, także przy punktowaniu końcowym.\n• Smok i księżniczka nie zmieniają punktacji.",
-  "rulesTower": "• Okup za uwięzionego mepla (także dużego) wynosi 3 pkt i otrzymuje go gracz przetrzymujący jeńca.\n• Wykupić można mepla, dużego mepla, wóz i burmistrza; budowniczego i świni nie można uwięzić.\n• Wykupu dokonuje się w swojej turze, raz na turę, i wymaga on posiadania co najmniej 3 pkt.\n• Wymiana jeńców (dwaj gracze przetrzymują nawzajem swoje meple) odbywa się bez punktów.",
+  "rulesTower": "• Okup za uwięzionego mepla (także dużego) wynosi 3 pkt i otrzymuje go gracz przetrzymujący jeńca.\n• Wykupić można mepla, dużego mepla, wóz i burmistrza; nie można uwięzić budowniczego, świni, stodoły, pasterza ani mepla w zamku/mieście Carcassonne.\n• Wykupu dokonuje się w swojej turze, raz na turę, i wymaga on posiadania co najmniej 3 pkt.\n• Wymiana jeńców (dwaj gracze przetrzymują nawzajem swoje meple) odbywa się bez punktów.",
   "rulesAbbey": "• Opactwo punktuje jak klasztor: ukończone 9 pkt, nieukończone 1 pkt za każdą płytkę.\n• Pole niepołączone ze stodołą: zwykłe punktowanie, 3 pkt za każde ukończone miasto.\n• Pole połączone ze stodołą: rolnicy otrzymują 1 pkt za miasto (2 ze świnką) i 2 pkt za zamek.\n• Właściciel stodoły na koniec gry: 4 pkt za miasto i 5 pkt za zamek, bez premii za świnkę.",
   "rulesBridges": "• Zamek: jego właściciel otrzymuje punkty ukończonego miasta, drogi lub klasztoru, przy którym stoi. Zamek nie punktuje na koniec gry.\n• Przy punktowaniu pola zamek jest wart 4 pkt zamiast 3 (5 ze świnką).\n• Bazar: gracz wybierający płytkę kupuje ją od najwyżej licytującego (płaci mu cenę) albo mu ją sprzedaje (otrzymuje cenę). Gdy licytował tylko on, płaci cenę, której nikt nie otrzymuje.\n• Mosty nie zmieniają punktacji.",
   "rulesHills": "• Winnice: za ukończony klasztor jego właściciel otrzymuje dodatkowo 3 pkt za każdą winnicę na otaczających płytkach.\n• Owce: stado składa się z żetonów 1–4 owiec; wszyscy pasterze na polu otrzymują punkty za całe stado. Wilk rozpędza stado. Owce nie punktują na koniec gry.",
-  "rulesCircus": "• Cyrk: po odkryciu żetonu zwierzęcia każdy mepel na płytce cyrku i na ośmiu sąsiednich płytkach daje właścicielowi tyle punktów, ile wynosi wartość zwierzęcia (słoń 7, lew 6, niedźwiedź 5, foka 4, małpka 3, pchła 1). Meple pozostają na planszy.\n• Akrobaci: ukończona piramida (3 meple) daje po 5 pkt za każdego akrobatę, który wraca do puli. Na koniec gry 5 pkt za każdego akrobatę na planszy.\n• Dyrektor cyrku: 2 pkt za każdą płytkę cyrku lub akrobatów obok niego, także na koniec gry.",
+  "rulesCircus": "• Cyrk: po odkryciu żetonu zwierzęcia każdy mepel na płytce cyrku i na ośmiu sąsiednich płytkach daje właścicielowi tyle punktów, ile wynosi wartość zwierzęcia (słoń 7, tygrys 6, niedźwiedź 5, foka 4, małpka 3, pchła 1). Meple pozostają na planszy. Liczą się też dyrektor cyrku i akrobaci, ale nie świnia, budowniczy, stodoła ani pasterz. Cyrk jest punktowany jeszcze raz na koniec gry, przed punktacją końcową.\n• Akrobaci: ukończona piramida (3 meple) daje po 5 pkt za każdego akrobatę, który wraca do puli. Na koniec gry 5 pkt za każdego akrobatę na planszy.\n• Dyrektor cyrku: 2 pkt za każdą płytkę cyrku lub akrobatów obok niego, także na koniec gry.",
   "rulesGold": "• Złoto: w grze jest 16 sztabek. Za ukończoną budowlę sztabki z jej płytek otrzymuje gracz z przewagą (rolnicy ich nie otrzymują).\n• Na koniec gry wartość sztabki zależy od liczby posiadanych: 1–3 sztabki po 1 pkt, 4–6 po 2 pkt, 7–9 po 3 pkt, od 10 po 4 pkt.",
   "gameStartedTitle": "Gra została rozpoczęta!",
   "noPlayersHint2": "Jeśli chcesz edytować gracza, przytrzymaj wiersz z jego imieniem.",
@@ -881,6 +881,7 @@
     }
   },
   "aboutDisclaimer": "Aplikacja nieoficjalna, tworzona przez fana. Carcassonne jest znakiem towarowym swoich właścicieli. Wszystkie ikony w aplikacji są autorskie.",
+  "aboutRulesNote": "Licznik liczy punkty według zasad wydań C1/C2/C3. Zmiany zasad z wydania C3.1 (2025) nie są uwzględnione.",
   "aboutLicenses": "Licencje bibliotek",
   "newGameChoiceBody": "Chcesz zagrać jeszcze raz w tym samym składzie, czy ustawić graczy od nowa?\n\nPunkty, surowce i zużyte żetony cyrku zostaną wyzerowane. Dodatki zostają bez zmian, a przed startem nadal możesz je zmienić.",
   "newGameSamePlayers": "Ci sami gracze",
@@ -889,7 +890,7 @@
   "expGermanCastles": "Niemieckie zamki",
   "expGermanCastlesDesc": "Podwójne płytki niemieckich zamków. Lord na zamku dostaje 12 pkt za ukończony zamek, a każdy zamek na końcu ukończonej drogi lub miasta daje graczom z przewagą dodatkowe 3 pkt.",
   "expGermanCathedrals": "Niemieckie katedry",
-  "expGermanCathedralsDesc": "Płytki z niemieckimi katedrami na polach. Zbój na drodze do katedry dostaje podwójne punkty za każdy odcinek drogi, także nieukończonej na koniec gry, a arcybiskup 1 pkt za każdy odcinek dróg, ale tylko gdy wszystkie są zamknięte.",
+  "expGermanCathedralsDesc": "Płytki z niemieckimi katedrami na polach. Zbój na drodze do katedry dostaje podwójne punkty za każdy odcinek ukończonej drogi, a arcybiskup 1 pkt za każdy odcinek dróg przy katedrze (2 z karczmą), przy czym każda droga jest liczona osobno.",
   "scGermanCastle": "Lord na zamku",
   "scArchbishop": "Arcybiskup",
   "germanCastlesAtFeature": "Zamki niemieckie przy budowli",
@@ -902,7 +903,7 @@
     }
   },
   "roadToCathedral": "Czy prowadzi do katedry",
-  "roadToCathedralHint": "Zaznacz, jeśli którykolwiek koniec drogi (także rondo z kilkoma końcami) leży na płytce niemieckiej katedry (zbój); wiele katedr nie zwiększa premii: dostaje podwójne punkty, czyli 2 pkt za płytkę (3 z karczmą), także gdy jest nieukończona na koniec gry.",
+  "roadToCathedralHint": "Zaznacz, jeśli którykolwiek koniec drogi (także rondo z kilkoma końcami) leży na płytce niemieckiej katedry (zbój); wiele katedr nie zwiększa premii. Ukończona droga daje podwójne punkty: 2 pkt za płytkę (3 z karczmą). Nieukończona na koniec gry liczy się jak zwykła droga: 1 pkt za płytkę (z karczmą 0).",
   "completedGermanCastle": "Czy ukończony",
   "germanCastleHint": "Zaznacz, jeśli zamek jest otoczony ze wszystkich stron: lord na zamku dostaje {completed} pkt. Odznacz, jeśli punktujesz go na koniec gry: {base} pkt za płytkę zamku i 1 pkt za każdą otaczającą płytkę.",
   "@germanCastleHint": {
@@ -916,10 +917,29 @@
     }
   },
   "tilesAroundCastle": "Płytki wokół zamku",
-  "archbishopRoadTiles": "Odcinki dróg przy katedrze",
-  "archbishopInnHint": "Zaznacz, jeśli drogi mają karczmę: arcybiskup dostaje 2 pkt za odcinek zamiast 1.",
+  "completedRoad": "Czy ukończona",
+  "archbishopRoads": "Liczba dróg przy katedrze",
+  "archbishopRoadsHint": "Wskaż, ile dróg wychodzi z katedry (3 lub 4) i wpisz liczbę odcinków każdej z nich. Każda droga jest liczona osobno (z karczmą lub bez), a wyniki się sumują. Gdy wszystkie drogi są zamknięte, arcybiskup dostaje 1 pkt za odcinek (2 z karczmą). Na koniec gry punktuje także przy otwartych drogach: ukończona jak wyżej, nieukończona 1 pkt za odcinek (z karczmą 0).",
+  "archbishopRoadSegments": "Droga {number}: odcinki",
+  "@archbishopRoadSegments": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "archbishopRoadTitle": "Droga {number}",
+  "@archbishopRoadTitle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "archbishopRoadInnHint": "Zaznacz, jeśli ta droga ma karczmę: ukończona daje 2 pkt za odcinek zamiast 1, a nieukończona na koniec gry 0.",
+  "archbishopRoadDoneHint": "Odznacz, jeśli ta droga jest jeszcze otwarta (możliwe tylko na koniec gry): liczy się wtedy 1 pkt za odcinek, a z karczmą 0.",
   "rulesGermanCastles": "• Każdy gracz otrzymuje 1 zamek (przy 2–3 graczach 2). Zamek kładzie się zamiast dociągnięcia płytki i nie może dotykać innych zamków, także rogiem.\n• Lord na zamku: ukończony zamek (otoczony jak klasztor) daje 12 pkt. Nieukończony na koniec gry daje 2 pkt za płytkę zamku i 1 pkt za każdą otaczającą płytkę.\n• Ukończona droga lub miasto z zamkiem na końcu daje graczom z przewagą po 3 pkt za każdy zamek, także nieobsadzony. Premia jest doliczana po modyfikacjach z karczmy i katedry.\n• Zamki nie dają premii +3 przy budowlach nieukończonych (na koniec gry).\n• Zamek nie liczy się jako miasto przy punktowaniu pól ani stodoły: nie przynosi punktów rolnikom ani właścicielowi stodoły.",
-  "rulesGermanCathedrals": "• Dodatek zawiera 6 płytek z katedrami na polach, z 3 lub 4 drogami wychodzącymi z katedry.\n• Zbój na drodze do katedry: podwójne punkty za każdy odcinek, czyli 2 pkt za płytkę (3 z karczmą). Dotyczy to także drogi nieukończonej na koniec gry (z karczmą 0).\n• Arcybiskup na katedrze punktuje tylko wtedy, gdy zamknięte są wszystkie drogi wychodzące z katedry: 1 pkt za każdy odcinek drogi (2 z karczmą), przy czym każdy odcinek na płytce katedry liczy się osobno. Jeśli któraś droga pozostanie otwarta do końca gry, arcybiskup nie otrzymuje punktów.",
+  "rulesGermanCathedrals": "• Dodatek zawiera 6 płytek z katedrami na polach, z 3 lub 4 drogami wychodzącymi z katedry.\n• Zbój na drodze do katedry: podwójne punkty za każdy odcinek ukończonej drogi, czyli 2 pkt za płytkę (3 z karczmą). Nieukończona na koniec gry liczy się jak zwykła droga: 1 pkt za płytkę (z karczmą 0).\n• Arcybiskup na katedrze: każda droga wychodząca z katedry jest liczona osobno, a wyniki się sumują. Ukończona droga daje 1 pkt za odcinek (2 z karczmą), każdy odcinek na płytce katedry liczy się osobno. Gdy jakaś droga pozostanie otwarta do końca gry, arcybiskup i tak punktuje: za drogę nieukończoną 1 pkt za odcinek (z karczmą 0).\n• Zasady według wydań C1/C2/C3; w wydaniu C3.1 nieukończona droga z karczmą liczy się inaczej, czego licznik nie uwzględnia.",
   "savePdf": "Zapisz PDF z gry",
   "pdfPhotoTitle": "Dodać zdjęcie planszy?",
   "pdfPhotoBody": "Zdjęcie zostanie dodane do dokumentu jako ostatnia strona.",

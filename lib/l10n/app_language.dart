@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 /// Język interfejsu aplikacji.
 enum AppLanguage {
   pl('pl', 'Polski'),
-  en('en', 'English');
+  en('en', 'English'),
+  de('de', 'Deutsch'),
+  fr('fr', 'Français');
 
   const AppLanguage(this.code, this.nativeName);
 
