@@ -243,20 +243,11 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         }
       : const {};
 
-  int get _points => _calc(
-    circusTiles: _ringmasterActive ? _circusTiles : 0,
-    fairy: _showFairy && _fairy && _fairyForScorer,
-  );
-
-  /// Punkty budowli bez premii przy meplu (wróżka, dyrektor cyrku) – to dostają
-  /// współdzielący i właściciele zamków.
-  int get _basePoints => _calc(circusTiles: 0, fairy: false);
-
   /// Punkty każdego gracza po podziale (punktujący jest pierwszy).
   Map<Player, int> get _distribution => _distributionOf(magic: true);
 
   /// Punkty graczy, które wynikają z maga lub wiedźmy (różnica z podziałem
-  /// bez pionka): w podsumowaniu idą do osobnej kolumny „Magia".
+  /// bez pionka): w podsumowaniu idą do osobnej kolumny „Mag i Wiedźma".
   Map<Player, int> get _magicParts {
     if (!_magicOk || _magic == null) return const {};
     final withMagic = _distributionOf(magic: true);
