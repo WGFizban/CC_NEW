@@ -86,6 +86,13 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   int _circusTiles = 0;
   bool _fairy = false;
 
+  /// Czyj mepel stoi przy wróżce (`null` = punktującego). Wróżka może dać +3 pkt
+  /// także graczowi bez przewagi w ukończonej budowli.
+  Player? _fairyOwner;
+
+  bool get _fairyForScorer =>
+      _fairyOwner == null || _fairyOwner == widget.player;
+
   /// Mag albo wiedźma na drodze lub mieście (minidodatek „Mag i Wiedźma").
   MagicPawn? _magic;
   _Field _active = _Field.tiles;
@@ -236,7 +243,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         }
       : const {};
 
-  int get _points => _calc(circusTiles: _ringmasterActive ? _circusTiles : 0, fairy: _showFairy && _fairy);
+  int get _points => _calc(
+    circusTiles: _ringmasterActive ? _circusTiles : 0,
+    fairy: _showFairy && _fairy && _fairyForScorer,
+  );
 
   /// Punkty budowli bez premii przy meplu (wróżka, dyrektor cyrku) – to dostają
   /// współdzielący i właściciele zamków.
@@ -252,6 +262,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       scorerAsCastle: _castleMode,
       scorerCastles: _scorerCastles,
       scorerExtraCastles: _scorerExtraCastles,
+      fairyOwner: _showFairy && _fairy && !_fairyForScorer ? _fairyOwner : null,
+      fairyPoints: kFairyFeaturePoints,
       others: {
         for (final e in _shares.entries)
           e.key: _castleOk ? e.value : e.value.copyWith(castle: false),
@@ -330,6 +342,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             ? goodsText.join(', ')
             : '${_goodsRecipient.name}: ${goodsText.join(', ')}',
       );
+    }
+    if (_showFairy && _fairy && !_fairyForScorer) {
+      parts.add('${l.scFairy}: ${_fairyOwner!.name}');
     }
     final shared = <String>[];
     final castles = <String>[];
@@ -1164,6 +1179,28 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         (v) => _fairy = v,
         hint: l.fairyHint(kFairyFeaturePoints),
       ),
+      // Przy punktach wspólnych wróżka może stać przy meplu gracza, który nie
+      // ma przewagi (więc nie dostaje punktów budowli, tylko +3 za wróżkę).
+      if (_fairy && _canShare && _otherPlayers.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: DropdownButtonFormField<Player>(
+            key: ValueKey(_fairyOwner),
+            initialValue: _fairyOwner ?? widget.player,
+            isExpanded: true,
+            decoration: InputDecoration(
+              labelText: l.fairyOwner,
+              border: const OutlineInputBorder(),
+            ),
+            items: [
+              for (final p in widget.players)
+                DropdownMenuItem(value: p, child: Text(p.name)),
+            ],
+            onChanged: (p) => setState(
+              () => _fairyOwner = p == widget.player ? null : p,
+            ),
+          ),
+        ),
     ];
   }
 
