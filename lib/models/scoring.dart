@@ -81,6 +81,12 @@ enum ScoringType {
   robber(
     'assets/icons/game/token_robber.svg',
     expansion: Expansion.kingRobber,
+  ),
+
+  /// Kolumna podsumowania z punktami od maga (+) i wiedźmy (−); nie do wyboru.
+  magic(
+    'assets/icons/game/magic.svg',
+    expansion: Expansion.mageWitch,
   );
 
   const ScoringType(this.iconAsset, {this.expansion});
@@ -129,7 +135,7 @@ enum ScoringType {
   /// króla i rabusia, które powstają tylko na koniec gry).
   static List<ScoringType> selectableFor(Set<Expansion> enabled) => [
     for (final t in availableFor(enabled))
-      if (t != king && t != robber) t,
+      if (t != king && t != robber && t != magic) t,
   ];
 }
 
@@ -239,6 +245,7 @@ int calculatePoints(
     case ScoringType.crown:
     case ScoringType.king:
     case ScoringType.robber:
+    case ScoringType.magic:
       base = 0;
 
     case ScoringType.germanCastle:

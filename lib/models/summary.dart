@@ -19,7 +19,11 @@ Map<String, Map<ScoringType?, int>> pointsByType(
       final id = c.playerId ?? _legacyId(c, players);
       if (id == null) continue;
       final row = result.putIfAbsent(id, () => {});
-      row[type] = (row[type] ?? 0) + c.points;
+      // Wpływ maga i wiedźmy ma osobną kolumnę; budowla liczy się bez niego.
+      row[type] = (row[type] ?? 0) + c.points - c.magic;
+      if (c.magic != 0) {
+        row[ScoringType.magic] = (row[ScoringType.magic] ?? 0) + c.magic;
+      }
     }
   }
   return result;

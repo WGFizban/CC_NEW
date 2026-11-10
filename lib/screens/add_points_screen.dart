@@ -253,12 +253,32 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   int get _basePoints => _calc(circusTiles: 0, fairy: false);
 
   /// Punkty każdego gracza po podziale (punktujący jest pierwszy).
-  Map<Player, int> get _distribution {
-    if (!_canShare) return {widget.player: _points};
+  Map<Player, int> get _distribution => _distributionOf(magic: true);
+
+  /// Punkty graczy, które wynikają z maga lub wiedźmy (różnica z podziałem
+  /// bez pionka): w podsumowaniu idą do osobnej kolumny „Magia".
+  Map<Player, int> get _magicParts {
+    if (!_magicOk || _magic == null) return const {};
+    final withMagic = _distributionOf(magic: true);
+    final without = _distributionOf(magic: false);
+    return {
+      for (final p in withMagic.keys)
+        if (withMagic[p]! != (without[p] ?? 0)) p: withMagic[p]! - (without[p] ?? 0),
+    };
+  }
+
+  Map<Player, int> _distributionOf({required bool magic}) {
+    final base = _calc(circusTiles: 0, fairy: false, magic: magic);
+    final points = _calc(
+      circusTiles: _ringmasterActive ? _circusTiles : 0,
+      fairy: _showFairy && _fairy && _fairyForScorer,
+      magic: magic,
+    );
+    if (!_canShare) return {widget.player: points};
     return splitPoints(
       scorer: widget.player,
-      base: _basePoints,
-      extras: _points - _basePoints,
+      base: base,
+      extras: points - base,
       scorerAsCastle: _castleMode,
       scorerCastles: _scorerCastles,
       scorerExtraCastles: _scorerExtraCastles,
@@ -271,7 +291,11 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     );
   }
 
-  int _calc({required int circusTiles, required bool fairy}) => calculatePoints(
+  int _calc({
+    required int circusTiles,
+    required bool fairy,
+    bool magic = true,
+  }) => calculatePoints(
     _type,
     tiles: _tiles,
     banners: _banners,
@@ -300,7 +324,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     farm: _farmActive,
     circusTiles: circusTiles,
     withFairy: fairy,
-    magic: _magicOk ? _magic : null,
+    magic: _magicOk && magic ? _magic : null,
   );
 
   void _onKey(String key) {
@@ -398,12 +422,14 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     for (final p in gold.keys) {
       totals.putIfAbsent(p, () => 0);
     }
+    final magicParts = _magicParts;
     final changes = [
       for (final e in totals.entries)
         if (e.value != 0 || e.key == recipient || gold.containsKey(e.key))
           ScoreChange(
             e.key,
             e.value,
+            magic: magicParts[e.key] ?? 0,
             goods: e.key == recipient ? goods : const {},
             gold: gold[e.key] ?? 0,
           ),
@@ -904,6 +930,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       case ScoringType.crown:
       case ScoringType.king:
       case ScoringType.robber:
+      case ScoringType.magic:
         // Wróżka dopisuje 1 pkt od razu na liście graczy, a pozostałe typy
         // mają osobne ekrany lub (surowce) tylko sekcję surowców.
         return const [];

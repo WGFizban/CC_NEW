@@ -13,11 +13,17 @@ class ScoreChange {
   /// Sztabki złota (minidodatek „Kopalnie złota").
   final int gold;
 
+  /// Część [points] wynikająca z maga (dodatnia) albo wiedźmy (ujemna).
+  /// W podsumowaniu trafia do osobnej kolumny „Magia", a punkty miasta lub
+  /// drogi liczą się bez niej.
+  final int magic;
+
   const ScoreChange(
     this.player,
     this.points, {
     this.goods = const {},
     this.gold = 0,
+    this.magic = 0,
   });
 }
 

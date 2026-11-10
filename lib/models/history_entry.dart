@@ -29,6 +29,9 @@ class HistoryChange {
   /// wpisach.
   final int? total;
 
+  /// Część [points] od maga (+) albo wiedźmy (−); patrz [ScoreChange.magic].
+  final int magic;
+
   const HistoryChange({
     required this.player,
     this.playerId,
@@ -37,6 +40,7 @@ class HistoryChange {
     this.gold = 0,
     this.color,
     this.total,
+    this.magic = 0,
   });
 
   /// Czy ta zmiana dotyczy gracza [p]. Nowe wpisy porównują id, starsze
@@ -54,6 +58,7 @@ class HistoryChange {
     gold: gold,
     color: color,
     total: total,
+    magic: magic,
   );
 
   /// Surowce i złoto jako tekst w aktualnym języku, np. „Wino ×1, Złoto ×3".
@@ -78,6 +83,7 @@ class HistoryChange {
     'gold': gold,
     'color': color,
     'total': total,
+    'magic': magic,
   };
 
   factory HistoryChange.fromJson(Map<String, dynamic> json) => HistoryChange(
@@ -87,6 +93,7 @@ class HistoryChange {
     gold: (json['gold'] as int?) ?? 0,
     color: json['color'] as int?,
     total: json['total'] as int?,
+    magic: (json['magic'] as int?) ?? 0,
     goods: {
       for (final e in ((json['goods'] as Map?) ?? const {}).entries)
         e.key as String: e.value as int,
@@ -149,6 +156,7 @@ class HistoryEntry {
             gold: c.gold,
             color: c.player.color.toARGB32(),
             total: totals?[c.player],
+            magic: c.magic,
           ),
       ],
     );

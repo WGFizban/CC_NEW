@@ -73,6 +73,7 @@ extension ScoringTypeLabels on ScoringType {
     ScoringType.crown => l.scCrown,
     ScoringType.king => l.tokenKingShort,
     ScoringType.robber => l.tokenRobberShort,
+    ScoringType.magic => l.scMagic,
   };
 }
 
