@@ -11,6 +11,8 @@ enum Expansion {
   bridgesCastlesBazaars(8),
   hillsSheep(9),
   circus(10),
+  flyingMachines(1, mini: true),
+  mageWitch(2, mini: true),
   goldMines(4, mini: true),
   monasteries(5, mini: true),
   germanCastles(6, mini: true),

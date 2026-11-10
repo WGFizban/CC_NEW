@@ -358,5 +358,18 @@
   "pdfNoPhotoTaken": "No photo was taken, so the PDF file was not saved.",
   "pdfCameraError": "The camera could not be started.",
   "pdfSaveError": "The PDF file could not be saved.",
-  "aboutRulesNote": "The app scores by the rules of the C1/C2/C3 editions. The rule changes of the C3.1 edition (2025) are not covered."
+  "aboutRulesNote": "The app scores by the rules of the C1/C2/C3 editions. The rule changes of the C3.1 edition (2025) are not covered.",
+  "expFlyingMachines": "The Flying Machines",
+  "expFlyingMachinesDesc": "A flying machine sends a meeple to another tile, even onto an occupied feature. This lets several players score the same monastery, abbey, German castle or line monastery.",
+  "expMageWitch": "The Mage and the Witch",
+  "expMageWitchDesc": "Magic pawns on a road or city: the mage adds 1 pt per tile, the witch halves the points (rounded up).",
+  "magicPawn": "Magic pawn",
+  "magicHint": "The mage adds 1 pt per tile of the road or city (coats of arms do not count). Inns and cathedrals do not change this, so you get the bonus even for an unfinished road with an inn or an unfinished city with a cathedral at the end of the game. The witch divides the points of the road or city by 2, rounded up (after inns, cathedrals and German cathedrals), but does not divide the German castle bonus, the fairy bonus or the ringmaster points. The mage and the witch cannot be on the same road or in the same city.",
+  "magicNone": "None",
+  "magicMage": "Mage",
+  "magicWitch": "Witch",
+  "sharedHintFlying": " Flying machines let extra meeples land in a monastery, abbey, garden or German castle – tick their owners here. The fairy can stand next to only one of them.",
+  "monasterySharedHint": "Tick the players who have a meeple in the same monastery thanks to a flying machine: they get the same end-game points. The fairy counts only for the scoring player.",
+  "rulesFlyingMachines": "• Flying machine tiles: instead of a normal meeple you may send a meeple by flying machine to another tile and place it on a feature there, even an occupied one.\n• So several players can have a meeple in a monastery, abbey, garden, German castle or line monastery – each scores the full points (in the app: shared points).\n• The fairy can stand next to only one of those meeples, so only one player gets her +3 pts.",
+  "rulesMageWitch": "• The expansion has a mage (purple), a witch (orange) and 8 magic tiles. After placing such a tile, before placing a meeple, you place or move one pawn onto an unfinished road or city.\n• The mage and the witch cannot be on the same road or in the same city.\n• Mage: +1 pt per tile of the road or city (coats of arms do not count). Inns and cathedrals do not change this, so you also get the bonus for an unfinished road with an inn or an unfinished city with a cathedral at the end of the game.\n• Witch: the points of the road or city are divided by 2, rounded up (after inns, cathedrals and German cathedrals). She does not divide the German castle bonus, the fairy bonus or the ringmaster points.\n• The archbishop gets no points from the mage on roads connected to his cathedral."
 }

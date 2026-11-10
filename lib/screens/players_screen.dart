@@ -333,6 +333,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       ScoringType.tower => TowerScreen(player: player, players: players),
       ScoringType.monastery => MonasteryScreen(
         player: player,
+        players: players,
         expansions: _settings.expansions,
       ),
       ScoringType.pyramid => PyramidScreen(players: players),

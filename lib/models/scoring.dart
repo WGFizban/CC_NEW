@@ -2,6 +2,7 @@ import 'circus.dart';
 import 'expansion.dart';
 import 'fairy.dart';
 import 'german.dart';
+import 'magic.dart';
 import 'sheep.dart';
 
 /// Rodzaje punktacji dostępne w aplikacji. Typy z dodatków pojawiają się
@@ -163,6 +164,7 @@ enum FarmScoring {
 /// - [cathedralRoad] – droga prowadzi do niemieckiej katedry: ukończona daje
 ///   2 pkt za płytkę (3 z karczmą), nieukończona liczy się jak zwykła droga,
 /// - [cathedralRoads] – drogi przy katedrze dla [ScoringType.archbishop],
+/// - [magic] – mag lub wiedźma na drodze/mieście (patrz [applyMagic]),
 /// - [withFairy] – wróżka stoi przy meplu w tej budowli: +3 pkt
 ///   niezależnie od reszty (tylko miasto, droga, klasztor i pole).
 ///
@@ -178,6 +180,7 @@ int calculatePoints(
   FarmScoring farm = FarmScoring.normal,
   int circusTiles = 0,
   bool withFairy = false,
+  MagicPawn? magic,
   int germanCastles = 0,
   bool cathedralRoad = false,
   List<CathedralRoad> cathedralRoads = const [],
@@ -247,10 +250,14 @@ int calculatePoints(
       // Arcybiskup: każda droga od katedry osobno (patrz archbishopPoints).
       base = archbishopPoints(cathedralRoads);
   }
+  // Mag i wiedźma działają tylko na drogę i miasto.
+  final magical = type == ScoringType.city || type == ScoringType.road
+      ? applyMagic(magic, base: base, tiles: tiles)
+      : base;
   final fairy = withFairy && type.supportsFairy ? kFairyFeaturePoints : 0;
   final castleBonus =
       completed && (type == ScoringType.city || type == ScoringType.road)
       ? germanCastles * kGermanCastleBonus
       : 0;
-  return base + castleBonus + ringmasterPoints(circusTiles) + fairy;
+  return magical + castleBonus + ringmasterPoints(circusTiles) + fairy;
 }

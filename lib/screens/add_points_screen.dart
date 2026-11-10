@@ -8,6 +8,7 @@ import '../models/expansion.dart';
 import '../models/fairy.dart';
 import '../models/gold.dart';
 import '../models/german.dart';
+import '../models/magic.dart';
 import '../models/goods.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
@@ -84,6 +85,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   /// Gracz przejmuje żeton Króla (miasto) albo Barona rabusiów (droga).
   int _circusTiles = 0;
   bool _fairy = false;
+
+  /// Mag albo wiedźma na drodze lub mieście (minidodatek „Mag i Wiedźma").
+  MagicPawn? _magic;
   _Field _active = _Field.tiles;
 
   /// Pozostali gracze, którzy dostają punkty tej budowli (wspólnie lub z zamku).
@@ -187,9 +191,19 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool get _showFairy =>
       _type.supportsFairy && _has(Expansion.princessDragon) && !_castleMode;
 
+  /// Mag i wiedźma działają tylko na drogę i miasto.
+  bool get _magicOk =>
+      (_type == ScoringType.city || _type == ScoringType.road) &&
+      _has(Expansion.mageWitch);
+
+  /// Punkty wspólne: budowle z [ScoringType.isFeature], a z maszynami
+  /// latającymi także zamek niemiecki (kilku graczy może mieć w nim mepla).
+  bool get _canShare =>
+      _isFeature ||
+      (_type == ScoringType.germanCastle && _has(Expansion.flyingMachines));
+
   bool get _showSharing =>
-      _isFeature &&
-      (widget.players.length > 1 || _castleOk);
+      _canShare && (widget.players.length > 1 || _castleOk);
 
   List<Player> get _otherPlayers => [
     for (final p in widget.players)
@@ -230,7 +244,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   /// Punkty każdego gracza po podziale (punktujący jest pierwszy).
   Map<Player, int> get _distribution {
-    if (!_isFeature) return {widget.player: _points};
+    if (!_canShare) return {widget.player: _points};
     return splitPoints(
       scorer: widget.player,
       base: _basePoints,
@@ -274,6 +288,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     farm: _farmActive,
     circusTiles: circusTiles,
     withFairy: fairy,
+    magic: _magicOk ? _magic : null,
   );
 
   void _onKey(String key) {
@@ -306,6 +321,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final parts = <String>[];
     final mine = distribution[widget.player] ?? 0;
     if (mine != 0) parts.add('+$mine');
+    if (_magicOk && _magic != null) {
+      parts.add(_magic == MagicPawn.mage ? l.magicMage : l.magicWitch);
+    }
     if (goodsText.isNotEmpty) {
       parts.add(
         _goodsRecipient == widget.player
@@ -667,6 +685,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               max: 6,
               hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
             ),
+          if (_magicOk) _buildMagic(),
           if (_tokenKind == CrownToken.king) _tokenInfo(CrownToken.king),
         ];
 
@@ -709,6 +728,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               max: 6,
               hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
             ),
+          if (_magicOk) _buildMagic(),
           if (_tokenKind == CrownToken.robber) _tokenInfo(CrownToken.robber),
         ];
 
@@ -1036,7 +1056,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         castleOk && _type.supportsCastle
             ? l.sharedPointsCastles
             : l.sharedPoints,
-        l.sharedHint + (castleOk ? l.sharedHintCastle : ''),
+        l.sharedHint +
+            (castleOk ? l.sharedHintCastle : '') +
+            (_has(Expansion.flyingMachines) ? l.sharedHintFlying : ''),
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
       subtitle: PlayerLabels(items: chosen, empty: l.none),
@@ -1222,6 +1244,47 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   }
 
   // ----------------------------------------------------------- widgety
+
+  /// Wybór pionka magicznego (brak / mag / wiedźma): wzajemnie się wykluczają,
+  /// bo nie mogą stać na tej samej drodze ani w tym samym mieście.
+  Widget _buildMagic() {
+    final l = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          LabelWithHint(l.magicPawn, l.magicHint),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<MagicPawn?>(
+              showSelectedIcon: false,
+              emptySelectionAllowed: false,
+              segments: [
+                ButtonSegment(
+                  value: null,
+                  label: Text(l.magicNone, maxLines: 1, softWrap: false),
+                ),
+                ButtonSegment(
+                  value: MagicPawn.mage,
+                  icon: GameIcon(MagicPawn.mage.iconAsset, size: 24),
+                  label: Text(l.magicMage, maxLines: 1, softWrap: false),
+                ),
+                ButtonSegment(
+                  value: MagicPawn.witch,
+                  icon: GameIcon(MagicPawn.witch.iconAsset, size: 24),
+                  label: Text(l.magicWitch, maxLines: 1, softWrap: false),
+                ),
+              ],
+              selected: {_magic},
+              onSelectionChanged: (s) => setState(() => _magic = s.first),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _check(
     String title,

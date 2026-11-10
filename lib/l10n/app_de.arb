@@ -358,5 +358,18 @@
   "pdfNoPhotoTaken": "Es wurde kein Foto aufgenommen, daher wurde die PDF-Datei nicht gespeichert.",
   "pdfCameraError": "Die Kamera konnte nicht gestartet werden.",
   "pdfSaveError": "Die PDF-Datei konnte nicht gespeichert werden.",
-  "aboutRulesNote": "Die App zählt nach den Regeln der Ausgaben C1/C2/C3. Die Regeländerungen der Ausgabe C3.1 (2025) sind nicht berücksichtigt."
+  "aboutRulesNote": "Die App zählt nach den Regeln der Ausgaben C1/C2/C3. Die Regeländerungen der Ausgabe C3.1 (2025) sind nicht berücksichtigt.",
+  "expFlyingMachines": "Die Fluggeräte",
+  "expFlyingMachinesDesc": "Ein Fluggerät schickt einen Meeple auf ein anderes Plättchen, auch auf ein besetztes Objekt. So können mehrere Spieler dasselbe Kloster, dieselbe Abtei, Burg oder dasselbe Linienkloster werten.",
+  "expMageWitch": "Magier und Hexe",
+  "expMageWitchDesc": "Zauberfiguren auf einer Straße oder in einer Stadt: Der Magier gibt 1 Pkt. pro Plättchen, die Hexe halbiert die Punkte (aufgerundet).",
+  "magicPawn": "Zauberfigur",
+  "magicHint": "Der Magier gibt 1 Pkt. pro Plättchen der Straße oder Stadt (Wappen zählen nicht). Gasthäuser und Kathedralen ändern daran nichts, daher gibt es den Bonus auch für eine unfertige Straße mit Gasthaus oder eine unfertige Stadt mit Kathedrale am Spielende. Die Hexe teilt die Punkte der Straße oder Stadt durch 2, aufgerundet (nach Gasthaus, Kathedrale und deutscher Kathedrale), teilt aber weder den Bonus der deutschen Burgen noch den der Fee oder des Zirkusdirektors. Magier und Hexe dürfen nicht auf derselben Straße oder in derselben Stadt stehen.",
+  "magicNone": "Keine",
+  "magicMage": "Magier",
+  "magicWitch": "Hexe",
+  "sharedHintFlying": " Mit Fluggeräten landen zusätzliche Meeple in Kloster, Abtei, Garten oder deutscher Burg – kreuze hier ihre Besitzer an. Die Fee steht nur neben einem von ihnen.",
+  "monasterySharedHint": "Kreuze die Spieler an, die dank eines Fluggeräts einen Meeple im selben Kloster haben: Sie erhalten dieselben Schlusspunkte. Die Fee zählt nur für den wertenden Spieler.",
+  "rulesFlyingMachines": "• Plättchen mit Fluggerät: Statt eines normalen Meeples kannst du einen Meeple per Fluggerät auf ein anderes Plättchen schicken und dort auf ein Objekt setzen, auch ein besetztes.\n• So können mehrere Spieler einen Meeple in Kloster, Abtei, Garten, deutscher Burg oder Linienkloster haben – jeder erhält die vollen Punkte (in der App: gemeinsame Punkte).\n• Die Fee kann nur neben einem dieser Meeple stehen, daher erhält nur ein Spieler ihre +3 Pkt.",
+  "rulesMageWitch": "• Die Erweiterung enthält einen Magier (lila), eine Hexe (orange) und 8 Zauberplättchen. Nach dem Legen eines solchen Plättchens setzt oder bewegst du vor dem Meeple eine Figur auf eine unfertige Straße oder Stadt.\n• Magier und Hexe dürfen nicht auf derselben Straße oder in derselben Stadt stehen.\n• Magier: +1 Pkt. pro Plättchen der Straße oder Stadt (Wappen zählen nicht). Gasthaus und Kathedrale ändern das nicht, daher gibt es den Bonus auch für eine unfertige Straße mit Gasthaus oder eine unfertige Stadt mit Kathedrale am Spielende.\n• Hexe: Die Punkte der Straße oder Stadt werden durch 2 geteilt, aufgerundet (nach Gasthaus, Kathedrale und deutscher Kathedrale). Sie teilt weder den Bonus der deutschen Burgen noch den der Fee oder des Zirkusdirektors.\n• Der Erzbischof erhält keine Punkte vom Magier auf Straßen an seiner Kathedrale."
 }

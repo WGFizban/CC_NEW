@@ -358,5 +358,18 @@
   "pdfNoPhotoTaken": "Aucune photo n'a été prise, le fichier PDF n'a donc pas été enregistré.",
   "pdfCameraError": "L'appareil photo n'a pas pu être démarré.",
   "pdfSaveError": "Le fichier PDF n'a pas pu être enregistré.",
-  "aboutRulesNote": "L'application compte selon les règles des éditions C1/C2/C3. Les changements de règles de l'édition C3.1 (2025) ne sont pas pris en compte."
+  "aboutRulesNote": "L'application compte selon les règles des éditions C1/C2/C3. Les changements de règles de l'édition C3.1 (2025) ne sont pas pris en compte.",
+  "expFlyingMachines": "Les machines volantes",
+  "expFlyingMachinesDesc": "Une machine volante envoie un meeple sur une autre tuile, même sur un élément occupé. Ainsi plusieurs joueurs peuvent marquer le même monastère, la même abbaye, le même château allemand ou monastère en ligne.",
+  "expMageWitch": "Le magicien et la sorcière",
+  "expMageWitchDesc": "Pions magiques sur une route ou une ville : le magicien ajoute 1 pt par tuile, la sorcière divise les points par deux (arrondi au supérieur).",
+  "magicPawn": "Pion magique",
+  "magicHint": "Le magicien ajoute 1 pt par tuile de la route ou de la ville (les blasons ne comptent pas). Auberges et cathédrales n'y changent rien : le bonus est donc aussi accordé pour une route inachevée avec auberge ou une ville inachevée avec cathédrale en fin de partie. La sorcière divise les points de la route ou de la ville par 2, arrondi au supérieur (après auberge, cathédrale et cathédrale allemande), mais ne divise pas le bonus des châteaux allemands, ni celui de la fée ou du directeur de piste. Le magicien et la sorcière ne peuvent pas être sur la même route ni dans la même ville.",
+  "magicNone": "Aucun",
+  "magicMage": "Magicien",
+  "magicWitch": "Sorcière",
+  "sharedHintFlying": " Les machines volantes permettent de poser des meeples supplémentaires dans un monastère, une abbaye, un jardin ou un château allemand – cochez alors leurs propriétaires. La fée n'est à côté que d'un seul d'entre eux.",
+  "monasterySharedHint": "Cochez les joueurs qui ont un meeple dans le même monastère grâce à une machine volante : ils marquent les mêmes points de fin de partie. La fée ne compte que pour le joueur qui marque.",
+  "rulesFlyingMachines": "• Tuiles à machine volante : au lieu d'un meeple normal, vous pouvez envoyer un meeple par machine volante sur une autre tuile et le poser sur un élément, même occupé.\n• Ainsi plusieurs joueurs peuvent avoir un meeple dans un monastère, une abbaye, un jardin, un château allemand ou un monastère en ligne – chacun marque tous les points (dans l'appli : points partagés).\n• La fée n'est à côté que d'un seul de ces meeples : un seul joueur reçoit ses +3 pts.",
+  "rulesMageWitch": "• L'extension contient un magicien (violet), une sorcière (orange) et 8 tuiles magiques. Après avoir posé une telle tuile, avant de poser un meeple, vous posez ou déplacez un pion sur une route ou une ville inachevée.\n• Le magicien et la sorcière ne peuvent pas être sur la même route ni dans la même ville.\n• Magicien : +1 pt par tuile de la route ou de la ville (les blasons ne comptent pas). Auberge et cathédrale n'y changent rien : le bonus est aussi accordé pour une route inachevée avec auberge ou une ville inachevée avec cathédrale en fin de partie.\n• Sorcière : les points de la route ou de la ville sont divisés par 2, arrondi au supérieur (après auberge, cathédrale et cathédrale allemande). Elle ne divise pas le bonus des châteaux allemands, ni celui de la fée ou du directeur de piste.\n• L'archevêque ne reçoit aucun point du magicien sur les routes reliées à sa cathédrale."
 }
