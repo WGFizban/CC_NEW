@@ -2,13 +2,13 @@
 <defs><clipPath id="t"><rect x="4" y="4" width="88" height="88" rx="18"/></clipPath></defs>
 <rect x="4" y="4" width="88" height="88" rx="18" fill="#EFE4F6"/>
 <g clip-path="url(#t)"><path d="M92 4 V92 H4 Z" fill="#F7E3CC"/></g>
-<g stroke="#3B2F2F" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
-<g transform="translate(6 6) scale(.55)">
+<g stroke="#3B2F2F" stroke-width="4.4" stroke-linejoin="round" stroke-linecap="round">
+<g transform="translate(5 5.5) scale(.5)">
 <path d="M30 70 C34 52 40 30 52 10 C58 28 64 52 68 70 Z" fill="#8E4FD0"/>
 <path d="M32 62 C44 66 56 66 67 62 L68 70 C56 74 42 74 30 70 Z" fill="#F2C94C"/>
 <path d="M14 72 C14 66 26 68 48 68 C70 68 82 66 82 72 C82 80 64 84 48 84 C32 84 14 80 14 72 Z" fill="#6B35A8"/>
 </g>
-<g transform="translate(38 36) scale(.55)">
+<g transform="translate(43 40.25) scale(.5)">
 <path d="M32 70 C34 56 40 44 46 34 C50 26 56 22 66 24 C60 24 58 28 58 32 C62 46 64 58 68 70 Z" fill="#E8820C"/>
 <path d="M66 24 C72 24 76 28 74 33"/>
 <path d="M34 61 C46 65 56 65 67 61 L68 70 C56 74 44 74 33 70 Z" fill="#6B4A2B"/>
