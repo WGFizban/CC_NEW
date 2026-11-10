@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cc_new/models/expansion.dart';
+import 'package:cc_new/models/german.dart';
 import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/magic.dart';
 import 'package:cc_new/models/player.dart';
@@ -12,6 +13,7 @@ import 'package:cc_new/models/summary.dart';
 
 void main() {
   _summaryTests();
+  _cathedralTests();
   group('Mag i wiedźma – dodatek', () {
     test('mag i maszyny latające to mini dodatki', () {
       expect(Expansion.mageWitch.mini, isTrue);
@@ -217,6 +219,55 @@ void _summaryTests() {
       expect(
         ScoringType.selectableFor({Expansion.mageWitch}),
         isNot(contains(ScoringType.magic)),
+      );
+    });
+  });
+}
+
+void _cathedralTests() {
+  group('Mag i wiedźma przy katedrze niemieckiej', () {
+    test('mag liczy płytki, nie odcinki (przykład z wikicarpedii: 14 pkt)', () {
+      // Droga z 4 płytek wraca do katedry: 5 odcinków * 2 + 4 płytki maga.
+      expect(
+        calculatePoints(
+          ScoringType.road,
+          tiles: 5,
+          cathedralRoad: true,
+          magic: MagicPawn.mage,
+          magicTiles: 4,
+        ),
+        14,
+      );
+    });
+
+    test('wiedźma zmniejsza o połowę tylko swoją drogę arcybiskupa', () {
+      final roads = [
+        const CathedralRoad(tiles: 5, magic: MagicPawn.witch), // 5 -> 3
+        const CathedralRoad(tiles: 4), // 4
+        const CathedralRoad(tiles: 3, inn: true), // 6
+      ];
+      expect(archbishopPoints(roads), 3 + 4 + 6);
+    });
+
+    test('mag nie daje arcybiskupowi punktów', () {
+      final roads = [
+        const CathedralRoad(tiles: 5, magic: MagicPawn.mage),
+        const CathedralRoad(tiles: 4, magic: MagicPawn.witch), // 4 -> 2
+      ];
+      expect(archbishopPoints(roads), 5 + 2);
+    });
+
+    test('nieukończona droga z karczmą nadal 0, także z wiedźmą', () {
+      expect(
+        archbishopPoints([
+          const CathedralRoad(
+            tiles: 4,
+            inn: true,
+            completed: false,
+            magic: MagicPawn.witch,
+          ),
+        ]),
+        0,
       );
     });
   });

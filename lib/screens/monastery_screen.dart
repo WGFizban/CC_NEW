@@ -131,7 +131,7 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
               if (_showFairy)
                 CheckboxListTile(
                   title: LabelWithHint(
-                    l.fairyOption(kFairyFeaturePoints),
+                    l.fairyOption,
                     l.fairyHint(kFairyFeaturePoints),
                   ),
                   value: _fairy,

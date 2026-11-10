@@ -95,6 +95,14 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   /// Mag albo wiedźma na drodze lub mieście (minidodatek „Mag i Wiedźma").
   MagicPawn? _magic;
+
+  /// Pionki magiczne na poszczególnych drogach arcybiskupa. Jest jeden mag
+  /// i jedna wiedźma, więc każdy stoi najwyżej na jednej drodze.
+  final List<MagicPawn?> _roadMagic = List.filled(kMaxCathedralRoads, null);
+
+  /// Płytki katedry niemieckiej, których dwa odcinki drogi liczą się dla maga
+  /// jako jedna płytka (mag liczy płytki, nie odcinki).
+  int _doubleTiles = 0;
   _Field _active = _Field.tiles;
 
   /// Pozostali gracze, którzy dostają punkty tej budowli (wspólnie lub z zamku).
@@ -131,14 +139,21 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     if (_type == ScoringType.archbishop) _active = _Field.road0;
   }
 
-  List<CathedralRoad> get _cathedralRoads => [
+  List<CathedralRoad> _cathedralRoads({bool magic = true}) => [
     for (var i = 0; i < _roadCount; i++)
       CathedralRoad(
         tiles: _roadTiles[i],
         inn: _has(Expansion.innsCathedrals) && _roadInn[i],
         completed: _roadDone[i],
+        magic: magic && _magicOk ? _roadMagic[i] : null,
       ),
   ];
+
+  /// Czy [pawn] stoi już na innej drodze niż [road] (pionek jest tylko jeden).
+  bool _magicTaken(MagicPawn pawn, int road) => [
+    for (var i = 0; i < _roadCount; i++)
+      if (i != road) _roadMagic[i],
+  ].contains(pawn);
 
   bool _has(Expansion e) => widget.expansions.contains(e);
 
@@ -198,16 +213,25 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool get _showFairy =>
       _type.supportsFairy && _has(Expansion.princessDragon) && !_castleMode;
 
-  /// Mag i wiedźma działają tylko na drogę i miasto.
+  /// Mag i wiedźma działają na drogę i miasto, a przy arcybiskupie na każdą
+  /// z jego dróg osobno.
   bool get _magicOk =>
-      (_type == ScoringType.city || _type == ScoringType.road) &&
+      (_type == ScoringType.city ||
+          _type == ScoringType.road ||
+          _type == ScoringType.archbishop) &&
       _has(Expansion.mageWitch);
+
+  /// Czy jakiś pionek magiczny jest wybrany.
+  bool get _magicChosen => _type == ScoringType.archbishop
+      ? [for (var i = 0; i < _roadCount; i++) _roadMagic[i]].any((m) => m != null)
+      : _magic != null;
 
   /// Punkty wspólne: budowle z [ScoringType.isFeature], a z maszynami
   /// latającymi także zamek niemiecki (kilku graczy może mieć w nim mepla).
   bool get _canShare =>
       _isFeature ||
-      (_type == ScoringType.germanCastle && _has(Expansion.flyingMachines));
+      ((_type == ScoringType.germanCastle || _type == ScoringType.archbishop) &&
+          _has(Expansion.flyingMachines));
 
   bool get _showSharing =>
       _canShare && (widget.players.length > 1 || _castleOk);
@@ -249,7 +273,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   /// Punkty graczy, które wynikają z maga lub wiedźmy (różnica z podziałem
   /// bez pionka): w podsumowaniu idą do osobnej kolumny „Mag i Wiedźma".
   Map<Player, int> get _magicParts {
-    if (!_magicOk || _magic == null) return const {};
+    if (!_magicOk || !_magicChosen) return const {};
     final withMagic = _distributionOf(magic: true);
     final without = _distributionOf(magic: false);
     return {
@@ -300,8 +324,14 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         : 0,
     completed: _completed,
     cathedralRoads: _type == ScoringType.archbishop
-        ? _cathedralRoads
+        ? _cathedralRoads(magic: magic)
         : const [],
+    magicTiles:
+        _type == ScoringType.road &&
+            _has(Expansion.germanCathedrals) &&
+            _cathedralRoad
+        ? (_tiles - _doubleTiles).clamp(0, _tiles)
+        : null,
     germanCastles:
         (_type == ScoringType.city || _type == ScoringType.road) &&
             _has(Expansion.germanCastles)
@@ -701,13 +731,14 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               _bonus,
               (v) {
                 _bonus = v;
-                // Nieukończone miasto z katedrą nie daje punktów, więc
-                // takiego punktowania po prostu się nie dopisuje.
-                if (v) _completed = true;
+                // Nieukończone miasto z katedrą nie daje punktów (chyba że
+                // stoi na nim mag), więc takiego punktowania zwykle nie
+                // dopisujemy.
+                if (v && !_magicOk) _completed = true;
               },
               hint: l.cathedralHint,
             ),
-          if (!_bonus)
+          if (!_bonus || _magicOk)
             _check(l.completedCity, _completed, (v) => _completed = v),
           if (_completed && _has(Expansion.germanCastles))
             _stepperRow(
@@ -732,8 +763,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               _bonus,
               (v) {
                 _bonus = v;
-                // Nieukończona droga z karczmą nie daje punktów.
-                if (v) _completed = true;
+                // Nieukończona droga z karczmą nie daje punktów (chyba że stoi
+                // na niej mag).
+                if (v && !_magicOk) _completed = true;
               },
               hint: l.innHint,
             ),
@@ -743,14 +775,17 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               _cathedralRoad,
               (v) {
                 _cathedralRoad = v;
-                if (!v) _completed = true;
+                if (!v && !_magicOk) _completed = true;
               },
               hint: l.roadToCathedralHint,
             ),
           // Zwykła droga liczy się tak samo ukończona i nie (nieukończoną
           // z karczmą po prostu się nie dopisuje). Różnicę daje dopiero droga
           // do katedry: ukończona podwójnie, nieukończona jak zwykła.
-          if (_has(Expansion.germanCathedrals) && _cathedralRoad && !_bonus)
+          // Z magiem (który działa też na nieukończonej drodze) pole „Czy
+          // ukończona" jest zawsze widoczne.
+          if (_magicOk ||
+              (_has(Expansion.germanCathedrals) && _cathedralRoad && !_bonus))
             _check(l.completedRoad, _completed, (v) => _completed = v),
           if (_completed && _has(Expansion.germanCastles))
             _stepperRow(
@@ -761,6 +796,17 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
             ),
           if (_magicOk) _buildMagic(),
+          if (_magicOk &&
+              _magic == MagicPawn.mage &&
+              _has(Expansion.germanCathedrals) &&
+              _cathedralRoad)
+            _stepperRow(
+              l.magicDoubleSegments,
+              _doubleTiles,
+              (v) => _doubleTiles = v,
+              max: kMaxCathedralRoads,
+              hint: l.magicDoubleSegmentsHint,
+            ),
           if (_tokenKind == CrownToken.robber) _tokenInfo(CrownToken.robber),
         ];
 
@@ -816,29 +862,53 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               ],
             ),
           ),
-          for (var i = 0; i < _roadCount; i++) ...[
-            if (_roadCount > 1)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: Text(
-                  l.archbishopRoadTitle(i + 1),
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+          // Każda droga w osobnej, domyślnie rozwiniętej sekcji; po zwinięciu
+          // widać jej stan (ukończona, karczma, pionek magiczny).
+          for (var i = 0; i < _roadCount; i++)
+            ExpansionTile(
+              key: PageStorageKey('cathedral-road-$i'),
+              initiallyExpanded: true,
+              shape: const Border(),
+              collapsedShape: const Border(),
+              title: Text(
+                l.archbishopRoadTitle(i + 1),
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                [
+                  _roadDone[i] ? l.roadDone : l.roadOpen,
+                  if (_has(Expansion.innsCathedrals) && _roadInn[i])
+                    l.innShort,
+                  if (_magicOk && _roadMagic[i] == MagicPawn.mage)
+                    l.magicMage,
+                  if (_magicOk && _roadMagic[i] == MagicPawn.witch)
+                    l.magicWitch,
+                ].join(' · '),
+              ),
+              children: [
+                if (_has(Expansion.innsCathedrals))
+                  _check(
+                    l.inn,
+                    _roadInn[i],
+                    (v) => _roadInn[i] = v,
+                    hint: l.archbishopRoadInnHint,
+                  ),
+                _check(
+                  l.completedRoad,
+                  _roadDone[i],
+                  (v) => _roadDone[i] = v,
+                  hint: l.archbishopRoadDoneHint,
                 ),
-              ),
-            if (_has(Expansion.innsCathedrals))
-              _check(
-                l.inn,
-                _roadInn[i],
-                (v) => _roadInn[i] = v,
-                hint: l.archbishopRoadInnHint,
-              ),
-            _check(
-              l.completedRoad,
-              _roadDone[i],
-              (v) => _roadDone[i] = v,
-              hint: l.archbishopRoadDoneHint,
+                if (_magicOk)
+                  _magicSelector(
+                    value: _roadMagic[i],
+                    onChanged: (v) => _roadMagic[i] = v,
+                    hint: l.archbishopMageHint,
+                    mageEnabled: !_magicTaken(MagicPawn.mage, i),
+                    witchEnabled: !_magicTaken(MagicPawn.witch, i),
+                  ),
+              ],
             ),
-          ],
         ];
 
       case ScoringType.cloister:
@@ -1192,33 +1262,35 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final l = context.l10n;
     return [
       _check(
-        l.fairyOption(kFairyFeaturePoints),
+        l.fairyOption,
         _fairy,
         (v) => _fairy = v,
         hint: l.fairyHint(kFairyFeaturePoints),
       ),
       // Przy punktach wspólnych wróżka może stać przy meplu gracza, który nie
-      // ma przewagi (więc nie dostaje punktów budowli, tylko +3 za wróżkę).
-      if (_fairy && _canShare && _otherPlayers.isNotEmpty)
+      // ma przewagi (więc nie dostaje punktów budowli, tylko premię wróżki).
+      if (_fairy && _canShare && _otherPlayers.isNotEmpty) ...[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(l.fairyOwner),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: DropdownButtonFormField<Player>(
-            key: ValueKey(_fairyOwner),
-            initialValue: _fairyOwner ?? widget.player,
-            isExpanded: true,
-            decoration: InputDecoration(
-              labelText: l.fairyOwner,
-              border: const OutlineInputBorder(),
-            ),
-            items: [
-              for (final p in widget.players)
-                DropdownMenuItem(value: p, child: Text(p.name)),
-            ],
-            onChanged: (p) => setState(
-              () => _fairyOwner = p == widget.player ? null : p,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: PlayerPicker(
+              players: widget.players,
+              selected: _fairyOwner ?? widget.player,
+              onSelected: (p) => setState(
+                () => _fairyOwner = p == widget.player ? null : p,
+              ),
             ),
           ),
         ),
+      ],
     ];
   }
 
@@ -1302,14 +1374,28 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   /// Wybór pionka magicznego (brak / mag / wiedźma): wzajemnie się wykluczają,
   /// bo nie mogą stać na tej samej drodze ani w tym samym mieście.
-  Widget _buildMagic() {
+  Widget _buildMagic() => _magicSelector(
+    value: _magic,
+    onChanged: (v) => _magic = v,
+    hint: context.l10n.magicHint,
+  );
+
+  /// Wybór Brak / Mag / Wiedźma. [mageEnabled] i [witchEnabled] wyłączają
+  /// pionek, który stoi już na innej drodze.
+  Widget _magicSelector({
+    required MagicPawn? value,
+    required ValueChanged<MagicPawn?> onChanged,
+    required String hint,
+    bool mageEnabled = true,
+    bool witchEnabled = true,
+  }) {
     final l = context.l10n;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          LabelWithHint(l.magicPawn, l.magicHint),
+          LabelWithHint(l.magicPawn, hint),
           const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
@@ -1323,17 +1409,19 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                 ),
                 ButtonSegment(
                   value: MagicPawn.mage,
+                  enabled: mageEnabled,
                   icon: GameIcon(MagicPawn.mage.iconAsset, size: 24),
                   label: Text(l.magicMage, maxLines: 1, softWrap: false),
                 ),
                 ButtonSegment(
                   value: MagicPawn.witch,
+                  enabled: witchEnabled,
                   icon: GameIcon(MagicPawn.witch.iconAsset, size: 24),
                   label: Text(l.magicWitch, maxLines: 1, softWrap: false),
                 ),
               ],
-              selected: {_magic},
-              onSelectionChanged: (s) => setState(() => _magic = s.first),
+              selected: {value},
+              onSelectionChanged: (s) => setState(() => onChanged(s.first)),
             ),
           ),
         ],

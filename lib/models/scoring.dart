@@ -187,6 +187,7 @@ int calculatePoints(
   int circusTiles = 0,
   bool withFairy = false,
   MagicPawn? magic,
+  int? magicTiles,
   int germanCastles = 0,
   bool cathedralRoad = false,
   List<CathedralRoad> cathedralRoads = const [],
@@ -259,7 +260,7 @@ int calculatePoints(
   }
   // Mag i wiedźma działają tylko na drogę i miasto.
   final magical = type == ScoringType.city || type == ScoringType.road
-      ? applyMagic(magic, base: base, tiles: tiles)
+      ? applyMagic(magic, base: base, tiles: magicTiles ?? tiles)
       : base;
   final fairy = withFairy && type.supportsFairy ? kFairyFeaturePoints : 0;
   final castleBonus =
