@@ -40,6 +40,13 @@ i tabletach (w pionie i w poziomie).
 - Klasztory niemieckie i holenderskie
 - Zamki w Niemczech
 - Katedry w Niemczech
+- Maszyny latające
+- Mag i Wiedźma
+
+### Jak obsługujemy nowsze minidodatki
+
+- **Mag i Wiedźma** – przy mieście i drodze wybierasz „Brak / Mag / Wiedźma". Mag dodaje 1 pkt za płytkę (także za nieukończoną drogę z karczmą lub miasto z katedrą), wiedźma dzieli punkty budowli przez 2 w górę. Przy arcybiskupie pionki ustawia się osobno na każdej drodze (jest tylko jeden mag i jedna wiedźma). Punkty od magii mają w podsumowaniu własną kolumnę „Mag i Wiedźma".
+- **Maszyny latające** – kilku graczy może mieć mepla w jednej budowli, więc punkty wspólne są dostępne także dla zamku niemieckiego, katedry niemieckiej i klasztoru liniowego. Wróżkę można przypisać do mepla dowolnego gracza.
 
 ## Pobierz
 
@@ -86,6 +93,13 @@ landscape.
 - German and Dutch Monasteries
 - German Castles
 - German Cathedrals
+- The Flying Machines
+- The Mage and the Witch
+
+### How the newer mini expansions work
+
+- **The Mage and the Witch** – for a city or road choose "None / Mage / Witch". The mage adds 1 pt per tile (also for an unfinished road with an inn or an unfinished city with a cathedral), the witch halves the points of the feature (rounded up). With the archbishop the pawns are set per road (there is only one mage and one witch). Magic points get their own "Mage & Witch" column in the summary.
+- **The Flying Machines** – several players can have a meeple in one feature, so shared points are also available for the German castle, the German cathedral and the line monastery. The fairy can be assigned to any player's meeple.
 
 ## Download
 

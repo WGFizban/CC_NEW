@@ -862,12 +862,12 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               ],
             ),
           ),
-          // Każda droga w osobnej, domyślnie rozwiniętej sekcji; po zwinięciu
-          // widać jej stan (ukończona, karczma, pionek magiczny).
+          // Każda droga w osobnej, domyślnie zwiniętej sekcji (czytelność); jej
+          // stan (ukończona, karczma, pionek magiczny) widać w podtytule.
           for (var i = 0; i < _roadCount; i++)
             ExpansionTile(
               key: PageStorageKey('cathedral-road-$i'),
-              initiallyExpanded: true,
+              initiallyExpanded: false,
               shape: const Border(),
               collapsedShape: const Border(),
               title: Text(
