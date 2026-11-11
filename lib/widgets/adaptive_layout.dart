@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import 'number_keypad.dart';
 
 /// Maksymalna szerokość treści. Na tabletach i w poziomie reszta ekranu
@@ -42,36 +43,104 @@ class ContentWidth extends StatelessWidget {
   }
 }
 
-/// Układ ekranu z klawiaturą numeryczną.
+/// Układ ekranu z klawiaturą numeryczną, taki sam jak na ekranie punktowania.
 ///
-/// W pionie: [form] zajmuje całą dostępną wysokość, a [keypad] leży pod nim
-/// (jak dotąd). W poziomie na szerokim ekranie: [form] po lewej, a [keypad]
-/// w osobnym panelu po prawej, na całą wysokość, żeby klawisze nie zasłaniały
-/// formularza i nie powodowały przepełnienia.
-///
-/// [keypad] jest budowany z informacją, czy stoi z boku (`sideBySide`).
-class KeypadLayout extends StatelessWidget {
+/// W pionie: [form] zajmuje całą dostępną wysokość, a klawiatura leży pod nim
+/// w panelu, który zwija się przyciskiem w prawym górnym rogu albo stuknięciem
+/// w puste miejsce formularza. Wysuwa się ponownie, gdy ekran ustawi [open] na
+/// `true` (np. po stuknięciu w pole, które klawiatura wypełnia). W poziomie na
+/// szerokim ekranie: [form] po lewej, a klawiatura w osobnym panelu po prawej,
+/// na całą wysokość, zawsze widoczna (bez zwijania).
+class CollapsibleKeypadLayout extends StatelessWidget {
   final Widget form;
-  final Widget Function(bool sideBySide) keypad;
+  final ValueChanged<String> onKey;
 
-  const KeypadLayout({super.key, required this.form, required this.keypad});
+  /// Czy klawiatura jest wysunięta (tylko układ pionowy).
+  final ValueNotifier<bool> open;
+
+  /// Opcjonalny element nad klawiszami (np. przełącznik pola).
+  final Widget? top;
+
+  const CollapsibleKeypadLayout({
+    super.key,
+    required this.form,
+    required this.onKey,
+    required this.open,
+    this.top,
+  });
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        final keypad = NumberKeypad(onKey: onKey, top: top);
         if (useSideKeypad(constraints)) {
           return Row(
             children: [
               Expanded(child: ContentWidth(child: form)),
-              SideKeypadPanel(child: keypad(true)),
+              SideKeypadPanel(
+                child: Column(
+                  children: [
+                    Expanded(child: Center(child: keypad)),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ),
             ],
           );
         }
         return Column(
           children: [
-            Expanded(child: ContentWidth(child: form)),
-            keypad(false),
+            Expanded(
+              child: ContentWidth(
+                // Stuknięcie w puste miejsce zwija klawiaturę; kontrolki
+                // (pola, checkboxy) obsługują stuknięcie same i jej nie chowają.
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => open.value = false,
+                  child: form,
+                ),
+              ),
+            ),
+            ValueListenableBuilder<bool>(
+              valueListenable: open,
+              builder: (context, isOpen, _) => AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                alignment: Alignment.bottomCenter,
+                child: isOpen
+                    ? Material(
+                        elevation: 8,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHigh,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
+                        child: SafeArea(
+                          top: false,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  tooltip: context.l10n.collapseKeypad,
+                                  visualDensity: VisualDensity.compact,
+                                  iconSize: 24,
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+                                  onPressed: () => open.value = false,
+                                ),
+                              ),
+                              keypad,
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        ),
+                      )
+                    : const SizedBox(width: double.infinity),
+              ),
+            ),
           ],
         );
       },
@@ -101,17 +170,4 @@ class SideKeypadPanel extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Klawiatura numeryczna do [KeypadLayout]: w panelu z boku wyśrodkowana
-/// i dopasowana do wysokości, pod formularzem z niewielkim odstępem od dołu.
-Widget keypadBlock({
-  required bool side,
-  required ValueChanged<String> onKey,
-}) {
-  if (side) return Center(child: NumberKeypad(onKey: onKey));
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [NumberKeypad(onKey: onKey), const SizedBox(height: 8)],
-  );
 }

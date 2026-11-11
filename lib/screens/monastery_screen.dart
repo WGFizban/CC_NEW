@@ -10,6 +10,7 @@ import '../models/scoring.dart';
 import '../theme/app_colors.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/number_keypad.dart';
+import '../widgets/player_label.dart';
 import '../widgets/player_picker.dart';
 import '../widgets/meeple_header.dart';
 import '../widgets/meeple_icon.dart';
@@ -37,6 +38,7 @@ class MonasteryScreen extends StatefulWidget {
 class _MonasteryScreenState extends State<MonasteryScreen> {
   int _line = 0;
   bool _fairy = false;
+  final _keypadOpen = ValueNotifier<bool>(true);
 
   /// Wróżka przy meplu innego gracza (maszyny latające: kilku opatów w jednym
   /// klasztorze); `null` = przy meplu punktującego.
@@ -69,21 +71,35 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
 
   bool get _canConfirm => _line + (_fairyOn ? kFairyFeaturePoints : 0) > 0;
 
-  void _confirm() {
-    final l = context.l10n;
-    final sharing = [
-      for (final p in _others)
-        if (_showSharing && _shared.contains(p)) p,
-    ];
+  @override
+  void dispose() {
+    _keypadOpen.dispose();
+    super.dispose();
+  }
+
+  List<Player> get _sharing => [
+    for (final p in _others)
+      if (_showSharing && _shared.contains(p)) p,
+  ];
+
+  /// Punkty każdego gracza (punktujący pierwszy): opat, współdzielący
+  /// i właściciel wróżki stojącej przy cudzym meplu.
+  Map<Player, int> get _distribution {
     final owner = _pickFairyOwner ? _fairyOwner : null;
     final points = <Player, int>{
       widget.player: _points,
-      for (final p in sharing) p: _line,
+      for (final p in _sharing) p: _line,
     };
-    // Wróżka stoi przy meplu innego gracza (także takiego bez przewagi).
     if (owner != null) {
       points[owner] = (points[owner] ?? 0) + kFairyFeaturePoints;
     }
+    return points;
+  }
+
+  void _confirm() {
+    final l = context.l10n;
+    final sharing = _sharing;
+    final owner = _pickFairyOwner ? _fairyOwner : null;
     Navigator.pop(
       context,
       ScoreEvent(
@@ -92,7 +108,7 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
                 ? ''
                 : ' · ${l.wordShared}: ${sharing.map((p) => p.name).join(', ')}') +
             (owner == null ? '' : ' · ${l.scFairy}: ${owner.name}'),
-        [for (final e in points.entries) ScoreChange(e.key, e.value)],
+        [for (final e in _distribution.entries) ScoreChange(e.key, e.value)],
         category: l.scMonastery,
         type: ScoringType.monastery,
       ),
@@ -106,6 +122,7 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
     final frameColor =
         visibleOn(color, Theme.of(context).scaffoldBackgroundColor);
     final frameSide = BorderSide(color: frameColor, width: 4);
+    final distribution = _distribution;
 
     return Scaffold(
       bottomNavigationBar: scoringBottomBar(
@@ -123,7 +140,11 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
             right: frameSide,
           ),
         ),
-        child: KeypadLayout(
+        child: CollapsibleKeypadLayout(
+          open: _keypadOpen,
+          onKey: (k) => setState(
+            () => _line = applyKey(_line, k, max: kMaxMonasteryPoints),
+          ),
           form: ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -136,14 +157,41 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              MeepleHeader(
-                color: color,
-                size: 48,
-                child: Text(
-                  '$_points',
-                  style: const TextStyle(
-                    fontSize: 56,
-                    fontWeight: FontWeight.bold,
+              // Stuknięcie w wynik wysuwa klawiaturę.
+              GestureDetector(
+                onTap: () => _keypadOpen.value = true,
+                child: MeepleHeader(
+                  color: color,
+                  size: 48,
+                  child: Column(
+                    children: [
+                      Text(
+                        '$_points',
+                        style: const TextStyle(
+                          fontSize: 56,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (distribution.length > 1)
+                        // Pod wynikiem: mepel w kolorze gracza i jego punkty
+                        // z podziału (współdzielenie, wróżka), jak na innych
+                        // ekranach punktowania.
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: PlayerLabels(
+                            alignment: WrapAlignment.center,
+                            items: [
+                              for (final e in distribution.entries)
+                                if (e.key != widget.player)
+                                  (
+                                    player: e.key,
+                                    text: '${e.key.name} +${e.value}',
+                                  ),
+                            ],
+                            empty: '',
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),
@@ -189,6 +237,13 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  // Wybrani gracze widać w podtytule także po zwinięciu.
+                  subtitle: PlayerLabels(
+                    items: [
+                      for (final p in _sharing) (player: p, text: p.name),
+                    ],
+                    empty: l.none,
+                  ),
                   children: [
                     for (final p in _others)
                       CheckboxListTile(
@@ -206,12 +261,6 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
                   ],
                 ),
             ],
-          ),
-          keypad: (side) => keypadBlock(
-            side: side,
-            onKey: (k) => setState(
-              () => _line = applyKey(_line, k, max: kMaxMonasteryPoints),
-            ),
           ),
         ),
       ),
