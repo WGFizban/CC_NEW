@@ -506,7 +506,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
   Future<void> _onFinishGame() async {
     final ok = await askYesNo(
       context,
-      title: context.l10n.finishGameQuestion,
+      title: context.l10n.summaryTitle,
+      message: context.l10n.finishGameQuestion,
     );
     if (!ok || !mounted) return;
     if (!await _askCrownEndPoints()) return;

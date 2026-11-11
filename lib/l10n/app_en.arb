@@ -394,5 +394,7 @@
   "completedInEndTitle": "Completed feature after the game",
   "completedInEndWarn": "You are adding points for a completed feature although the tiles have run out. Completed features are scored during the game; only incomplete ones remain now. Are you sure you want to do this?",
   "archbishopAllDoneTitle": "All roads completed",
-  "archbishopAllDoneWarn": "All roads of the cathedral are marked as completed, but the tiles have run out. At least one should be incomplete (a completed cathedral is scored during the game). Are you sure you want to add these points?"
+  "archbishopAllDoneWarn": "All roads of the cathedral are marked as completed, but the tiles have run out. At least one should be incomplete (a completed cathedral is scored during the game). Are you sure you want to add these points?",
+  "farmAfterBarn": "Farms after placing the barn",
+  "farmJoinedToBarn": "Farms joined to the barn"
 }

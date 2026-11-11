@@ -1076,8 +1076,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   Widget _buildBarnChoice() {
     final l = context.l10n;
     final labels = {
-      FarmScoring.normal: l.farmNormal,
-      FarmScoring.barnJoined: l.farmJoined,
+      FarmScoring.normal: _endPhase ? l.farmNormal : l.farmAfterBarn,
+      FarmScoring.barnJoined: _endPhase ? l.farmJoined : l.farmJoinedToBarn,
       FarmScoring.barnOwner: l.farmBarnOwner,
     };
     return Padding(

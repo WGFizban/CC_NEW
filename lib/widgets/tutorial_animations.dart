@@ -1364,7 +1364,7 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                       right: 14,
                       top: 42,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
                         decoration: BoxDecoration(
                           color: scheme.primaryContainer,
                           borderRadius: BorderRadius.circular(14),
@@ -1373,25 +1373,26 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                           children: [
                             const Icon(
                               Icons.emoji_events,
-                              size: 30,
+                              size: 22,
                               color: Color(0xFFD4A017),
                             ),
                             Text(
                               l.winner,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 11,
+                                height: 1.1,
                                 color: scheme.onPrimaryContainer,
                               ),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                MeepleIcon(color: _kAla, size: 24),
+                                MeepleIcon(color: _kAla, size: 20),
                                 const SizedBox(width: 4),
                                 Text(
                                   'Ala',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: scheme.onPrimaryContainer,
                                   ),
@@ -1401,7 +1402,8 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                             Text(
                               l.pointsValue(12),
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 12,
+                                height: 1.1,
                                 color: scheme.onPrimaryContainer,
                               ),
                             ),
@@ -1413,7 +1415,7 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                     Positioned(
                       left: 18,
                       right: 18,
-                      top: 138,
+                      top: 128,
                       child: Row(
                         children: [
                           Text(
@@ -1448,11 +1450,11 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                     Positioned(
                       left: 14,
                       right: 14,
-                      top: 164,
+                      top: 156,
                       child: _pill(
                         context,
                         l.summaryTitle,
-                        height: 28,
+                        height: 26,
                         color: scheme.surfaceContainerHighest,
                         textColor: scheme.onSurface,
                         icon: Icons.table_chart_outlined,
@@ -1461,11 +1463,11 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                     Positioned(
                       left: 14,
                       right: 14,
-                      top: 196,
+                      top: 188,
                       child: _pill(
                         context,
                         l.newGame,
-                        height: 28,
+                        height: 26,
                         color: scheme.primary,
                         textColor: scheme.onPrimary,
                         icon: Icons.refresh,

@@ -266,13 +266,16 @@ pw.Widget _table(
       alignment: pw.Alignment.center,
       padding: const pw.EdgeInsets.symmetric(horizontal: 2, vertical: 3),
       child: pw.Container(
-        padding: const pw.EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+        padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: pw.BoxDecoration(
           color: _accent,
-          borderRadius: pw.BorderRadius.circular(8),
+          // Pełne zaokrąglenie (połowa wysokości pastylki).
+          borderRadius: pw.BorderRadius.circular(fontSize * 0.6 + 2),
         ),
         child: pw.Text(
           text,
+          // Trzycyfrowy wynik nie może się zawinąć w wąskiej kolumnie.
+          softWrap: false,
           style: pw.TextStyle(
             font: bold,
             fontSize: fontSize,

@@ -394,5 +394,7 @@
   "completedInEndTitle": "Fertiges Bauwerk nach dem Spiel",
   "completedInEndWarn": "Du fügst Punkte für ein fertiges Bauwerk hinzu, obwohl die Plättchen aufgebraucht sind. Fertige Bauwerke werden während des Spiels gewertet, jetzt bleiben nur unfertige übrig. Möchtest du das wirklich tun?",
   "archbishopAllDoneTitle": "Alle Straßen fertig",
-  "archbishopAllDoneWarn": "Alle Straßen der Kathedrale sind als fertig markiert, aber die Plättchen sind aufgebraucht. Mindestens eine sollte unfertig sein (eine fertige Kathedrale wird während des Spiels gewertet). Möchtest du diese Punkte wirklich hinzufügen?"
+  "archbishopAllDoneWarn": "Alle Straßen der Kathedrale sind als fertig markiert, aber die Plättchen sind aufgebraucht. Mindestens eine sollte unfertig sein (eine fertige Kathedrale wird während des Spiels gewertet). Möchtest du diese Punkte wirklich hinzufügen?",
+  "farmAfterBarn": "Wiesen nach dem Platzieren der Scheune",
+  "farmJoinedToBarn": "Mit der Scheune verbundene Wiesen"
 }

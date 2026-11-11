@@ -994,5 +994,13 @@
   "completedInEndTitle": "Ukończona struktura po grze",
   "completedInEndWarn": "Dodajesz punkty za ukończoną strukturę, choć kafelki już się skończyły. Struktury ukończone punktuje się w trakcie gry, teraz zostają tylko nieukończone. Czy na pewno chcesz to zrobić?",
   "archbishopAllDoneTitle": "Wszystkie drogi ukończone",
-  "archbishopAllDoneWarn": "Wszystkie drogi katedry są oznaczone jako ukończone, a kafelki już się skończyły. Co najmniej jedna powinna być nieukończona (ukończoną katedrę punktuje się w trakcie gry). Czy na pewno chcesz dodać te punkty?"
+  "archbishopAllDoneWarn": "Wszystkie drogi katedry są oznaczone jako ukończone, a kafelki już się skończyły. Co najmniej jedna powinna być nieukończona (ukończoną katedrę punktuje się w trakcie gry). Czy na pewno chcesz dodać te punkty?",
+  "farmAfterBarn": "Pola po położeniu stodoły",
+  "farmJoinedToBarn": "Pola połączone ze stodołą",
+  "@farmAfterBarn": {
+    "description": "Pole w trakcie gry: punktowane po położeniu stodoły"
+  },
+  "@farmJoinedToBarn": {
+    "description": "Pole w trakcie gry: połączone ze stodołą"
+  }
 }

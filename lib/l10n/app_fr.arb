@@ -394,5 +394,7 @@
   "completedInEndTitle": "Construction achevée après la partie",
   "completedInEndWarn": "Vous ajoutez des points pour une construction achevée alors que les tuiles sont épuisées. Les constructions achevées se décomptent pendant la partie ; il ne reste maintenant que les inachevées. Êtes-vous sûr de vouloir le faire ?",
   "archbishopAllDoneTitle": "Toutes les routes achevées",
-  "archbishopAllDoneWarn": "Toutes les routes de la cathédrale sont marquées comme achevées, mais les tuiles sont épuisées. Au moins une devrait être inachevée (une cathédrale achevée se décompte pendant la partie). Voulez-vous vraiment ajouter ces points ?"
+  "archbishopAllDoneWarn": "Toutes les routes de la cathédrale sont marquées comme achevées, mais les tuiles sont épuisées. Au moins une devrait être inachevée (une cathédrale achevée se décompte pendant la partie). Voulez-vous vraiment ajouter ces points ?",
+  "farmAfterBarn": "Prés après la pose de la grange",
+  "farmJoinedToBarn": "Prés reliés à la grange"
 }
