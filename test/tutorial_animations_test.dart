@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cc_new/l10n/app_localizations.dart';
@@ -10,7 +10,10 @@ Widget _app({
 }) => MaterialApp(
   locale: const Locale('pl'),
   supportedLocales: AppLocalizations.supportedLocales,
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+    AppLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
+  ],
   builder: (context, child) => MediaQuery(
     data: MediaQuery.of(context).copyWith(disableAnimations: reduceMotion),
     child: child!,
