@@ -47,30 +47,15 @@ class _BazaarScreenState extends State<BazaarScreen> {
   bool get _canConfirm =>
       _price > 0 && (!_needsBidder || (_bidder != null && _bidder != _chooser));
 
-  /// Kto ile dostaje (z minusem, gdy płaci).
-  List<({Player player, String text})> get _gains {
-    final bidder = _bidder;
-    final p = _price;
-    return switch (_deal) {
-      _Deal.buy => [
-        (player: _chooser, text: '${_chooser.name} -$p'),
-        if (bidder != null) (player: bidder, text: '${bidder.name} +$p'),
-      ],
-      _Deal.sell => [
-        (player: _chooser, text: '${_chooser.name} +$p'),
-        if (bidder != null) (player: bidder, text: '${bidder.name} -$p'),
-      ],
-      _Deal.solo => [(player: _chooser, text: '${_chooser.name} -$p')],
-    };
-  }
-
+  /// Opis rozliczenia; imiona to znaczniki [playerMark] (mepel + imię).
   String get _description {
     final l = context.l10n;
-    final bidder = _bidder?.name ?? l.theBidder;
+    final chooser = playerMark(0);
+    final bidder = _bidder == null ? l.theBidder : playerMark(1);
     return switch (_deal) {
-      _Deal.buy => l.bazaarBuyDesc(_chooser.name, _price, bidder),
-      _Deal.sell => l.bazaarSellDesc(_chooser.name, _price, bidder),
-      _Deal.solo => l.bazaarSoleDesc(_chooser.name, _price),
+      _Deal.buy => l.bazaarBuyDesc(chooser, _price, bidder),
+      _Deal.sell => l.bazaarSellDesc(chooser, _price, bidder),
+      _Deal.solo => l.bazaarSoleDesc(chooser, _price),
     };
   }
 
@@ -192,30 +177,47 @@ class _BazaarScreenState extends State<BazaarScreen> {
                     ),
                   ],
                   const SizedBox(height: 16),
-                  // Stuknięcie w cenę wysuwa klawiaturę.
-                  GestureDetector(
-                    onTap: () => _keypadOpen.value = true,
-                    child: Center(
-                      child: Text(
-                        l.priceValue(_price),
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                  // Pole ceny wygląda jak pola żetonów na ekranie Króla/Barona:
+                  // ramka w kolorze akcentu, gdy klawiatura jest wysunięta;
+                  // stuknięcie w nie wysuwa klawiaturę.
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _keypadOpen,
+                    builder: (context, open, _) => GestureDetector(
+                      onTap: () => _keypadOpen.value = true,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: playerCardColor(context),
+                          border: Border.all(
+                            color: open
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.transparent,
+                            width: 3,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            l.priceValue(_price),
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  if (_price > 0)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: PlayerLabels(
-                        alignment: WrapAlignment.center,
-                        items: _gains,
-                        empty: '',
-                      ),
+                  Center(
+                    child: PlayerRichText(
+                      _description,
+                      players: [_chooser, if (_bidder != null) _bidder!],
                     ),
-                  Center(child: Text(_description, textAlign: TextAlign.center)),
+                  ),
                   const SizedBox(height: 12),
               ],
             ),

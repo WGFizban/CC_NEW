@@ -72,3 +72,68 @@ class PlayerLabels extends StatelessWidget {
     );
   }
 }
+
+/// Znacznik gracza do wstawienia w tekście zamiast imienia (np. jako argument
+/// funkcji z tłumaczeń); [PlayerRichText] zamienia go na mepla i imię.
+String playerMark(int index) => String.fromCharCode(0xE000 + index);
+
+/// Tekst opisu z imionami graczy poprzedzonymi meplem w ich kolorze.
+///
+/// [template] to zwykły przetłumaczony tekst, w którym imiona zastąpiono
+/// znacznikami [playerMark] (indeks w [players]), dzięki czemu także dwóch
+/// graczy o tym samym imieniu jest rozróżnionych kolorem mepla.
+class PlayerRichText extends StatelessWidget {
+  final String template;
+  final List<Player> players;
+  final TextAlign textAlign;
+  final TextStyle? style;
+
+  const PlayerRichText(
+    this.template, {
+    super.key,
+    required this.players,
+    this.textAlign = TextAlign.center,
+    this.style,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final base = DefaultTextStyle.of(context).style.merge(style);
+    final spans = <InlineSpan>[];
+    final buffer = StringBuffer();
+    void flush() {
+      if (buffer.isEmpty) return;
+      spans.add(TextSpan(text: buffer.toString()));
+      buffer.clear();
+    }
+
+    for (final unit in template.runes) {
+      final index = unit - 0xE000;
+      if (index >= 0 && index < players.length) {
+        flush();
+        final p = players[index];
+        spans.add(
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MeepleIcon(color: p.color, size: (base.fontSize ?? 14) + 4),
+                const SizedBox(width: 3),
+                Text(p.name, style: base),
+              ],
+            ),
+          ),
+        );
+      } else {
+        buffer.writeCharCode(unit);
+      }
+    }
+    flush();
+    return Text.rich(
+      TextSpan(children: spans),
+      textAlign: textAlign,
+      style: base,
+    );
+  }
+}

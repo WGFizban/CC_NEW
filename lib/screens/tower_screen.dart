@@ -55,7 +55,7 @@ class _TowerScreenState extends State<TowerScreen> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final holderName = _holder?.name ?? l.towerHolderDefault;
+    final holderName = _holder == null ? l.towerHolderDefault : playerMark(1);
 
     // Neutralna ramka (kolor wierszy graczy): nie wiadomo z góry, kto
     // dokładnie dostanie punkty.
@@ -114,32 +114,19 @@ class _TowerScreenState extends State<TowerScreen> {
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
-          // Kto ile dostaje: mepel w kolorze gracza i jego punkty.
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: PlayerLabels(
-              alignment: WrapAlignment.center,
-              items: [
-                (player: _buyer, text: '${_buyer.name} -$kRansomPoints'),
-                if (_holder != null)
-                  (player: _holder!, text: '${_holder!.name} +$kRansomPoints'),
-              ],
-              empty: '',
-            ),
-          ),
           const SizedBox(height: 8),
           Center(
-            child: Text(
-              l.towerDesc(_buyer.name, kRansomPoints, holderName),
-              textAlign: TextAlign.center,
+            child: PlayerRichText(
+              l.towerDesc(playerMark(0), kRansomPoints, holderName),
+              players: [_buyer, if (_holder != null) _holder!],
             ),
           ),
           if (!_affordable)
             Padding(
               padding: const EdgeInsets.only(top: 12),
-              child: Text(
-                l.towerShort(_buyer.name, _buyer.points, kRansomPoints),
-                textAlign: TextAlign.center,
+              child: PlayerRichText(
+                l.towerShort(playerMark(0), _buyer.points, kRansomPoints),
+                players: [_buyer],
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.error,
                   fontWeight: FontWeight.bold,
