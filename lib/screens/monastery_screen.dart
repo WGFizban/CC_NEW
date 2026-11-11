@@ -10,6 +10,7 @@ import '../models/scoring.dart';
 import '../theme/app_colors.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/number_keypad.dart';
+import '../widgets/player_picker.dart';
 import '../widgets/meeple_header.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/adaptive_layout.dart';
@@ -37,6 +38,10 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
   int _line = 0;
   bool _fairy = false;
 
+  /// Wróżka przy meplu innego gracza (maszyny latające: kilku opatów w jednym
+  /// klasztorze); `null` = przy meplu punktującego.
+  Player? _fairyOwner;
+
   /// Gracze, którzy dostają te same punkty (maszyny latające: kilku opatów
   /// w jednym klasztorze).
   final Set<Player> _shared = {};
@@ -52,9 +57,17 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
 
   bool get _showFairy => widget.expansions.contains(Expansion.princessDragon);
 
-  /// Punkty opata plus 3 pkt za wróżkę przy jego meplu.
-  int get _points =>
-      _line + (_showFairy && _fairy ? kFairyFeaturePoints : 0);
+  bool get _fairyOn => _showFairy && _fairy;
+
+  /// Wskazanie właściciela wróżki ma sens tylko przy kilku opatach.
+  bool get _pickFairyOwner => _fairyOn && _showSharing;
+
+  bool get _fairyForScorer => !_pickFairyOwner || _fairyOwner == null;
+
+  /// Punkty opata plus 3 pkt za wróżkę, jeśli stoi przy jego meplu.
+  int get _points => _line + (_fairyOn && _fairyForScorer ? kFairyFeaturePoints : 0);
+
+  bool get _canConfirm => _line + (_fairyOn ? kFairyFeaturePoints : 0) > 0;
 
   void _confirm() {
     final l = context.l10n;
@@ -62,18 +75,24 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
       for (final p in _others)
         if (_showSharing && _shared.contains(p)) p,
     ];
+    final owner = _pickFairyOwner ? _fairyOwner : null;
+    final points = <Player, int>{
+      widget.player: _points,
+      for (final p in sharing) p: _line,
+    };
+    // Wróżka stoi przy meplu innego gracza (także takiego bez przewagi).
+    if (owner != null) {
+      points[owner] = (points[owner] ?? 0) + kFairyFeaturePoints;
+    }
     Navigator.pop(
       context,
       ScoreEvent(
         l.monasteryEventLabel(widget.player.name, _points) +
             (sharing.isEmpty
                 ? ''
-                : ' · ${l.wordShared}: ${sharing.map((p) => p.name).join(', ')}'),
-        [
-          ScoreChange(widget.player, _points),
-          // Wróżka stoi przy jednym meplu, więc współdzielący jej nie mają.
-          for (final p in sharing) ScoreChange(p, _line),
-        ],
+                : ' · ${l.wordShared}: ${sharing.map((p) => p.name).join(', ')}') +
+            (owner == null ? '' : ' · ${l.scFairy}: ${owner.name}'),
+        [for (final e in points.entries) ScoreChange(e.key, e.value)],
         category: l.scMonastery,
         type: ScoringType.monastery,
       ),
@@ -91,7 +110,7 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
     return Scaffold(
       bottomNavigationBar: scoringBottomBar(
         context,
-        onConfirm: _points > 0 ? _confirm : null,
+        onConfirm: _canConfirm ? _confirm : null,
         frameColor: frameColor,
       ),
       body: SafeArea(
@@ -137,6 +156,26 @@ class _MonasteryScreenState extends State<MonasteryScreen> {
                   value: _fairy,
                   onChanged: (v) => setState(() => _fairy = v ?? false),
                 ),
+              // Wróżka może stać przy meplu innego opata.
+              if (_pickFairyOwner) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+                  child: Text(l.fairyOwner),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: PlayerPicker(
+                      players: widget.players,
+                      selected: _fairyOwner ?? widget.player,
+                      onSelected: (p) => setState(
+                        () => _fairyOwner = p == widget.player ? null : p,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
               if (_showSharing)
                 ExpansionTile(
                   shape: const Border(),
