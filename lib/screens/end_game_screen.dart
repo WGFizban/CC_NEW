@@ -52,6 +52,7 @@ class EndGameScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 children: [
                   _winnerBanner(context, winners, best),
+                  _otherPlaces(context),
                   const SizedBox(height: 24),
                   FilledButton.tonalIcon(
                     onPressed: () => Navigator.push<void>(
@@ -81,6 +82,57 @@ class EndGameScreen extends StatelessWidget {
                   ),
                 ],
               )),
+      ),
+    );
+  }
+
+  /// Kolejne miejsca pod zwycięzcą (remis dzieli miejsce).
+  Widget _otherPlaces(BuildContext context) {
+    final l = context.l10n;
+    final rest = [
+      for (final r in rankings(players))
+        if (r.place > 1) r,
+    ];
+    if (rest.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            children: [
+              for (final r in rest)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 36,
+                        child: Text(
+                          '${r.place}.',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: PlayerLabel(
+                          player: r.player,
+                          iconSize: 24,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      ),
+                      Text(
+                        l.pointsValue(r.score),
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

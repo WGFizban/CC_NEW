@@ -610,7 +610,10 @@ class _StartGameAnimationState extends _LoopingSceneState<StartGameAnimation> {
                 ),
                 Opacity(
                   opacity: swap,
-                  child: Icon(Icons.flag, color: scheme.onPrimaryContainer),
+                  child: Icon(
+                    Icons.sports_score,
+                    color: scheme.onPrimaryContainer,
+                  ),
                 ),
               ],
             ),
@@ -1167,7 +1170,8 @@ class _UndoAnimationState extends _LoopingSceneState<UndoAnimation> {
   }
 }
 
-/// Animacja „Koniec gry”: flaga, potwierdzenie i ekran zwycięzcy.
+/// Animacja „Koniec gry”, w dwóch krokach: flaga (koniec kafelków) → punktowanie
+/// końcowe z plakietką fazy i dopisaniem punktów → puchar → ekran zwycięzcy.
 class EndGameAnimation extends _LoopingScene {
   const EndGameAnimation({super.key});
 
@@ -1179,12 +1183,12 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
   static const _w = 280.0;
   static const _h = 230.0;
 
-  static const _flag = Offset(_w - 38, _h - 38);
-  static const _dialog = Rect.fromLTWH(34, 56, _w - 68, 112);
-  static const _yes = Offset(_w - 34 - 12 - 18, 56 + 112 - 12 - 13);
+  static const _fab = Offset(_w - 38, _h - 38);
+  static const _dialog = Rect.fromLTWH(34, 68, _w - 68, 92);
+  static const _yes = Offset(_w - 34 - 12 - 18, 68 + 92 - 12 - 13);
 
   @override
-  Duration get duration => const Duration(seconds: 9);
+  Duration get duration => const Duration(seconds: 15);
 
   @override
   Widget buildScene(BuildContext context, double t) {
@@ -1192,20 +1196,41 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
     final scheme = Theme.of(context).colorScheme;
     final bg = Theme.of(context).scaffoldBackgroundColor;
 
-    final flagPress = _seg(t, 0.16, 0.20);
-    final dialogIn = _seg(t, 0.20, 0.26, Curves.easeOut);
-    final yesPress = _seg(t, 0.46, 0.50);
-    final dialogOut = _seg(t, 0.50, 0.55);
-    final swap = _seg(t, 0.54, 0.62);
-    final fingerOut = _seg(t, 0.50, 0.56);
+    // Krok 1: flaga → „Koniec kafelków?” → Tak.
+    final flagPress = _seg(t, 0.11, 0.14);
+    final dialog1 =
+        _seg(t, 0.14, 0.18, Curves.easeOut) * (1 - _seg(t, 0.31, 0.35));
+    final yes1Press = _seg(t, 0.28, 0.31);
+    // Krok 2: plakietka fazy, dopisanie punktów, puchar → „Do podsumowania?”.
+    final banner = _seg(t, 0.35, 0.40);
+    final plus = _seg(t, 0.42, 0.46) * (1 - _seg(t, 0.52, 0.56));
+    final scored = t >= 0.46;
+    final trophyPress = _seg(t, 0.60, 0.63);
+    final dialog2 =
+        _seg(t, 0.63, 0.67, Curves.easeOut) * (1 - _seg(t, 0.77, 0.81));
+    final yes2Press = _seg(t, 0.74, 0.77);
+    final swap = _seg(t, 0.79, 0.85);
 
     final restFinger = Offset(_w * 0.55, _h * 0.55);
-    final finger = t < 0.3
-        ? Offset.lerp(restFinger, _flag, _seg(t, 0.04, 0.16))!
-        : Offset.lerp(_flag, _yes, _seg(t, 0.34, 0.46))!;
-    final pressing = t < 0.3 ? _bump(flagPress) : _bump(yesPress);
-    final fingerOpacity = _seg(t, 0.02, 0.05) * (1 - fingerOut);
-    final dialogOpacity = dialogIn * (1 - dialogOut);
+    final Offset finger;
+    if (t < 0.15) {
+      finger = Offset.lerp(restFinger, _fab, _seg(t, 0.03, 0.11))!;
+    } else if (t < 0.45) {
+      finger = Offset.lerp(_fab, _yes, _seg(t, 0.20, 0.28))!;
+    } else if (t < 0.64) {
+      finger = Offset.lerp(_yes, _fab, _seg(t, 0.50, 0.60))!;
+    } else {
+      finger = Offset.lerp(_fab, _yes, _seg(t, 0.67, 0.74))!;
+    }
+    final pressing = t < 0.2
+        ? _bump(flagPress)
+        : t < 0.45
+        ? _bump(yes1Press)
+        : t < 0.65
+        ? _bump(trophyPress)
+        : _bump(yes2Press);
+    final fabPressing = t < 0.45 ? _bump(flagPress) : _bump(trophyPress);
+    final fingerOpacity = _seg(t, 0.02, 0.05) * (1 - _seg(t, 0.78, 0.82));
 
     return _PhoneFrame(
       width: _w,
@@ -1218,13 +1243,77 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
             child: Stack(
               children: [
                 _titleBar(context),
-                _playerRow(context, top: 44, color: _kAla, name: 'Ala', score: '12'),
-                _playerRow(context, top: 88, color: _kBob, name: 'Bob', score: '7'),
+                // Plakietka „Punktowanie końcowe” pojawia się po kroku 1.
                 Positioned(
-                  left: _flag.dx - 22,
-                  top: _flag.dy - 22,
+                  left: 10,
+                  right: 10,
+                  top: 38,
+                  child: Opacity(
+                    opacity: banner,
+                    child: Container(
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: scheme.tertiaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.sports_score,
+                            size: 14,
+                            color: scheme.onTertiaryContainer,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            l.endPhaseLabel,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: scheme.onTertiaryContainer,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                _playerRow(
+                  context,
+                  top: 44 + 26 * banner,
+                  color: _kAla,
+                  name: 'Ala',
+                  score: '12',
+                ),
+                _playerRow(
+                  context,
+                  top: 88 + 26 * banner,
+                  color: _kBob,
+                  name: 'Bob',
+                  score: scored ? '10' : '7',
+                ),
+                if (plus > 0)
+                  Positioned(
+                    right: 44,
+                    top: 88 + 26 - 4 - 6 * plus,
+                    child: Opacity(
+                      opacity: plus,
+                      child: _pill(
+                        context,
+                        '+3',
+                        height: 20,
+                        color: scheme.primary,
+                        textColor: scheme.onPrimary,
+                      ),
+                    ),
+                  ),
+                // Flaga zamienia się w puchar po przejściu do punktowania
+                // końcowego.
+                Positioned(
+                  left: _fab.dx - 22,
+                  top: _fab.dy - 22,
                   child: Transform.scale(
-                    scale: 1 - 0.12 * (t < 0.3 ? pressing : 0),
+                    scale: 1 - 0.12 * fabPressing,
                     child: Container(
                       width: 44,
                       height: 44,
@@ -1232,7 +1321,25 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                         color: scheme.primaryContainer,
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: Icon(Icons.flag, color: scheme.onPrimaryContainer),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Opacity(
+                            opacity: 1 - banner,
+                            child: Icon(
+                              Icons.sports_score,
+                              color: scheme.onPrimaryContainer,
+                            ),
+                          ),
+                          Opacity(
+                            opacity: banner,
+                            child: Icon(
+                              Icons.emoji_events,
+                              color: scheme.onPrimaryContainer,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1240,46 +1347,8 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
             ),
           ),
         ),
-        if (dialogOpacity > 0)
-          _dialogCard(
-            context,
-            _dialog,
-            dialogOpacity,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l.endGameQuestion,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: scheme.onSurface,
-                  ),
-                ),
-                const Spacer(),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        l.no,
-                        style: TextStyle(fontSize: 12, color: scheme.primary),
-                      ),
-                      const SizedBox(width: 12),
-                      _pill(
-                        context,
-                        l.yes,
-                        color: scheme.primary,
-                        textColor: scheme.onPrimary,
-                        height: 26,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+        if (dialog1 > 0) _endDialog(context, dialog1, l.tutorialEndTiles),
+        if (dialog2 > 0) _endDialog(context, dialog2, l.tutorialToSummary),
         // Ekran końca gry.
         if (swap > 0)
           Positioned.fill(
@@ -1340,14 +1409,50 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                         ),
                       ),
                     ),
+                    // Kolejne miejsca pod zwycięzcą.
+                    Positioned(
+                      left: 18,
+                      right: 18,
+                      top: 138,
+                      child: Row(
+                        children: [
+                          Text(
+                            '2.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: scheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          MeepleIcon(color: _kBob, size: 18),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Bob',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: scheme.onSurface,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            l.pointsValue(10),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: scheme.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     Positioned(
                       left: 14,
                       right: 14,
-                      top: 154,
+                      top: 164,
                       child: _pill(
                         context,
                         l.summaryTitle,
-                        height: 30,
+                        height: 28,
                         color: scheme.surfaceContainerHighest,
                         textColor: scheme.onSurface,
                         icon: Icons.table_chart_outlined,
@@ -1356,11 +1461,11 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                     Positioned(
                       left: 14,
                       right: 14,
-                      top: 190,
+                      top: 196,
                       child: _pill(
                         context,
                         l.newGame,
-                        height: 30,
+                        height: 28,
                         color: scheme.primary,
                         textColor: scheme.onPrimary,
                         icon: Icons.refresh,
@@ -1371,11 +1476,58 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
               ),
             ),
           ),
-        _tap(context, _flag, flagPress),
-        _tap(context, _yes, yesPress),
-        _veil(context, t),
+        _tap(context, _fab, t < 0.45 ? flagPress : trophyPress),
+        _tap(context, _yes, t < 0.45 ? yes1Press : yes2Press),
+        _veil(context, t, fadeOutFrom: 0.96),
         _finger(context, finger, opacity: fingerOpacity, pressed: pressing),
       ],
+    );
+  }
+
+  /// Okno z krótkim pytaniem i przyciskami Nie / Tak (czytelne w makiecie).
+  Widget _endDialog(BuildContext context, double appear, String question) {
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    return _dialogCard(
+      context,
+      _dialog,
+      appear,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            question,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: scheme.onSurface,
+            ),
+          ),
+          const Spacer(),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l.no,
+                  style: TextStyle(fontSize: 12, color: scheme.primary),
+                ),
+                const SizedBox(width: 12),
+                _pill(
+                  context,
+                  l.yes,
+                  color: scheme.primary,
+                  textColor: scheme.onPrimary,
+                  height: 26,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -15,7 +15,7 @@ import '../widgets/meeple_icon.dart';
 import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 
-/// Punkty opata z klasztoru liniowego (dodatek „Klasztory niemieckie
+/// Punkty opata z klasztoru niemieckiego lub holenderskiego (dodatek „Klasztory niemieckie
 /// i holenderskie"): jedno pole z klawiaturą na punkty końcowe.
 class MonasteryScreen extends StatefulWidget {
   final Player player;

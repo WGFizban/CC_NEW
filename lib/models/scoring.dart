@@ -108,7 +108,7 @@ enum ScoringType {
 
   /// Typy, przy których wróżka może dać +3 pkt: budowle z [isFeature] oraz
   /// punktowania meepla w katedrze niemieckiej (arcybiskup), zamku niemieckim
-  /// (lord) i klasztorze liniowym (opat). Pasterz (owce) wróżki nie ma.
+  /// (lord) i klasztorze niemieckim lub holenderskim (opat). Pasterz (owce) wróżki nie ma.
   bool get supportsFairy =>
       isFeature ||
       this == archbishop ||
@@ -133,7 +133,7 @@ enum ScoringType {
 
   /// Czy typ można punktować po ostatniej płytce (punktowanie końcowe). Tylko
   /// te typy: budowle zostawione na planszy (także nieukończone), pola, klasztor
-  /// liniowy (opat/przeor), cyrk i akrobaci. Owce, surowce, bazar, wieża, złoto,
+  /// niemiecki i holenderski (opat/przeor), cyrk i akrobaci. Owce, surowce, bazar, wieża, złoto,
   /// żeton Króla/Barona i wróżka (+1 na początku tury) po grze nie punktują.
   bool get scoresAfterGame => switch (this) {
     ScoringType.city ||
@@ -152,7 +152,7 @@ enum ScoringType {
 
   /// Czy typ można punktować w trakcie gry przy włączonych [enabled] dodatkach.
   /// Pole punktuje tylko na koniec gry, chyba że ktoś postawi stodołę
-  /// (dodatek „Opactwo i burmistrz"); klasztor liniowy (opat/przeor) liczy się
+  /// (dodatek „Opactwo i burmistrz"); klasztor niemiecki lub holenderski (opat/przeor) liczy się
   /// wyłącznie po grze.
   bool scoresDuringGame(Set<Expansion> enabled) => switch (this) {
     ScoringType.meadow => enabled.contains(Expansion.abbeyMayor),

@@ -6,6 +6,8 @@ import 'package:cc_new/models/expansion.dart';
 import 'package:cc_new/models/game_state.dart';
 import 'package:cc_new/models/player.dart';
 import 'package:cc_new/models/scoring.dart';
+import 'package:cc_new/models/standings.dart';
+import 'package:cc_new/screens/end_game_screen.dart';
 import 'package:cc_new/screens/add_points_screen.dart';
 import 'package:cc_new/screens/select_points_type_screen.dart';
 import 'package:cc_new/services/settings_storage.dart';
@@ -63,7 +65,7 @@ void main() {
   group('typy punktacji w fazach gry', () {
     final all = Expansion.values.toSet();
 
-    test('w trakcie gry nie ma klasztoru liniowego', () {
+    test('w trakcie gry nie ma klasztorów niemieckich i holenderskich', () {
       expect(
         ScoringType.selectableFor(all),
         isNot(contains(ScoringType.monastery)),
@@ -104,7 +106,7 @@ void main() {
       );
     });
 
-    test('po grze są pola, klasztor liniowy i nieukończone budowle', () {
+    test('po grze są pola, klasztory niemieckie i holenderskie oraz nieukończone budowle', () {
       final types = ScoringType.selectableFor({}, endPhase: true);
       expect(
         types,
@@ -286,6 +288,46 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('Punktowanie końcowe'), findsOneWidget);
+    });
+  });
+
+  group('miejsca w podsumowaniu', () {
+    test('remis dzieli miejsce, a następne jest pomijane', () {
+      final a = _p('A')..points = 30;
+      final b = _p('B')..points = 20;
+      final c = _p('C')..points = 20;
+      final d = _p('D')..points = 5;
+
+      final r = rankings([d, b, a, c]);
+
+      expect([for (final e in r) e.place], [1, 2, 2, 4]);
+      expect(r.first.player, a);
+      expect(r.first.score, 30);
+    });
+
+    testWidgets('pod zwycięzcą są kolejne miejsca z punktami', (tester) async {
+      final players = [
+        _p('Ala')..points = 30,
+        _p('Bob')..points = 20,
+        _p('Cezary')..points = 20,
+      ];
+      await tester.pumpWidget(
+        _app(
+          EndGameScreen(
+            players: players,
+            log: const [],
+            expansions: const {},
+            elapsed: Duration.zero,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Zwycięzca'), findsOneWidget);
+      expect(find.text('2.'), findsNWidgets(2));
+      expect(find.text('Bob'), findsOneWidget);
+      expect(find.text('Cezary'), findsOneWidget);
+      expect(find.text('20 pkt'), findsNWidgets(2));
     });
   });
 }

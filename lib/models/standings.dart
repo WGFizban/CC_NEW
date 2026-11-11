@@ -54,3 +54,19 @@ int goldRemaining(List<Player> players) {
 /// pokazujemy tylko punkty z planszy (`player.points`).
 int finalScore(Player player, List<Player> players) =>
     player.points + goodsBonus(player, players) + goldPoints(player.gold);
+
+/// Miejsca graczy według punktów końcowych, od najlepszego. Gracze z tym samym
+/// wynikiem dzielą miejsce, a następne jest pomijane (1, 2, 2, 4).
+List<({int place, Player player, int score})> rankings(List<Player> players) {
+  final scored = [
+    for (final p in players) (player: p, score: finalScore(p, players)),
+  ]..sort((a, b) => b.score.compareTo(a.score));
+  return [
+    for (final e in scored)
+      (
+        place: 1 + scored.where((o) => o.score > e.score).length,
+        player: e.player,
+        score: e.score,
+      ),
+  ];
+}

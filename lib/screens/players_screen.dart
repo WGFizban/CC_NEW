@@ -486,7 +486,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   /// Flaga: kafelki się skończyły. Zatrzymuje czas gry i przechodzi do
-  /// punktowania końcowego (pola, klasztory liniowe, nieukończone budowle).
+  /// punktowania końcowego (pola, klasztory niemieckie i holenderskie,
+  /// nieukończone budowle).
   Future<void> _onEndTiles() async {
     final l = context.l10n;
     final ok = await askYesNo(
@@ -499,9 +500,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
       _settings.endedAt = DateTime.now();
       _setStage(GameStage.endScoring);
     });
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(l.endScoringStarted)));
   }
 
   /// Puchar: wszystkie punkty końcowe wpisane, przejście do podsumowania.
@@ -824,7 +822,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
                           EndPhaseBadge(l.endPhaseLabel),
                           const SizedBox(height: 4),
                           Text(
-                            l.endPhaseBanner,
+                            _has(Expansion.monasteries)
+                                ? l.endPhaseBannerMonasteries
+                                : l.endPhaseBanner,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodySmall,
                           ),

@@ -1104,9 +1104,12 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           Wrap(
             spacing: 8,
             children: [
-              // Właściciel stodoły liczy swoje pola dopiero po grze.
+              // Właściciel stodoły liczy swoje pola dopiero po grze, a pole
+              // „połączone ze stodołą" ma sens tylko w trakcie gry.
               for (final e in labels.entries)
-                if (_endPhase || e.key != FarmScoring.barnOwner)
+                if (_endPhase
+                    ? e.key != FarmScoring.barnJoined
+                    : e.key != FarmScoring.barnOwner)
                   ChoiceChip(
                   label: Text(e.value),
                   selected: _farm == e.key,
