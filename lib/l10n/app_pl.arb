@@ -458,7 +458,7 @@
   },
   "circusAllUsed": "Wszystkie żetony zwierząt zostały już zużyte. Zeruje je reset punktów.",
   "circusStep2": "2. Ile mepli ma każdy gracz na płytce cyrku i ośmiu sąsiednich?",
-  "circusStep2Hint": "Wskaż, czyje meple stoją na płytce cyrku i wokół niej. Liczą się zwykłe meple, duże meple, opaci, wozy i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, pasterze ani stodoły. Punktujące meple zostają na planszy.",
+  "circusStep2Hint": "Wskaż, czyje meple stoją na płytce cyrku i wokół niej. Liczą się zwykłe meple, duże meple, opaci, wozy i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, pasterze ani stodoły. Punktujące meple zostają na planszy. Liczą się też meple lordów w zamkach nachodzących na te płytki (zamek z dodatku „Mosty, zamki i bazary”).",
   "circusEventLabel": "Cyrk ({animal})",
   "@circusEventLabel": {
     "placeholders": {
@@ -913,7 +913,7 @@
   "tilesAroundCastle": "Płytki wokół zamku",
   "completedRoad": "Czy ukończona",
   "archbishopRoads": "Liczba dróg przy katedrze",
-  "archbishopRoadsHint": "Wskaż, ile dróg wychodzi z katedry (3 lub 4) i wpisz liczbę odcinków każdej z nich. Każda droga jest liczona osobno (z karczmą lub bez), a wyniki się sumują. Gdy wszystkie drogi są zamknięte, arcybiskup dostaje 1 pkt za odcinek (2 z karczmą). Na koniec gry punktuje także przy otwartych drogach: ukończona jak wyżej, nieukończona 1 pkt za odcinek (z karczmą 0).",
+  "archbishopRoadsHint": "Wskaż, ile dróg wychodzi z katedry (3 lub 4) i wpisz liczbę odcinków każdej z nich. Każda droga jest liczona osobno (z karczmą lub bez), a wyniki się sumują. Gdy wszystkie drogi są zamknięte, arcybiskup dostaje 1 pkt za odcinek (2 z karczmą). Na koniec gry punktuje także przy otwartych drogach: ukończona jak wyżej, nieukończona 1 pkt za odcinek (z karczmą 0). Droga, która zaczyna i kończy się na tej samej katedrze, liczy się jako jedna droga i jest punktowana raz.",
   "archbishopRoadSegments": "Droga {number}: odcinki",
   "@archbishopRoadSegments": {
     "placeholders": {
