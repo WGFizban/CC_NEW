@@ -235,6 +235,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool get _castleOk =>
       _type.supportsCastle &&
       _completed &&
+      // Katedra niemiecka jest „ukończona” tylko w trakcie gry (po grze
+      // punktuje się ją jako nieukończoną).
+      !(_type == ScoringType.archbishop && _endPhase) &&
       _has(Expansion.bridgesCastlesBazaars);
 
   bool get _castleMode => _castleOk && _scorerCastle;
@@ -275,7 +278,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool get _canShare =>
       _isFeature ||
       ((_type == ScoringType.germanCastle || _type == ScoringType.archbishop) &&
-          _has(Expansion.flyingMachines));
+          (_has(Expansion.flyingMachines) || _castleOk));
 
   bool get _showSharing =>
       _canShare && (widget.players.length > 1 || _castleOk);

@@ -119,7 +119,12 @@ enum ScoringType {
   /// jego właściciel dostaje punkty ukończonej sąsiedniej budowli (na polach
   /// zamek nie punktuje).
   bool get supportsCastle =>
-      this == city || this == road || this == cloister || this == abbey;
+      this == city ||
+      this == road ||
+      this == cloister ||
+      this == abbey ||
+      this == germanCastle ||
+      this == archbishop;
 
   /// Budowle, za które przy ukończeniu dostaje się sztabki złota z minidodatku
   /// (rolnicy złota nie dostają).

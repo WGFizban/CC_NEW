@@ -259,6 +259,20 @@ void main() {
       expect(find.text('ukończona'), findsNothing);
     });
 
+    testWidgets('zamek z Mostów, zamków i bazarów punktuje też katedrę', (
+      tester,
+    ) async {
+      final exp = {
+        Expansion.germanCathedrals,
+        Expansion.bridgesCastlesBazaars,
+      };
+      await tester.pumpWidget(_screen(ScoringType.archbishop, expansions: exp));
+      await tester.pumpAndSettle();
+      expect(ScoringType.archbishop.supportsCastle, isTrue);
+      expect(ScoringType.germanCastle.supportsCastle, isTrue);
+      expect(find.byType(CheckboxListTile), findsWidgets);
+    });
+
     testWidgets('w trakcie gry sekcje dróg nie mówią o ukończeniu', (
       tester,
     ) async {
