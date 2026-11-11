@@ -491,7 +491,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final l = context.l10n;
     final ok = await askYesNo(
       context,
-      title: l.endGameQuestion,
+      title: l.endTilesQuestion,
       message: l.endGameCheck,
     );
     if (!ok || !mounted) return;

@@ -207,9 +207,16 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final inn = tester.getTopLeft(find.text('Czy zawiera karczmę')).dy;
-      final done = tester.getTopLeft(find.text('Czy ukończona')).dy;
-      expect(done, greaterThan(inn));
+      // Karczma (z podpowiedzią) i „Czy ukończona” to dwa checkboxy; ten
+      // drugi musi leżeć niżej.
+      final boxes = find.byType(CheckboxListTile);
+      expect(boxes, findsNWidgets(2));
+      final last = tester.widget<CheckboxListTile>(boxes.last);
+      expect((last.title! as Text).data, 'Czy ukończona');
+      expect(
+        tester.getTopLeft(boxes.last).dy,
+        greaterThan(tester.getTopLeft(boxes.first).dy),
+      );
     });
 
     testWidgets('ukończona struktura po grze wymaga potwierdzenia', (
