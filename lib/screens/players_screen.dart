@@ -25,6 +25,7 @@ import '../widgets/game_dialogs.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/player_dialog.dart';
+import '../widgets/player_label.dart';
 import '../widgets/token_dialogs.dart';
 import 'add_points_screen.dart';
 import 'bazaar_screen.dart';
@@ -335,7 +336,12 @@ class _PlayersScreenState extends State<PlayersScreen> {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(l.fairySnack(player.name, kFairyTurnPoints)),
+          // Mepel w kolorze gracza odróżnia graczy o tym samym imieniu.
+          content: PlayerLabel(
+            player: player,
+            text: l.fairySnack(player.name, kFairyTurnPoints),
+            iconSize: 22,
+          ),
           duration: const Duration(seconds: 2),
         ),
       );
