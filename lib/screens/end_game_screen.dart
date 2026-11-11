@@ -67,7 +67,7 @@ class EndGameScreen extends StatelessWidget {
                       ),
                     ),
                     icon: const Icon(Icons.table_chart_outlined),
-                    label: Text(l.summaryTitle),
+                    label: Text(l.detailedSummary),
                   ),
                   const SizedBox(height: 8),
                   FilledButton.icon(

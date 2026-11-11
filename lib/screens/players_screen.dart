@@ -320,7 +320,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   /// Wróżka przy meplu gracza daje 1 pkt na początku jego tury, więc
-  /// dopisujemy go od razu, bez osobnego ekranu (bez komunikatu). Cofniesz go z menu.
+  /// dopisujemy go od razu, bez osobnego ekranu, z krótkim komunikatem. Cofniesz go z menu.
   void _scoreFairy(Player player) {
     final l = context.l10n;
     final event = ScoreEvent(
@@ -330,6 +330,15 @@ class _PlayersScreenState extends State<PlayersScreen> {
       type: ScoringType.fairy,
     );
     _applyEvent(event);
+    // Wróżka łatwo ucieka z pamięci, więc krótka przypominajka.
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(l.fairySnack(player.name, kFairyTurnPoints)),
+          duration: const Duration(seconds: 2),
+        ),
+      );
   }
 
   Widget _scoringScreen(Player player, ScoringType type) {
@@ -492,8 +501,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final l = context.l10n;
     final ok = await askYesNo(
       context,
-      title: l.endTilesQuestion,
-      message: l.endGameCheck,
+      title: l.endTilesTitle,
+      message: '${l.endGameCheck}\n\n${l.endTilesQuestion}',
     );
     if (!ok || !mounted) return;
     setState(() {
@@ -820,14 +829,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
                       child: Column(
                         children: [
-                          EndPhaseBadge(l.endPhaseLabel),
-                          const SizedBox(height: 4),
-                          Text(
-                            _has(Expansion.monasteries)
+                          EndPhaseBadge(
+                            l.endPhaseLabel,
+                            hint: _has(Expansion.monasteries)
                                 ? l.endPhaseBannerMonasteries
                                 : l.endPhaseBanner,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
                       ),

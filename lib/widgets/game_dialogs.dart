@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import 'info_hint.dart';
 import 'meeple_icon.dart';
 
 /// Ikona kończąca grę (ta sama na przycisku i w komunikacie o starcie).
@@ -14,7 +15,10 @@ const IconData kSummaryIcon = Icons.emoji_events;
 class EndPhaseBadge extends StatelessWidget {
   final String text;
 
-  const EndPhaseBadge(this.text, {super.key});
+  /// Opis fazy w dymku przy znaczniku (np. na ekranie graczy).
+  final String? hint;
+
+  const EndPhaseBadge(this.text, {this.hint, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +45,7 @@ class EndPhaseBadge extends StatelessWidget {
               ),
             ),
           ),
+          if (hint != null) InfoHint(hint!, title: text),
         ],
       ),
     );

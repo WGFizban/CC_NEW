@@ -218,7 +218,7 @@
   "farmJoined": "Joined to a barn",
   "farmBarnOwner": "Barn owner",
   "barn": "Barn",
-  "barnHint": "Choose how to score a farm with a barn. Normal: scoring the farm at the end of the game or when the barn is placed (3 pts per city). Joined to a barn: farmers on a farm that was just joined to the barn farm get 1 pt per city (2 with a pig). Barn owner at the end of the game: 4 pts per city and 5 per castle, no pig; each barn on the joined farm gets the full score.",
+  "barnHint": "Choose how to score a farm with a barn. Farms after placing the barn: the farm is scored when the barn is placed (3 pts per city). Farms joined to the barn: farmers on a farm that was just joined to the barn farm get 1 pt per city (2 with a pig).",
   "goldBarsToAdd": "Gold bars to add",
   "goldBars": "Gold bars",
   "goldHint": "Expand the section to add gold bars. Gold bars from the tiles of a completed feature go to the player with the majority; on a tie they are shared in turn order. Farmers get no gold. At the end of the game the more bars you hold, the more each is worth: 1–3 bars 1 pt each, 4–6 2 pts, 7–9 3 pts, 10+ 4 pts.",
@@ -314,7 +314,7 @@
   "tutorial5Title": "A mistake?",
   "tutorial5Body": "In the menu you can undo the most recently confirmed points. The \"Rules summary\" lists the scoring of each element, and the \"?\" icon next to options shows an explanation.",
   "tutorial6Title": "End of the game",
-  "tutorial6Body": "When the tiles run out, press the flag button and add points for farms and incomplete features. The trophy button then takes you to the summary with the winner and the next places. The \"Summary\" button opens a table of the points from each source, and \"New game\" lets you start again.\n\nHave fun!",
+  "tutorial6Body": "When the tiles run out, tap the flag and add points for farms and incomplete features. Once everything is entered, the trophy takes you to the summary with the winner and the next places. From there you can open a table of points from each source (\"Detailed summary\") or start over (\"New game\").\n\nHave fun!",
   "aboutTitle": "About the app",
   "aboutVersion": "Version {version}",
   "aboutDescription": "A score counter for the Carcassonne board game. It scores by the rules, supports many expansions, guides the game flow and shows a summary at the end.",
@@ -396,5 +396,8 @@
   "archbishopAllDoneTitle": "All roads completed",
   "archbishopAllDoneWarn": "All roads of the cathedral are marked as completed, but the tiles have run out. At least one should be incomplete (a completed cathedral is scored during the game). Are you sure you want to add these points?",
   "farmAfterBarn": "Farms after placing the barn",
-  "farmJoinedToBarn": "Farms joined to the barn"
+  "farmJoinedToBarn": "Farms joined to the barn",
+  "endTilesTitle": "No more tiles",
+  "detailedSummary": "Detailed summary",
+  "barnHintEnd": "Choose how to score a farm with a barn at the end of the game. Normal: the farm is scored at the end of the game (3 pts per city). Barn owner: 4 pts per city and 5 per castle, no pig; each barn on the joined farm gets the full score."
 }

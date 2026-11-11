@@ -218,7 +218,7 @@
   "farmJoined": "Relié à une grange",
   "farmBarnOwner": "Propriétaire de la grange",
   "barn": "Grange",
-  "barnHint": "Choisissez comment décompter un pré avec une grange. Normal : décompte du pré en fin de partie ou à la pose de la grange (3 pts par ville). Relié à une grange : les paysans d'un pré qui vient d'être relié au pré de la grange marquent 1 pt par ville (2 avec un cochon). Propriétaire de la grange en fin de partie : 4 pts par ville et 5 par château, sans cochon ; chaque grange du pré relié reçoit le décompte complet.",
+  "barnHint": "Choisissez comment décompter un pré avec une grange. Prés après la pose de la grange : décompte du pré à la pose de la grange (3 pts par ville). Prés reliés à la grange : les paysans d'un pré qui vient d'être relié au pré de la grange marquent 1 pt par ville (2 avec un cochon).",
   "goldBarsToAdd": "Lingots d'or à ajouter",
   "goldBars": "Lingots d'or",
   "goldHint": "Développez la section pour ajouter des lingots d'or. Les lingots des tuiles d'un élément achevé vont au joueur ayant la majorité ; en cas d'égalité, ils sont répartis dans l'ordre du tour. Les paysans ne reçoivent pas d'or. En fin de partie, chaque lingot vaut d'autant plus que vous en avez : 1 à 3 lingots 1 pt chacun, 4 à 6 2 pts, 7 à 9 3 pts, 10 et plus 4 pts.",
@@ -314,7 +314,7 @@
   "tutorial5Title": "Une erreur ?",
   "tutorial5Body": "Dans le menu, vous pouvez annuler les derniers points confirmés. Le « Résumé des règles » indique le décompte de chaque élément, et l'icône « ? » à côté des options affiche une explication.",
   "tutorial6Title": "Fin de la partie",
-  "tutorial6Body": "Quand les tuiles sont épuisées, appuyez sur le bouton drapeau et ajoutez les points des prés et des constructions inachevées. Le bouton trophée mène ensuite au récapitulatif avec le vainqueur et les places suivantes. Le bouton « Récapitulatif » ouvre un tableau des points de chaque source, et « Nouvelle partie » permet de recommencer.\n\nAmusez-vous bien !",
+  "tutorial6Body": "Quand les tuiles sont épuisées, appuyez sur le drapeau et ajoutez les points des prés et des constructions inachevées. Une fois tout saisi, le trophée vous mène au récapitulatif avec le vainqueur et les places suivantes. De là, vous ouvrez le tableau des points de chaque source (« Récapitulatif détaillé ») ou recommencez (« Nouvelle partie »).\n\nAmusez-vous bien !",
   "aboutTitle": "À propos de l'application",
   "aboutVersion": "Version {version}",
   "aboutDescription": "Un compteur de points pour le jeu de société Carcassonne. Il décompte selon les règles, prend en charge de nombreuses extensions, guide le déroulement de la partie et affiche un récapitulatif à la fin.",
@@ -396,5 +396,8 @@
   "archbishopAllDoneTitle": "Toutes les routes achevées",
   "archbishopAllDoneWarn": "Toutes les routes de la cathédrale sont marquées comme achevées, mais les tuiles sont épuisées. Au moins une devrait être inachevée (une cathédrale achevée se décompte pendant la partie). Voulez-vous vraiment ajouter ces points ?",
   "farmAfterBarn": "Prés après la pose de la grange",
-  "farmJoinedToBarn": "Prés reliés à la grange"
+  "farmJoinedToBarn": "Prés reliés à la grange",
+  "endTilesTitle": "Plus de tuiles",
+  "detailedSummary": "Récapitulatif détaillé",
+  "barnHintEnd": "Choisissez comment décompter un pré avec une grange en fin de partie. Normal : décompte du pré en fin de partie (3 pts par ville). Propriétaire de la grange : 4 pts par ville et 5 par château, sans cochon ; chaque grange du pré relié reçoit le décompte complet."
 }

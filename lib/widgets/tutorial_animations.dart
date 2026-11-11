@@ -1453,7 +1453,7 @@ class _EndGameAnimationState extends _LoopingSceneState<EndGameAnimation> {
                       top: 156,
                       child: _pill(
                         context,
-                        l.summaryTitle,
+                        l.detailedSummary,
                         height: 26,
                         color: scheme.surfaceContainerHighest,
                         textColor: scheme.onSurface,

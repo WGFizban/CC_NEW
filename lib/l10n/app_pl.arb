@@ -637,7 +637,7 @@
   "farmJoined": "Połączone ze stodołą",
   "farmBarnOwner": "Właściciel stodoły",
   "barn": "Stodoła",
-  "barnHint": "Wybierz sposób punktowania pola ze stodołą. Zwykłe: punktowanie pola na koniec gry albo w chwili postawienia stodoły (3 pkt za miasto). Połączone ze stodołą: rolnicy na polu, które właśnie połączono z polem ze stodołą, dostają 1 pkt za miasto (2 ze świnką). Właściciel stodoły na koniec gry: 4 pkt za miasto i 5 za zamek, bez świnki; każda stodoła na połączonym polu dostaje pełną punktację.",
+  "barnHint": "Wybierz sposób punktowania pola ze stodołą. Pola po położeniu stodoły: punktowanie pola w chwili postawienia stodoły (3 pkt za miasto). Pola połączone ze stodołą: rolnicy na polu, które właśnie połączono z polem ze stodołą, dostają 1 pkt za miasto (2 ze świnką).",
   "goldBarsToAdd": "Sztabki złota do dopisania",
   "goldBars": "Sztabki złota",
   "goldHint": "Rozwiń sekcję, aby dopisać sztabki złota. Sztabki z płytek ukończonej budowli dostaje gracz z przewagą; przy remisie dzielą się nimi według kolejności. Rolnicy złota nie dostają. Na koniec gry im więcej sztabek, tym więcej warta każda: 1–3 po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.",
@@ -855,7 +855,7 @@
   "tutorial5Title": "Pomyłka?",
   "tutorial5Body": "W menu możesz cofnąć ostatnio zatwierdzone punkty. „Skrót zasad\" zawiera punktację poszczególnych elementów, a ikona „?\" przy opcjach wyświetla ich objaśnienie.",
   "tutorial6Title": "Koniec gry",
-  "tutorial6Body": "Gdy skończą się kafelki, naciśnij przycisk z flagą i dopisz punkty za pola oraz struktury nieukończone. Przyciskiem z pucharem przejdziesz do podsumowania ze zwycięzcą i kolejnymi miejscami. Przyciskiem „Podsumowanie\" zobaczysz tabelę punktów z każdego źródła, a „Nowa gra\" pozwoli zacząć od nowa.\n\nMiłej rozgrywki!",
+  "tutorial6Body": "Gdy skończą się kafelki, naciśnij flagę i dopisz punkty za pola oraz struktury nieukończone. Gdy wszystko wpiszesz, puchar przeniesie Cię do podsumowania ze zwycięzcą i kolejnymi miejscami. Stamtąd otworzysz tabelę punktów z każdego źródła („Szczegółowe podsumowanie”) albo zaczniesz od nowa („Nowa gra”).\n\nMiłej rozgrywki!",
   "aboutTitle": "Info o aplikacji",
   "aboutVersion": "Wersja {version}",
   "@aboutVersion": {
@@ -1002,5 +1002,17 @@
   },
   "@farmJoinedToBarn": {
     "description": "Pole w trakcie gry: połączone ze stodołą"
+  },
+  "endTilesTitle": "Koniec kafelków",
+  "detailedSummary": "Szczegółowe podsumowanie",
+  "barnHintEnd": "Wybierz sposób punktowania pola ze stodołą na koniec gry. Zwykłe: punktowanie pola na koniec gry (3 pkt za miasto). Właściciel stodoły: 4 pkt za miasto i 5 za zamek, bez świnki; każda stodoła na połączonym polu dostaje pełną punktację.",
+  "@endTilesTitle": {
+    "description": "endTilesTitle"
+  },
+  "@detailedSummary": {
+    "description": "detailedSummary"
+  },
+  "@barnHintEnd": {
+    "description": "barnHintEnd"
   }
 }

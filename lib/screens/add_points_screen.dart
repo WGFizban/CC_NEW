@@ -1095,7 +1095,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               Expanded(
                 child: LabelWithHint(
                   l.barn,
-                  l.barnHint,
+                  _endPhase ? l.barnHintEnd : l.barnHint,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
