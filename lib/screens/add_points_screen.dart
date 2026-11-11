@@ -22,6 +22,7 @@ import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/token_dialogs.dart';
 import '../widgets/counter_stepper.dart';
+import '../widgets/game_dialogs.dart' show EndPhaseBadge, warnAndAsk;
 import '../widgets/game_icon.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/info_hint.dart';
@@ -46,6 +47,12 @@ class AddPointsScreen extends StatefulWidget {
   /// rabusiów").
   final Map<CrownToken, TokenHolding> tokens;
 
+  /// Punktowanie końcowe (po ostatniej płytce). Budowle są wtedy domyślnie
+  /// nieukończone, a przełączniki „ukończone” widoczne (na końcu formularza).
+  /// W trakcie gry budowle są zawsze ukończone, bez takich przełączników
+  /// (wyjątek: klasztor i opactwo, z których opat może zejść wcześniej).
+  final bool endPhase;
+
   const AddPointsScreen({
     super.key,
     required this.player,
@@ -53,6 +60,7 @@ class AddPointsScreen extends StatefulWidget {
     required this.type,
     required this.expansions,
     this.tokens = const {},
+    this.endPhase = false,
   });
 
   @override
@@ -76,7 +84,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   final List<bool> _roadInn = List.filled(kMaxCathedralRoads, false);
   final List<bool> _roadDone = List.filled(kMaxCathedralRoads, true);
   int _vineyards = 0;
-  bool _completed = true;
+
+  /// Po grze budowle są domyślnie nieukończone (ukończone punktuje się w trakcie
+  /// gry); w trakcie gry zawsze ukończone.
+  late bool _completed = !(_endPhase && _hasCompletedState);
 
   /// Katedra (miasto), karczma (droga) lub świnka (pola).
   bool _bonus = false;
@@ -133,10 +144,38 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   ScoringType get _type => widget.type;
 
+  bool get _endPhase => widget.endPhase;
+
+  /// Typy, w których ważne jest, czy budowla jest ukończona (arcybiskup ma to
+  /// osobno dla każdej drogi).
+  bool get _hasCompletedState =>
+      _type == ScoringType.city ||
+      _type == ScoringType.road ||
+      _type == ScoringType.cloister ||
+      _type == ScoringType.abbey ||
+      _type == ScoringType.germanCastle;
+
+  /// Przełącznik „ukończone”: po grze zawsze, w trakcie gry tylko przy
+  /// klasztorze i opactwie (opat zdjęty przed ukończeniem; wróżka nie daje
+  /// wtedy punktów, bo punktuje się opata, a nie budowlę).
+  bool get _showCompletedToggle => switch (_type) {
+    ScoringType.cloister || ScoringType.abbey => true,
+    ScoringType.city ||
+    ScoringType.road ||
+    ScoringType.germanCastle => _endPhase,
+    _ => false,
+  };
+
   @override
   void initState() {
     super.initState();
     if (_type == ScoringType.archbishop) _active = _Field.road0;
+    // Po grze każda droga katedry jest domyślnie nieukończona.
+    if (_endPhase) {
+      for (var i = 0; i < _roadDone.length; i++) {
+        _roadDone[i] = false;
+      }
+    }
   }
 
   List<CathedralRoad> _cathedralRoads({bool magic = true}) => [
@@ -210,8 +249,13 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool get _showRingmaster =>
       _isFeature && _has(Expansion.circus) && !_castleMode;
 
+  /// W trakcie gry wróżka daje +3 tylko za ukończoną budowlę (nie za opata
+  /// zdjętego z nieukończonego klasztoru); po grze także za nieukończone.
   bool get _showFairy =>
-      _type.supportsFairy && _has(Expansion.princessDragon) && !_castleMode;
+      _type.supportsFairy &&
+      _has(Expansion.princessDragon) &&
+      !_castleMode &&
+      (_endPhase || _completed);
 
   /// Mag i wiedźma działają na drogę i miasto, a przy arcybiskupie na każdą
   /// z jego dróg osobno.
@@ -432,6 +476,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   }
 
   Future<void> _confirm() async {
+    if (!await _confirmEndPhase() || !mounted) return;
     final distribution = _distribution;
     final goods = _goodsToAdd;
     final gold = _goldToAdd;
@@ -545,6 +590,12 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             final side = _usesKeypad && useSideKeypad(constraints);
             final form = Column(
               children: [
+                // Faza po grze jest zaznaczona na każdym ekranie punktowania.
+                if (_endPhase)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                    child: EndPhaseBadge(l.endPhaseLabel),
+                  ),
                 // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.
                 if (!neutral && _type != ScoringType.goods)
                   Padding(
@@ -604,6 +655,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                           if (_showSharing) _buildSharing(),
                           if (_showGold) _buildGold(),
                           if (_showGoods) _buildGoods(),
+                          // „Czy ukończone" jest na samym końcu formularza.
+                          if (_showCompletedToggle) _buildCompletedToggle(),
                         ],
                       ),
                     ),
@@ -729,17 +782,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             _check(
               l.cathedral,
               _bonus,
-              (v) {
-                _bonus = v;
-                // Nieukończone miasto z katedrą nie daje punktów (chyba że
-                // stoi na nim mag), więc takiego punktowania zwykle nie
-                // dopisujemy.
-                if (v && !_magicOk) _completed = true;
-              },
+              (v) => _bonus = v,
               hint: l.cathedralHint,
             ),
-          if (!_bonus || _magicOk)
-            _check(l.completedCity, _completed, (v) => _completed = v),
           if (_completed && _has(Expansion.germanCastles))
             _stepperRow(
               l.germanCastlesAtFeature,
@@ -755,38 +800,22 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       case ScoringType.road:
         return [
           _valueBoxes([_valueBox(l.tiles, _tiles, _Field.tiles)]),
-          // Bez karczmy ukończona i nieukończona droga liczą się tak samo,
-          // a nieukończona z karczmą nie daje punktów (nie dopisujemy jej).
+          // Nieukończona droga z karczmą nie daje punktów, a droga do katedry
+          // nieukończona liczy się jak zwykła (patrz calculatePoints).
           if (_has(Expansion.innsCathedrals))
             _check(
               l.inn,
               _bonus,
-              (v) {
-                _bonus = v;
-                // Nieukończona droga z karczmą nie daje punktów (chyba że stoi
-                // na niej mag).
-                if (v && !_magicOk) _completed = true;
-              },
+              (v) => _bonus = v,
               hint: l.innHint,
             ),
           if (_has(Expansion.germanCathedrals))
             _check(
               l.roadToCathedral,
               _cathedralRoad,
-              (v) {
-                _cathedralRoad = v;
-                if (!v && !_magicOk) _completed = true;
-              },
+              (v) => _cathedralRoad = v,
               hint: l.roadToCathedralHint,
             ),
-          // Zwykła droga liczy się tak samo ukończona i nie (nieukończoną
-          // z karczmą po prostu się nie dopisuje). Różnicę daje dopiero droga
-          // do katedry: ukończona podwójnie, nieukończona jak zwykła.
-          // Z magiem (który działa też na nieukończonej drodze) pole „Czy
-          // ukończona" jest zawsze widoczne.
-          if (_magicOk ||
-              (_has(Expansion.germanCathedrals) && _cathedralRoad && !_bonus))
-            _check(l.completedRoad, _completed, (v) => _completed = v),
           if (_completed && _has(Expansion.germanCastles))
             _stepperRow(
               l.germanCastlesAtFeature,
@@ -812,15 +841,19 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
       case ScoringType.germanCastle:
         return [
-          _check(
-            l.completedGermanCastle,
-            _completed,
-            (v) => _completed = v,
-            hint: l.germanCastleHint(
-              kGermanCastleCompleted,
-              kGermanCastleTileBase,
+          // W trakcie gry zamek jest zawsze ukończony (12 pkt), więc zamiast
+          // przełącznika jest tylko informacja.
+          if (_completed)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: LabelWithHint(
+                l.completedGermanCastle,
+                l.germanCastleHint(
+                  kGermanCastleCompleted,
+                  kGermanCastleTileBase,
+                ),
+              ),
             ),
-          ),
           if (!_completed)
             _valueBoxes([_valueBox(l.tilesAroundCastle, _tiles, _Field.tiles)]),
         ];
@@ -864,65 +897,15 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           ),
           // Każda droga w osobnej, domyślnie zwiniętej sekcji (czytelność); jej
           // stan (ukończona, karczma, pionek magiczny) widać w podtytule.
-          for (var i = 0; i < _roadCount; i++)
-            ExpansionTile(
-              key: PageStorageKey('cathedral-road-$i'),
-              initiallyExpanded: false,
-              shape: const Border(),
-              collapsedShape: const Border(),
-              title: Text(
-                l.archbishopRoadTitle(i + 1),
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                [
-                  _roadDone[i] ? l.roadDone : l.roadOpen,
-                  if (_has(Expansion.innsCathedrals) && _roadInn[i])
-                    l.innShort,
-                  if (_magicOk && _roadMagic[i] == MagicPawn.mage)
-                    l.magicMage,
-                  if (_magicOk && _roadMagic[i] == MagicPawn.witch)
-                    l.magicWitch,
-                ].join(' · '),
-              ),
-              children: [
-                if (_has(Expansion.innsCathedrals))
-                  _check(
-                    l.inn,
-                    _roadInn[i],
-                    (v) => _roadInn[i] = v,
-                    hint: l.archbishopRoadInnHint,
-                  ),
-                _check(
-                  l.completedRoad,
-                  _roadDone[i],
-                  (v) => _roadDone[i] = v,
-                  hint: l.archbishopRoadDoneHint,
-                ),
-                if (_magicOk)
-                  _magicSelector(
-                    value: _roadMagic[i],
-                    onChanged: (v) => _roadMagic[i] = v,
-                    hint: l.archbishopMageHint,
-                    mageEnabled: !_magicTaken(MagicPawn.mage, i),
-                    witchEnabled: !_magicTaken(MagicPawn.witch, i),
-                  ),
-              ],
-            ),
+          for (var i = 0; i < _roadCount; i++) _archbishopRoad(i),
         ];
 
       case ScoringType.cloister:
       case ScoringType.abbey:
         final isAbbey = _type == ScoringType.abbey;
         return [
-          // Jak „Ukończone miasto": zaznaczone = ukończony. Punkty za ukończony
-          // (9) i niedokończony (1 za płytkę) opisuje podpowiedź.
-          _check(
-            isAbbey ? l.completedAbbey : l.completedCloister,
-            _completed,
-            (v) => _completed = v,
-            hint: isAbbey ? l.abbeyHint : l.cloisterHint,
-          ),
+          // Przełącznik „ukończony" jest na końcu formularza (patrz
+          // _buildCompletedToggle).
           if (_completed) ...[
             if (_has(Expansion.hillsSheep))
               _stepperRow(
@@ -998,6 +981,97 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     }
   }
 
+  /// Jedna droga arcybiskupa w zwijanej sekcji. Stan drogi (ukończona, karczma,
+  /// pionek magiczny) widać w podtytule. Przełącznik „ukończona" jest tylko po
+  /// grze (w trakcie gry wszystkie drogi katedry są ukończone) i stoi na końcu
+  /// sekcji.
+  Widget _archbishopRoad(int i) {
+    final l = context.l10n;
+    final summary = [
+      if (_endPhase) _roadDone[i] ? l.roadDone : l.roadOpen,
+      if (_has(Expansion.innsCathedrals) && _roadInn[i]) l.innShort,
+      if (_magicOk && _roadMagic[i] == MagicPawn.mage) l.magicMage,
+      if (_magicOk && _roadMagic[i] == MagicPawn.witch) l.magicWitch,
+    ];
+    return ExpansionTile(
+      key: PageStorageKey('cathedral-road-$i'),
+      initiallyExpanded: false,
+      shape: const Border(),
+      collapsedShape: const Border(),
+      title: Text(
+        l.archbishopRoadTitle(i + 1),
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+      subtitle: summary.isEmpty ? null : Text(summary.join(' · ')),
+      children: [
+        if (_has(Expansion.innsCathedrals))
+          _check(
+            l.inn,
+            _roadInn[i],
+            (v) => _roadInn[i] = v,
+            hint: l.archbishopRoadInnHint,
+          ),
+        if (_magicOk)
+          _magicSelector(
+            value: _roadMagic[i],
+            onChanged: (v) => _roadMagic[i] = v,
+            hint: l.archbishopMageHint,
+            mageEnabled: !_magicTaken(MagicPawn.mage, i),
+            witchEnabled: !_magicTaken(MagicPawn.witch, i),
+          ),
+        if (_endPhase)
+          _check(
+            l.completedRoad,
+            _roadDone[i],
+            (v) => _roadDone[i] = v,
+            hint: l.archbishopRoadDoneHint,
+          ),
+      ],
+    );
+  }
+
+  /// Przełącznik „ukończone" na końcu formularza (miasto, droga, klasztor,
+  /// opactwo, zamek niemiecki).
+  Widget _buildCompletedToggle() {
+    final l = context.l10n;
+    final (String label, String? hint) = switch (_type) {
+      ScoringType.city => (l.completedCity, null),
+      ScoringType.road => (l.completedRoad, null),
+      ScoringType.cloister => (l.completedCloister, l.cloisterHint),
+      ScoringType.abbey => (l.completedAbbey, l.abbeyHint),
+      _ => (
+        l.completedGermanCastle,
+        l.germanCastleHint(kGermanCastleCompleted, kGermanCastleTileBase),
+      ),
+    };
+    return _check(label, _completed, (v) => _completed = v, hint: hint);
+  }
+
+  /// Przy ukończonej budowli w punktowaniu końcowym (albo arcybiskupie bez
+  /// żadnej nieukończonej drogi) ostrzega, że to prawdopodobnie pomyłka: takie
+  /// budowle punktuje się w trakcie gry. Zwraca `true`, gdy można zatwierdzić.
+  Future<bool> _confirmEndPhase() async {
+    if (!_endPhase) return true;
+    final l = context.l10n;
+    if (_type == ScoringType.archbishop) {
+      final allDone = _roadDone.take(_roadCount).every((d) => d);
+      if (!allDone) return true;
+      return warnAndAsk(
+        context,
+        title: l.archbishopAllDoneTitle,
+        message: l.archbishopAllDoneWarn,
+      );
+    }
+    if (_showCompletedToggle && _completed) {
+      return warnAndAsk(
+        context,
+        title: l.completedInEndTitle,
+        message: l.completedInEndWarn,
+      );
+    }
+    return true;
+  }
+
   /// Wybór sposobu punktowania pola przy stodole.
   Widget _buildBarnChoice() {
     final l = context.l10n;
@@ -1030,8 +1104,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           Wrap(
             spacing: 8,
             children: [
+              // Właściciel stodoły liczy swoje pola dopiero po grze.
               for (final e in labels.entries)
-                ChoiceChip(
+                if (_endPhase || e.key != FarmScoring.barnOwner)
+                  ChoiceChip(
                   label: Text(e.value),
                   selected: _farm == e.key,
                   onSelected: (_) => setState(() {

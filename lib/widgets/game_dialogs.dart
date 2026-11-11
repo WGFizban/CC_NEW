@@ -6,6 +6,76 @@ import 'meeple_icon.dart';
 /// Ikona kończąca grę (ta sama na przycisku i w komunikacie o starcie).
 const IconData kEndGameIcon = Icons.sports_score;
 
+/// Ikona przycisku przechodzącego do podsumowania (po punktowaniu końcowym).
+const IconData kSummaryIcon = Icons.emoji_events;
+
+/// Wyraźna plakietka „Punktowanie końcowe", żeby w tej fazie nie pomylić ekranów
+/// z punktowaniem w trakcie gry.
+class EndPhaseBadge extends StatelessWidget {
+  final String text;
+
+  const EndPhaseBadge(this.text, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: scheme.tertiaryContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(kEndGameIcon, size: 20, color: scheme.onTertiaryContainer),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: scheme.onTertiaryContainer,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Ostrzeżenie z wyborem „Wróć” / „Dodaj mimo to”. Zwraca `true`, gdy
+/// użytkownik mimo wszystko zatwierdza.
+Future<bool> warnAndAsk(
+  BuildContext context, {
+  required String title,
+  required String message,
+}) async {
+  final l = context.l10n;
+  final result = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      icon: const Icon(Icons.warning_amber_rounded),
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: Text(l.goBack),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: Text(l.addAnyway),
+        ),
+      ],
+    ),
+  );
+  return result ?? false;
+}
+
 /// Okno z pytaniem i odpowiedziami Tak / Nie. Zwraca `true` po „Tak".
 Future<bool> askYesNo(
   BuildContext context, {

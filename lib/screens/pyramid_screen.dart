@@ -9,6 +9,7 @@ import '../models/score_event.dart';
 import '../models/scoring.dart';
 import '../theme/app_theme.dart';
 import '../widgets/adaptive_layout.dart';
+import '../widgets/game_dialogs.dart' show EndPhaseBadge;
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/info_hint.dart';
 import '../widgets/player_counter_tile.dart';
@@ -26,7 +27,11 @@ enum _PyramidMode { completed, endGame }
 class PyramidScreen extends StatefulWidget {
   final List<Player> players;
 
-  const PyramidScreen({super.key, required this.players});
+  /// Punktowanie końcowe: tylko akrobaci na planszy po grze. W trakcie gry
+  /// tylko ukończona piramida.
+  final bool endPhase;
+
+  const PyramidScreen({super.key, required this.players, this.endPhase = false});
 
   @override
   State<PyramidScreen> createState() => _PyramidScreenState();
@@ -36,7 +41,8 @@ class _PyramidScreenState extends State<PyramidScreen> {
   /// Każdy gracz ma 7 mepli, więc tylu akrobatów może mieć najwyżej.
   static const _maxPerPlayer = 7;
 
-  _PyramidMode _mode = _PyramidMode.completed;
+  late final _PyramidMode _mode =
+      widget.endPhase ? _PyramidMode.endGame : _PyramidMode.completed;
   late final Map<Player, int> _acrobats = {
     for (final p in widget.players) p: 0,
   };
@@ -66,15 +72,6 @@ class _PyramidScreenState extends State<PyramidScreen> {
 
   bool get _canConfirm =>
       _isCompleted ? _total == kPyramidSize : _total > 0;
-
-  void _setMode(_PyramidMode mode) {
-    setState(() {
-      _mode = mode;
-      for (final p in widget.players) {
-        _acrobats[p] = 0;
-      }
-    });
-  }
 
   void _confirm() {
     final changes = [
@@ -122,20 +119,13 @@ class _PyramidScreenState extends State<PyramidScreen> {
           child: ContentWidth(child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          SegmentedButton<_PyramidMode>(
-            segments: [
-              ButtonSegment(
-                value: _PyramidMode.completed,
-                label: Text(l.pyramidCompleted),
-              ),
-              ButtonSegment(
-                value: _PyramidMode.endGame,
-                label: Text(l.pyramidEndOfGame),
-              ),
-            ],
-            selected: {_mode},
-            onSelectionChanged: (s) => _setMode(s.first),
-          ),
+          if (widget.endPhase)
+            EndPhaseBadge(l.endPhaseLabel)
+          else
+            // W trakcie gry akrobaci punktują tylko przy ukończonej piramidzie
+            // (punkty za akrobatów na planszy dopiero po grze), więc wyboru
+            // trybu nie ma.
+            const SizedBox.shrink(),
           const SizedBox(height: 12),
           LabelWithHint(
             _isCompleted ? l.pyramidWhoseThree : l.acrobatsHowMany,

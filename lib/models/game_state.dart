@@ -1,7 +1,16 @@
 import 'player.dart';
 
-/// Etap gry: przygotowanie (dodawanie graczy i dodatków), rozgrywka i koniec.
-enum GameStage { setup, playing, finished }
+/// Etap gry: przygotowanie (dodawanie graczy i dodatków), rozgrywka,
+/// punktowanie końcowe (kafelki się skończyły, na planszy zostały mepelki
+/// do podliczenia) i koniec.
+enum GameStage { setup, playing, endScoring, finished }
+
+/// Czy można dopisywać punkty (w trakcie gry albo w punktowaniu końcowym).
+bool canScore(GameStage stage) =>
+    stage == GameStage.playing || stage == GameStage.endScoring;
+
+/// Czy trwa punktowanie końcowe: kafelki się skończyły, czas gry stoi.
+bool isEndScoring(GameStage stage) => stage == GameStage.endScoring;
 
 /// Najmniejsza liczba graczy potrzebna do rozpoczęcia gry.
 const int kMinPlayers = 2;

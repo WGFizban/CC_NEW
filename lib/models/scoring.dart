@@ -131,11 +131,48 @@ enum ScoringType {
       if (t.expansion == null || enabled.contains(t.expansion)) t,
   ];
 
+  /// Czy typ można punktować po ostatniej płytce (punktowanie końcowe). Tylko
+  /// te typy: budowle zostawione na planszy (także nieukończone), pola, klasztor
+  /// liniowy (opat/przeor), cyrk i akrobaci. Owce, surowce, bazar, wieża, złoto,
+  /// żeton Króla/Barona i wróżka (+1 na początku tury) po grze nie punktują.
+  bool get scoresAfterGame => switch (this) {
+    ScoringType.city ||
+    ScoringType.road ||
+    ScoringType.cloister ||
+    ScoringType.abbey ||
+    ScoringType.meadow ||
+    ScoringType.germanCastle ||
+    ScoringType.archbishop ||
+    ScoringType.monastery ||
+    ScoringType.circus ||
+    ScoringType.pyramid ||
+    ScoringType.ringmaster => true,
+    _ => false,
+  };
+
+  /// Czy typ można punktować w trakcie gry przy włączonych [enabled] dodatkach.
+  /// Pole punktuje tylko na koniec gry, chyba że ktoś postawi stodołę
+  /// (dodatek „Opactwo i burmistrz"); klasztor liniowy (opat/przeor) liczy się
+  /// wyłącznie po grze.
+  bool scoresDuringGame(Set<Expansion> enabled) => switch (this) {
+    ScoringType.meadow => enabled.contains(Expansion.abbeyMayor),
+    ScoringType.monastery => false,
+    _ => true,
+  };
+
   /// Typy do wyboru na ekranie rodzaju punktacji (bez kolumn podsumowania
-  /// króla i rabusia, które powstają tylko na koniec gry).
-  static List<ScoringType> selectableFor(Set<Expansion> enabled) => [
+  /// króla i rabusia, które powstają tylko na koniec gry). [endPhase] = true
+  /// w punktowaniu końcowym (po ostatniej płytce), inaczej w trakcie gry.
+  static List<ScoringType> selectableFor(
+    Set<Expansion> enabled, {
+    bool endPhase = false,
+  }) => [
     for (final t in availableFor(enabled))
-      if (t != king && t != robber && t != magic) t,
+      if (t != king &&
+          t != robber &&
+          t != magic &&
+          (endPhase ? t.scoresAfterGame : t.scoresDuringGame(enabled)))
+        t,
   ];
 }
 
