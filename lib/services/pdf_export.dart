@@ -99,12 +99,34 @@ Future<Uint8List> buildSummaryPdf({
   final best = table.rows.isEmpty ? 0 : table.rows.first.total;
   final winners = [
     for (final r in table.rows)
-      if (r.total == best) r.player.name,
+      if (r.total == best) r.player,
   ];
-  final winnerText = table.rows.isEmpty
+  final winnerStyle = pw.TextStyle(font: bold, fontSize: 14);
+  // „Zwycięzca: [mepel] Imię – N pkt”; przy remisie każdy z mepelem w swoim kolorze.
+  final winnerLine = table.rows.isEmpty
       ? null
-      : '${winners.length == 1 ? l.winner : l.tiedLead}: '
-            '${winners.join(', ')} – ${l.pointsValue(best)}';
+      : pw.Wrap(
+          crossAxisAlignment: pw.WrapCrossAlignment.center,
+          children: [
+            pw.Text(
+              '${winners.length == 1 ? l.winner : l.tiedLead}: ',
+              style: winnerStyle,
+            ),
+            for (var i = 0; i < winners.length; i++) ...[
+              if (_meeple(meepleSvg, winners[i].color.toARGB32(), 16)
+                  case final m?)
+                pw.Padding(
+                  padding: const pw.EdgeInsets.only(right: 4),
+                  child: pw.SizedBox(width: 16, height: 16, child: m),
+                ),
+              pw.Text(
+                winners[i].name + (i < winners.length - 1 ? ', ' : ''),
+                style: winnerStyle,
+              ),
+            ],
+            pw.Text(' – ${l.pointsValue(best)}', style: winnerStyle),
+          ],
+        );
 
   final doc = pw.Document(title: l.summaryTitle, theme: theme);
 
@@ -124,9 +146,9 @@ Future<Uint8List> buildSummaryPdf({
           l.gameTime(formatGameDuration(elapsed)),
           style: const pw.TextStyle(fontSize: 11),
         ),
-        if (winnerText != null) ...[
+        if (winnerLine != null) ...[
           pw.SizedBox(height: 8),
-          pw.Text(winnerText, style: pw.TextStyle(font: bold, fontSize: 14)),
+          winnerLine,
         ],
         pw.SizedBox(height: 14),
         _table(l, table, bold, iconSvgs, meepleSvg),
