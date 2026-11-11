@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/info_hint.dart';
+import '../widgets/player_label.dart';
 import '../widgets/number_keypad.dart';
 import '../widgets/player_picker.dart';
 
@@ -45,6 +46,23 @@ class _BazaarScreenState extends State<BazaarScreen> {
 
   bool get _canConfirm =>
       _price > 0 && (!_needsBidder || (_bidder != null && _bidder != _chooser));
+
+  /// Kto ile dostaje (z minusem, gdy płaci).
+  List<({Player player, String text})> get _gains {
+    final bidder = _bidder;
+    final p = _price;
+    return switch (_deal) {
+      _Deal.buy => [
+        (player: _chooser, text: '${_chooser.name} -$p'),
+        if (bidder != null) (player: bidder, text: '${bidder.name} +$p'),
+      ],
+      _Deal.sell => [
+        (player: _chooser, text: '${_chooser.name} +$p'),
+        if (bidder != null) (player: bidder, text: '${bidder.name} -$p'),
+      ],
+      _Deal.solo => [(player: _chooser, text: '${_chooser.name} -$p')],
+    };
+  }
 
   String get _description {
     final l = context.l10n;
@@ -188,6 +206,15 @@ class _BazaarScreenState extends State<BazaarScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
+                  if (_price > 0)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: PlayerLabels(
+                        alignment: WrapAlignment.center,
+                        items: _gains,
+                        empty: '',
+                      ),
+                    ),
                   Center(child: Text(_description, textAlign: TextAlign.center)),
                   const SizedBox(height: 12),
               ],

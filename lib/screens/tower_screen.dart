@@ -9,6 +9,7 @@ import '../theme/app_theme.dart';
 import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/info_hint.dart';
+import '../widgets/player_label.dart';
 import '../widgets/player_picker.dart';
 
 /// Wykup uwięzionego mepla z dodatku „Wieża".
@@ -111,6 +112,19 @@ class _TowerScreenState extends State<TowerScreen> {
             child: Text(
               l.ransomValue(kRansomPoints),
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+          // Kto ile dostaje: mepel w kolorze gracza i jego punkty.
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: PlayerLabels(
+              alignment: WrapAlignment.center,
+              items: [
+                (player: _buyer, text: '${_buyer.name} -$kRansomPoints'),
+                if (_holder != null)
+                  (player: _holder!, text: '${_holder!.name} +$kRansomPoints'),
+              ],
+              empty: '',
             ),
           ),
           const SizedBox(height: 8),
