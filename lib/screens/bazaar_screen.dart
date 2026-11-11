@@ -33,6 +33,13 @@ class _BazaarScreenState extends State<BazaarScreen> {
   Player? _bidder;
   _Deal _deal = _Deal.buy;
   int _price = 0;
+  final _keypadOpen = ValueNotifier<bool>(true);
+
+  @override
+  void dispose() {
+    _keypadOpen.dispose();
+    super.dispose();
+  }
 
   bool get _needsBidder => _deal != _Deal.solo;
 
@@ -107,17 +114,13 @@ class _BazaarScreenState extends State<BazaarScreen> {
               right: frameSide,
             ),
           ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              // W poziomie klawiatura stoi w panelu obok formularza.
-              final side = useSideKeypad(constraints);
-              final keypad = NumberKeypad(
-                onKey: (key) =>
-                    setState(() => _price = applyKey(_price, key, max: 9999)),
-              );
-              final list = ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
+          child: CollapsibleKeypadLayout(
+            open: _keypadOpen,
+            onKey: (key) =>
+                setState(() => _price = applyKey(_price, key, max: 9999)),
+            form: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
                   Text(
                     l.whoPickedTile,
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -171,28 +174,24 @@ class _BazaarScreenState extends State<BazaarScreen> {
                     ),
                   ],
                   const SizedBox(height: 16),
-                  Center(
-                    child: Text(
-                      l.priceValue(_price),
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  // Stuknięcie w cenę wysuwa klawiaturę.
+                  GestureDetector(
+                    onTap: () => _keypadOpen.value = true,
+                    child: Center(
+                      child: Text(
+                        l.priceValue(_price),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Center(child: Text(_description, textAlign: TextAlign.center)),
                   const SizedBox(height: 12),
-                  if (!side) keypad,
-                ],
-              );
-              if (side) {
-                return Row(
-                  children: [
-                    Expanded(child: ContentWidth(child: list)),
-                    SideKeypadPanel(child: Center(child: keypad)),
-                  ],
-                );
-              }
-              return ContentWidth(child: list);
-            },
+              ],
+            ),
           ),
         ),
       ),
