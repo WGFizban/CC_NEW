@@ -243,7 +243,7 @@ class _TypeButton extends StatelessWidget {
   final ScoringType type;
   final VoidCallback onTap;
 
-  /// Mała stodoła w rogu ikony (pole w trakcie gry).
+  /// Ikona pola ze stodołą w rogu (pole w trakcie gry).
   final bool barnBadge;
 
   const _TypeButton({
@@ -275,24 +275,14 @@ class _TypeButton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.all(8),
-                  child: barnBadge
-                      ? Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            FittedBox(
-                              child: GameIcon(type.iconAsset, size: 64),
-                            ),
-                            const Positioned(
-                              right: 0,
-                              bottom: 0,
-                              child: GameIcon(
-                                'assets/icons/game/barn.svg',
-                                size: 28,
-                              ),
-                            ),
-                          ],
-                        )
-                      : FittedBox(child: GameIcon(type.iconAsset, size: 64)),
+                  child: FittedBox(
+                    child: GameIcon(
+                      barnBadge
+                          ? 'assets/icons/game/meadow_barn.svg'
+                          : type.iconAsset,
+                      size: 64,
+                    ),
+                  ),
                 ),
               ),
             ),
