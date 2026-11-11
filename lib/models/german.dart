@@ -1,3 +1,5 @@
+import 'magic.dart';
+
 /// Premia za każdy niemiecki zamek na końcu ukończonej drogi lub miasta
 /// (dodatek „Zamki w Niemczech"). Liczona po modyfikacjach z karczmy
 /// i katedry.
@@ -23,6 +25,7 @@ class CathedralRoad {
     this.tiles = 0,
     this.inn = false,
     this.completed = true,
+    this.magic,
   });
 
   /// Odcinki drogi (razem z odcinkiem na płytce katedry).
@@ -33,6 +36,10 @@ class CathedralRoad {
 
   /// Droga jest zamknięta; otwarta liczy się tylko na koniec gry.
   final bool completed;
+
+  /// Pionek magiczny na tej drodze. Wiedźma zmniejsza o połowę (w górę)
+  /// punkty arcybiskupa z tej drogi, mag nie daje mu nic (zasady).
+  final MagicPawn? magic;
 }
 
 /// Punkty arcybiskupa: każda droga osobno, wyniki się sumują.
@@ -44,11 +51,13 @@ class CathedralRoad {
 int archbishopPoints(Iterable<CathedralRoad> roads) {
   var sum = 0;
   for (final r in roads) {
+    final int points;
     if (r.completed) {
-      sum += r.tiles * (r.inn ? 2 : 1);
+      points = r.tiles * (r.inn ? 2 : 1);
     } else {
-      sum += r.inn ? 0 : r.tiles;
+      points = r.inn ? 0 : r.tiles;
     }
+    sum += r.magic == MagicPawn.witch ? (points + 1) ~/ 2 : points;
   }
   return sum;
 }

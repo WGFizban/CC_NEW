@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+<defs><clipPath id="t"><rect x="4" y="4" width="88" height="88" rx="18"/></clipPath></defs>
+<rect x="4" y="4" width="88" height="88" rx="18" fill="#EFE4F6"/>
+<g clip-path="url(#t)"><path d="M92 4 V92 H4 Z" fill="#F7E3CC"/></g>
+<g stroke="#3B2F2F" stroke-width="4.4" stroke-linejoin="round" stroke-linecap="round">
+<g transform="translate(5 5.5) scale(.5)">
+<path d="M30 70 C34 52 40 30 52 10 C58 28 64 52 68 70 Z" fill="#8E4FD0"/>
+<path d="M32 62 C44 66 56 66 67 62 L68 70 C56 74 42 74 30 70 Z" fill="#F2C94C"/>
+<path d="M14 72 C14 66 26 68 48 68 C70 68 82 66 82 72 C82 80 64 84 48 84 C32 84 14 80 14 72 Z" fill="#6B35A8"/>
+<path d="M50 30 L52.5 36 L59 36.5 L54 40.5 L55.8 47 L50 43.4 L44.2 47 L46 40.5 L41 36.5 L47.5 36 Z" fill="#F2C94C" stroke-width="3.6"/>
+</g>
+<g transform="translate(43 40.25) scale(.5)">
+<path d="M32 70 C34 56 40 44 46 34 C50 26 56 22 66 24 C60 24 58 28 58 32 C62 46 64 58 68 70 Z" fill="#E8820C"/>
+<path d="M66 24 C72 24 76 28 74 33"/>
+<path d="M34 61 C46 65 56 65 67 61 L68 70 C56 74 44 74 33 70 Z" fill="#6B4A2B"/>
+<path d="M12 73 L18 68 C28 70 38 68 48 68 C60 68 70 70 78 67 L84 72 L79 76 L83 81 L72 80 L66 84 L55 81 L46 85 L36 81 L26 83 L21 78 L12 80 Z" fill="#C96A05"/>
+<rect x="46" y="44" width="11" height="10" rx="1.5" fill="#F2C94C" transform="rotate(-6 51 49)" stroke-width="3.6"/>
+<path d="M47.5 49 H55.5 M51.5 45 V53" stroke-width="2.4"/>
+<path d="M40 40 L38 46 L42 49" stroke-width="3.6"/>
+</g>
+</g>
+<rect x="4" y="4" width="88" height="88" rx="18" fill="none" stroke="#3B2F2F" stroke-width="3.5"/>
+</svg>

@@ -40,6 +40,9 @@ i tabletach (w pionie i w poziomie).
 - Klasztory niemieckie i holenderskie
 - Zamki w Niemczech
 - Katedry w Niemczech
+- Maszyny latające
+- Mag i Wiedźma
+
 
 ## Pobierz
 
@@ -86,6 +89,9 @@ landscape.
 - German and Dutch Monasteries
 - German Castles
 - German Cathedrals
+- The Flying Machines
+- The Mage and the Witch
+
 
 ## Download
 

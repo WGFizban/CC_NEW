@@ -9,6 +9,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
 import '../widgets/adaptive_layout.dart';
 import '../widgets/auto_size_text.dart';
+import '../widgets/game_dialogs.dart' show EndPhaseBadge;
 import '../widgets/game_icon.dart';
 import '../widgets/meeple_header.dart';
 import '../widgets/scoring_app_bar.dart' show kCancelColor;
@@ -26,12 +27,17 @@ class SelectPointsTypeScreen extends StatelessWidget {
   /// Czy każdy dodatek zaczyna się od nowej linii (inaczej kafelki płyną).
   final bool groupsOnNewLines;
 
+  /// Punktowanie końcowe (po ostatniej płytce). W trakcie gry kafelek pola ma
+  /// obrazek stodoły, bo tylko stodoła punktuje pole przed końcem gry.
+  final bool endPhase;
+
   const SelectPointsTypeScreen({
     super.key,
     required this.player,
     required this.types,
     this.showGroupTitles = true,
     this.groupsOnNewLines = false,
+    this.endPhase = false,
   });
 
   /// Typy pogrupowane według dodatku: gra podstawowa pierwsza, potem dodatki
@@ -110,6 +116,7 @@ class SelectPointsTypeScreen extends StatelessWidget {
                     height: tile,
                     child: _TypeButton(
                       type: type,
+                      barnBadge: !endPhase && type == ScoringType.meadow,
                       onTap: () => Navigator.pop(context, type),
                     ),
                   ),
@@ -184,6 +191,10 @@ class SelectPointsTypeScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: compact ? 8 : 16),
+            if (endPhase) ...[
+              EndPhaseBadge(l.endPhaseLabel),
+              SizedBox(height: compact ? 8 : 12),
+            ],
             if (!compact) ...[
               Text(
                 l.chooseScoring,
@@ -232,7 +243,14 @@ class _TypeButton extends StatelessWidget {
   final ScoringType type;
   final VoidCallback onTap;
 
-  const _TypeButton({required this.type, required this.onTap});
+  /// Ikona pola ze stodołą w rogu (pole w trakcie gry).
+  final bool barnBadge;
+
+  const _TypeButton({
+    required this.type,
+    required this.onTap,
+    this.barnBadge = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +275,14 @@ class _TypeButton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.all(8),
-                  child: FittedBox(child: GameIcon(type.iconAsset, size: 64)),
+                  child: FittedBox(
+                    child: GameIcon(
+                      barnBadge
+                          ? 'assets/icons/game/meadow_barn.svg'
+                          : type.iconAsset,
+                      size: 64,
+                    ),
+                  ),
                 ),
               ),
             ),

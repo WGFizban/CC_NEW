@@ -1,4 +1,4 @@
-/// Najwięcej punktów, jakie może dać klasztor liniowy: pole klasztoru plus
+/// Najwięcej punktów, jakie może dać klasztor niemiecki lub holenderski: pole klasztoru plus
 /// dwa pełne rzędy i kolumny po obu stronach (ograniczenie pola wpisu).
 const int kMaxMonasteryPoints = 99;
 

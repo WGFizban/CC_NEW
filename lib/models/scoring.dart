@@ -2,6 +2,7 @@ import 'circus.dart';
 import 'expansion.dart';
 import 'fairy.dart';
 import 'german.dart';
+import 'magic.dart';
 import 'sheep.dart';
 
 /// Rodzaje punktacji dostępne w aplikacji. Typy z dodatków pojawiają się
@@ -80,6 +81,12 @@ enum ScoringType {
   robber(
     'assets/icons/game/token_robber.svg',
     expansion: Expansion.kingRobber,
+  ),
+
+  /// Kolumna podsumowania z punktami od maga (+) i wiedźmy (−); nie do wyboru.
+  magic(
+    'assets/icons/game/magic.svg',
+    expansion: Expansion.mageWitch,
   );
 
   const ScoringType(this.iconAsset, {this.expansion});
@@ -101,7 +108,7 @@ enum ScoringType {
 
   /// Typy, przy których wróżka może dać +3 pkt: budowle z [isFeature] oraz
   /// punktowania meepla w katedrze niemieckiej (arcybiskup), zamku niemieckim
-  /// (lord) i klasztorze liniowym (opat). Pasterz (owce) wróżki nie ma.
+  /// (lord) i klasztorze niemieckim lub holenderskim (opat). Pasterz (owce) wróżki nie ma.
   bool get supportsFairy =>
       isFeature ||
       this == archbishop ||
@@ -112,7 +119,12 @@ enum ScoringType {
   /// jego właściciel dostaje punkty ukończonej sąsiedniej budowli (na polach
   /// zamek nie punktuje).
   bool get supportsCastle =>
-      this == city || this == road || this == cloister || this == abbey;
+      this == city ||
+      this == road ||
+      this == cloister ||
+      this == abbey ||
+      this == germanCastle ||
+      this == archbishop;
 
   /// Budowle, za które przy ukończeniu dostaje się sztabki złota z minidodatku
   /// (rolnicy złota nie dostają).
@@ -124,11 +136,48 @@ enum ScoringType {
       if (t.expansion == null || enabled.contains(t.expansion)) t,
   ];
 
+  /// Czy typ można punktować po ostatniej płytce (punktowanie końcowe). Tylko
+  /// te typy: budowle zostawione na planszy (także nieukończone), pola, klasztor
+  /// niemiecki i holenderski (opat/przeor), cyrk i akrobaci. Owce, surowce, bazar, wieża, złoto,
+  /// żeton Króla/Barona i wróżka (+1 na początku tury) po grze nie punktują.
+  bool get scoresAfterGame => switch (this) {
+    ScoringType.city ||
+    ScoringType.road ||
+    ScoringType.cloister ||
+    ScoringType.abbey ||
+    ScoringType.meadow ||
+    ScoringType.germanCastle ||
+    ScoringType.archbishop ||
+    ScoringType.monastery ||
+    ScoringType.circus ||
+    ScoringType.pyramid ||
+    ScoringType.ringmaster => true,
+    _ => false,
+  };
+
+  /// Czy typ można punktować w trakcie gry przy włączonych [enabled] dodatkach.
+  /// Pole punktuje tylko na koniec gry, chyba że ktoś postawi stodołę
+  /// (dodatek „Opactwo i burmistrz"); klasztor niemiecki lub holenderski (opat/przeor) liczy się
+  /// wyłącznie po grze.
+  bool scoresDuringGame(Set<Expansion> enabled) => switch (this) {
+    ScoringType.meadow => enabled.contains(Expansion.abbeyMayor),
+    ScoringType.monastery => false,
+    _ => true,
+  };
+
   /// Typy do wyboru na ekranie rodzaju punktacji (bez kolumn podsumowania
-  /// króla i rabusia, które powstają tylko na koniec gry).
-  static List<ScoringType> selectableFor(Set<Expansion> enabled) => [
+  /// króla i rabusia, które powstają tylko na koniec gry). [endPhase] = true
+  /// w punktowaniu końcowym (po ostatniej płytce), inaczej w trakcie gry.
+  static List<ScoringType> selectableFor(
+    Set<Expansion> enabled, {
+    bool endPhase = false,
+  }) => [
     for (final t in availableFor(enabled))
-      if (t != king && t != robber) t,
+      if (t != king &&
+          t != robber &&
+          t != magic &&
+          (endPhase ? t.scoresAfterGame : t.scoresDuringGame(enabled)))
+        t,
   ];
 }
 
@@ -163,6 +212,7 @@ enum FarmScoring {
 /// - [cathedralRoad] – droga prowadzi do niemieckiej katedry: ukończona daje
 ///   2 pkt za płytkę (3 z karczmą), nieukończona liczy się jak zwykła droga,
 /// - [cathedralRoads] – drogi przy katedrze dla [ScoringType.archbishop],
+/// - [magic] – mag lub wiedźma na drodze/mieście (patrz [applyMagic]),
 /// - [withFairy] – wróżka stoi przy meplu w tej budowli: +3 pkt
 ///   niezależnie od reszty (tylko miasto, droga, klasztor i pole).
 ///
@@ -178,6 +228,8 @@ int calculatePoints(
   FarmScoring farm = FarmScoring.normal,
   int circusTiles = 0,
   bool withFairy = false,
+  MagicPawn? magic,
+  int? magicTiles,
   int germanCastles = 0,
   bool cathedralRoad = false,
   List<CathedralRoad> cathedralRoads = const [],
@@ -236,6 +288,7 @@ int calculatePoints(
     case ScoringType.crown:
     case ScoringType.king:
     case ScoringType.robber:
+    case ScoringType.magic:
       base = 0;
 
     case ScoringType.germanCastle:
@@ -247,10 +300,14 @@ int calculatePoints(
       // Arcybiskup: każda droga od katedry osobno (patrz archbishopPoints).
       base = archbishopPoints(cathedralRoads);
   }
+  // Mag i wiedźma działają tylko na drogę i miasto.
+  final magical = type == ScoringType.city || type == ScoringType.road
+      ? applyMagic(magic, base: base, tiles: magicTiles ?? tiles)
+      : base;
   final fairy = withFairy && type.supportsFairy ? kFairyFeaturePoints : 0;
   final castleBonus =
       completed && (type == ScoringType.city || type == ScoringType.road)
       ? germanCastles * kGermanCastleBonus
       : 0;
-  return base + castleBonus + ringmasterPoints(circusTiles) + fairy;
+  return magical + castleBonus + ringmasterPoints(circusTiles) + fairy;
 }

@@ -10,6 +10,7 @@ import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/counter_stepper.dart';
 import '../widgets/info_hint.dart';
+import '../widgets/player_label.dart';
 import '../widgets/meeple_icon.dart';
 
 /// Punktowanie stada z dodatku „Wzgórza i owce".
@@ -124,6 +125,21 @@ class _FlockScreenState extends State<FlockScreen> {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
+          // Pod wynikiem: mepel w kolorze gracza i jego punkty (jak na ekranie
+          // punktowania).
+          if (sheep > 0 && _shepherds.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: PlayerLabels(
+                alignment: WrapAlignment.center,
+                items: [
+                  for (final p in widget.players)
+                    if (_shepherds.contains(p))
+                      (player: p, text: '${p.name} +$sheep'),
+                ],
+                empty: '',
+              ),
+            ),
           const SizedBox(height: 16),
           LabelWithHint(
             l.shepherdsTitle,

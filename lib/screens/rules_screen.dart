@@ -19,6 +19,8 @@ class RulesScreen extends StatelessWidget {
     Expansion.bridgesCastlesBazaars => l.rulesBridges,
     Expansion.hillsSheep => l.rulesHills,
     Expansion.circus => l.rulesCircus,
+    Expansion.flyingMachines => l.rulesFlyingMachines,
+    Expansion.mageWitch => l.rulesMageWitch,
     Expansion.goldMines => l.rulesGold,
     Expansion.monasteries => l.rulesMonasteries,
     Expansion.germanCastles => l.rulesGermanCastles,

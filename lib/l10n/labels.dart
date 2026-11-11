@@ -18,6 +18,8 @@ extension ExpansionLabels on Expansion {
     Expansion.bridgesCastlesBazaars => l.expBridges,
     Expansion.hillsSheep => l.expHills,
     Expansion.circus => l.expCircus,
+    Expansion.flyingMachines => l.expFlyingMachines,
+    Expansion.mageWitch => l.expMageWitch,
     Expansion.goldMines => l.expGold,
     Expansion.monasteries => l.expMonasteries,
     Expansion.germanCastles => l.expGermanCastles,
@@ -35,6 +37,8 @@ extension ExpansionLabels on Expansion {
     Expansion.bridgesCastlesBazaars => l.expBridgesDesc,
     Expansion.hillsSheep => l.expHillsDesc,
     Expansion.circus => l.expCircusDesc,
+    Expansion.flyingMachines => l.expFlyingMachinesDesc,
+    Expansion.mageWitch => l.expMageWitchDesc,
     Expansion.goldMines => l.expGoldDesc,
     Expansion.monasteries => l.expMonasteriesDesc,
     Expansion.germanCastles => l.expGermanCastlesDesc,
@@ -69,6 +73,7 @@ extension ScoringTypeLabels on ScoringType {
     ScoringType.crown => l.scCrown,
     ScoringType.king => l.tokenKingShort,
     ScoringType.robber => l.tokenRobberShort,
+    ScoringType.magic => l.scMagic,
   };
 }
 

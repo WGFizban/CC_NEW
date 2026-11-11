@@ -84,13 +84,15 @@ void main() {
         Expansion.bridgesCastlesBazaars,
         Expansion.hillsSheep,
         Expansion.circus,
+        Expansion.flyingMachines,
+        Expansion.mageWitch,
         Expansion.goldMines,
         Expansion.monasteries,
         Expansion.germanCastles,
         Expansion.germanCathedrals,
       ]);
       expect([for (final e in Expansion.values) e.number], [
-        1, 2, 3, 4, 5, 6, 8, 9, 10, 4, 5, 6, 7, //
+        1, 2, 3, 4, 5, 6, 8, 9, 10, 1, 5, 4, 5, 6, 7, //
       ]);
     });
 

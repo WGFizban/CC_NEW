@@ -458,7 +458,7 @@
   },
   "circusAllUsed": "Wszystkie żetony zwierząt zostały już zużyte. Zeruje je reset punktów.",
   "circusStep2": "2. Ile mepli ma każdy gracz na płytce cyrku i ośmiu sąsiednich?",
-  "circusStep2Hint": "Wskaż, czyje meple stoją na płytce cyrku i wokół niej. Liczą się zwykłe meple, duże meple, opaci, wozy i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, pasterze ani stodoły. Punktujące meple zostają na planszy.",
+  "circusStep2Hint": "Wskaż, czyje meple stoją na płytce cyrku i wokół niej. Liczą się zwykłe meple, duże meple, opaci, wozy i dyrektorzy cyrku. Nie liczą się budowniczowie, świnie, pasterze ani stodoły. Punktujące meple zostają na planszy. Liczą się też meple lordów w zamkach nachodzących na te płytki (zamek z dodatku „Mosty, zamki i bazary”).",
   "circusEventLabel": "Cyrk ({animal})",
   "@circusEventLabel": {
     "placeholders": {
@@ -600,8 +600,8 @@
   "innHint": "Zaznacz, jeśli ukończona droga prowadzi przez karczmę: wtedy dostaje 2 pkt za płytkę zamiast 1.",
   "completedCloister": "Czy ukończony",
   "completedAbbey": "Czy ukończone",
-  "cloisterHint": "Zaznacz, jeśli klasztor jest ukończony (otoczony ośmioma płytkami): daje 9 pkt. Odznacz, jeśli punktujesz go na koniec gry – wtedy 1 pkt za każdą płytkę: klasztor i otaczające go płytki.",
-  "abbeyHint": "Zaznacz, jeśli opactwo jest ukończone (otoczone ośmioma płytkami): daje 9 pkt. Odznacz, jeśli punktujesz je na koniec gry – wtedy 1 pkt za każdą płytkę: opactwo i otaczające je płytki.",
+  "cloisterHint": "Zaznacz, jeśli klasztor jest ukończony (otoczony ośmioma płytkami): daje 9 pkt. Odznacz, jeśli punktujesz go nieukończony: na koniec gry albo w trakcie gry po zdjęciu opata (specjalnego pionka, który może zejść z nieukończonego klasztoru). Wtedy 1 pkt za każdą płytkę: klasztor i otaczające go płytki. W trakcie gry wróżka nie daje wtedy punktów.",
+  "abbeyHint": "Zaznacz, jeśli opactwo jest ukończone (otoczone ośmioma płytkami): daje 9 pkt. Odznacz, jeśli punktujesz je nieukończone: na koniec gry albo w trakcie gry po zdjęciu opata (specjalnego pionka, który może zejść z nieukończonego opactwa). Wtedy 1 pkt za każdą płytkę: opactwo i otaczające je płytki. W trakcie gry wróżka nie daje wtedy punktów.",
   "vineyardsCloister": "Winnice wokół klasztoru",
   "vineyardsAbbey": "Winnice wokół opactwa",
   "vineyardsCloisterHint": "Ustaw liczbę winnic na płytkach wokół ukończonego klasztoru: {points} pkt za każdą (najwyżej {max}).",
@@ -637,7 +637,7 @@
   "farmJoined": "Połączone ze stodołą",
   "farmBarnOwner": "Właściciel stodoły",
   "barn": "Stodoła",
-  "barnHint": "Wybierz sposób punktowania pola ze stodołą. Zwykłe: punktowanie pola na koniec gry albo w chwili postawienia stodoły (3 pkt za miasto). Połączone ze stodołą: rolnicy na polu, które właśnie połączono z polem ze stodołą, dostają 1 pkt za miasto (2 ze świnką). Właściciel stodoły na koniec gry: 4 pkt za miasto i 5 za zamek, bez świnki; każda stodoła na połączonym polu dostaje pełną punktację.",
+  "barnHint": "Wybierz sposób punktowania pola ze stodołą. Pola po położeniu stodoły: punktowanie pola w chwili postawienia stodoły (3 pkt za miasto). Pola połączone ze stodołą: rolnicy na polu, które właśnie połączono z polem ze stodołą, dostają 1 pkt za miasto (2 ze świnką).",
   "goldBarsToAdd": "Sztabki złota do dopisania",
   "goldBars": "Sztabki złota",
   "goldHint": "Rozwiń sekcję, aby dopisać sztabki złota. Sztabki z płytek ukończonej budowli dostaje gracz z przewagą; przy remisie dzielą się nimi według kolejności. Rolnicy złota nie dostają. Na koniec gry im więcej sztabek, tym więcej warta każda: 1–3 po 1 pkt, 4–6 po 2, 7–9 po 3, od 10 po 4.",
@@ -740,15 +740,8 @@
   "sharesSegment": "Współdzieli",
   "castleSegment": "Zamek",
   "bothSegment": "Oba",
-  "fairyOption": "Wróżka przy meplu (+{points} pkt)",
-  "@fairyOption": {
-    "placeholders": {
-      "points": {
-        "type": "int"
-      }
-    }
-  },
-  "fairyHint": "Zaznacz, jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, droga, klasztor, pole, katedra niemiecka, zamek niemiecki lub klasztor liniowy): jego właściciel dostaje {points} pkt niezależnie od zwykłej punktacji. Dotyczy też punktowania na koniec gry.",
+  "fairyOption": "Wróżka przy meplu",
+  "fairyHint": "Zaznacz, jeśli wróżka stoi przy meplu w punktowanej budowli (miasto, droga, klasztor, pole, katedra niemiecka, zamek niemiecki lub klasztor niemiecki lub holenderski): jego właściciel dostaje {points} pkt niezależnie od zwykłej punktacji. Dotyczy też punktowania na koniec gry.",
   "@fairyHint": {
     "placeholders": {
       "points": {
@@ -799,10 +792,11 @@
   "ok": "OK",
   "close": "Zamknij",
   "gameStartedBefore": "Aby dodać punkty graczowi, który je zdobywa, kliknij wiersz w jego kolorze i wybierz punktujące elementy. Wybierz przycisk",
-  "gameStartedEnd": "żeby zakończyć grę.",
+  "gameStartedEnd": "po położeniu ostatniej płytki, aby przejść do punktowania końcowego (pola i struktury nieukończone).",
   "gameStartedAfter": "Życzę miłej rozgrywki!",
   "endGameQuestion": "Czy chcesz zakończyć grę?",
-  "endGameTooltip": "Zakończ grę",
+  "endTilesQuestion": "Czy kafelki się skończyły i chcesz przejść do punktowania końcowego?",
+  "endGameTooltip": "Koniec kafelków: punktowanie końcowe",
   "newGameQuestion": "Czy chcesz rozpocząć nową grę?",
   "startFirst": "Najpierw rozpocznij grę, żeby dodawać punkty.",
   "ringmasterOption": "Czy zawiera dyrektora cyrku",
@@ -815,7 +809,7 @@
   "rulesPrincess": "• Wróżka: na początku tury gracz otrzymuje 1 pkt, jeśli jego mepel stoi przy wróżce.\n• Przy punktowaniu budowli z meplem stojącym przy wróżce jego właściciel otrzymuje dodatkowe 3 pkt, także przy punktowaniu końcowym.\n• Smok i księżniczka nie zmieniają punktacji.",
   "rulesTower": "• Okup za uwięzionego mepla (także dużego) wynosi 3 pkt i otrzymuje go gracz przetrzymujący jeńca.\n• Wykupić można mepla, dużego mepla, wóz i burmistrza; nie można uwięzić budowniczego, świni, stodoły, pasterza ani mepla w zamku/mieście Carcassonne.\n• Wykupu dokonuje się w swojej turze, raz na turę, i wymaga on posiadania co najmniej 3 pkt.\n• Wymiana jeńców (dwaj gracze przetrzymują nawzajem swoje meple) odbywa się bez punktów.",
   "rulesAbbey": "• Opactwo punktuje jak klasztor: ukończone 9 pkt, nieukończone 1 pkt za każdą płytkę.\n• Pole niepołączone ze stodołą: zwykłe punktowanie, 3 pkt za każde ukończone miasto.\n• Pole połączone ze stodołą: rolnicy otrzymują 1 pkt za miasto (2 ze świnką) i 2 pkt za zamek.\n• Właściciel stodoły na koniec gry: 4 pkt za miasto i 5 pkt za zamek, bez premii za świnkę.",
-  "rulesBridges": "• Zamek: jego właściciel otrzymuje punkty ukończonego miasta, drogi lub klasztoru, przy którym stoi. Zamek nie punktuje na koniec gry.\n• Przy punktowaniu pola zamek jest wart 4 pkt zamiast 3 (5 ze świnką).\n• Bazar: gracz wybierający płytkę kupuje ją od najwyżej licytującego (płaci mu cenę) albo mu ją sprzedaje (otrzymuje cenę). Gdy licytował tylko on, płaci cenę, której nikt nie otrzymuje.\n• Mosty nie zmieniają punktacji.",
+  "rulesBridges": "• Zamek: jego właściciel otrzymuje punkty, gdy zostanie ukończona budowla, której płytka zachodzi na obszar zamku (sześć płytek) – także nieobsadzona. Dotyczy miasta, drogi, klasztoru i opactwa (również klasztoru niemieckiego i holenderskiego), zamku niemieckiego, katedry niemieckiej oraz innego zamku. Punkty liczą się razem z modyfikacjami budowli (karczma, katedra, winnice). Burmistrz w zamku nie punktuje, bo zamek nie ma herbu. Zamek nie punktuje na koniec gry.\n• Przy punktowaniu pola zamek jest wart o 1 pkt więcej niż ukończone miasto: 4 pkt zamiast 3 (5 ze świnką).\n• Bazar: gracz wybierający płytkę kupuje ją od najwyżej licytującego (płaci mu cenę) albo mu ją sprzedaje (otrzymuje cenę). Gdy licytował tylko on, płaci cenę, której nikt nie otrzymuje.\n• Mosty nie zmieniają punktacji.",
   "rulesHills": "• Winnice: za ukończony klasztor jego właściciel otrzymuje dodatkowo 3 pkt za każdą winnicę na otaczających płytkach.\n• Owce: stado składa się z żetonów 1–4 owiec; wszyscy pasterze na polu otrzymują punkty za całe stado. Wilk rozpędza stado. Owce nie punktują na koniec gry.",
   "rulesCircus": "• Cyrk: po odkryciu żetonu zwierzęcia każdy mepel na płytce cyrku i na ośmiu sąsiednich płytkach daje właścicielowi tyle punktów, ile wynosi wartość zwierzęcia (słoń 7, tygrys 6, niedźwiedź 5, foka 4, małpka 3, pchła 1). Meple pozostają na planszy. Liczą się też dyrektor cyrku i akrobaci, ale nie świnia, budowniczy, stodoła ani pasterz. Cyrk jest punktowany jeszcze raz na koniec gry, przed punktacją końcową.\n• Akrobaci: ukończona piramida (3 meple) daje po 5 pkt za każdego akrobatę, który wraca do puli. Na koniec gry 5 pkt za każdego akrobatę na planszy.\n• Dyrektor cyrku: 2 pkt za każdą płytkę cyrku lub akrobatów obok niego, także na koniec gry.",
   "rulesGold": "• Złoto: w grze jest 16 sztabek. Za ukończoną budowlę sztabki z jej płytek otrzymuje gracz z przewagą (rolnicy ich nie otrzymują).\n• Na koniec gry wartość sztabki zależy od liczby posiadanych: 1–3 sztabki po 1 pkt, 4–6 po 2 pkt, 7–9 po 3 pkt, od 10 po 4 pkt.",
@@ -861,7 +855,7 @@
   "tutorial5Title": "Pomyłka?",
   "tutorial5Body": "W menu możesz cofnąć ostatnio zatwierdzone punkty. „Skrót zasad\" zawiera punktację poszczególnych elementów, a ikona „?\" przy opcjach wyświetla ich objaśnienie.",
   "tutorial6Title": "Koniec gry",
-  "tutorial6Body": "Przycisk z flagą kończy grę i pokazuje zwycięzcę. Przyciskiem „Podsumowanie\" zobaczysz tabelę punktów z każdego źródła, a „Nowa gra\" pozwoli zacząć od nowa.\n\nMiłej rozgrywki!",
+  "tutorial6Body": "Gdy skończą się kafelki, naciśnij flagę i dopisz punkty za pola oraz struktury nieukończone. Gdy wszystko wpiszesz, puchar przeniesie Cię do podsumowania ze zwycięzcą i kolejnymi miejscami. Stamtąd otworzysz tabelę punktów z każdego źródła („Szczegółowe podsumowanie”) albo zaczniesz od nowa („Nowa gra”).\n\nMiłej rozgrywki!",
   "aboutTitle": "Info o aplikacji",
   "aboutVersion": "Wersja {version}",
   "@aboutVersion": {
@@ -919,7 +913,7 @@
   "tilesAroundCastle": "Płytki wokół zamku",
   "completedRoad": "Czy ukończona",
   "archbishopRoads": "Liczba dróg przy katedrze",
-  "archbishopRoadsHint": "Wskaż, ile dróg wychodzi z katedry (3 lub 4) i wpisz liczbę odcinków każdej z nich. Każda droga jest liczona osobno (z karczmą lub bez), a wyniki się sumują. Gdy wszystkie drogi są zamknięte, arcybiskup dostaje 1 pkt za odcinek (2 z karczmą). Na koniec gry punktuje także przy otwartych drogach: ukończona jak wyżej, nieukończona 1 pkt za odcinek (z karczmą 0).",
+  "archbishopRoadsHint": "Wskaż, ile dróg wychodzi z katedry (3 lub 4) i wpisz liczbę odcinków każdej z nich. Każda droga jest liczona osobno (z karczmą lub bez), a wyniki się sumują. Gdy wszystkie drogi są zamknięte, arcybiskup dostaje 1 pkt za odcinek (2 z karczmą). Na koniec gry punktuje także przy otwartych drogach: ukończona jak wyżej, nieukończona 1 pkt za odcinek (z karczmą 0). Droga, która zaczyna i kończy się na tej samej katedrze, liczy się jako jedna droga i jest punktowana raz.",
   "archbishopRoadSegments": "Droga {number}: odcinki",
   "@archbishopRoadSegments": {
     "placeholders": {
@@ -965,5 +959,60 @@
   "pdfSaved": "Zapisano plik PDF.",
   "pdfNoPhotoTaken": "Nie zrobiono zdjęcia, plik PDF nie został zapisany.",
   "pdfCameraError": "Nie udało się uruchomić aparatu.",
-  "pdfSaveError": "Nie udało się zapisać pliku PDF."
+  "pdfSaveError": "Nie udało się zapisać pliku PDF.",
+  "expFlyingMachines": "Maszyny latające",
+  "expFlyingMachinesDesc": "Maszyna latająca przenosi mepla na nieukończoną drogę, miasto lub klasztor na innej płytce, także zajęte. Dzięki temu w jednej budowli, np. w klasztorze, może stać kilku graczy.",
+  "expMageWitch": "Mag i Wiedźma",
+  "expMageWitchDesc": "Pionki magiczne na drodze lub mieście: mag dodaje 1 pkt za każdą płytkę, wiedźma zmniejsza punkty o połowę (w górę).",
+  "magicPawn": "Mag/Wiedźma",
+  "magicHint": "Mag dodaje 1 pkt za każdą płytkę drogi lub miasta (sztandary się nie liczą). Karczma i katedra tego nie zmieniają, więc bonus dostaniesz nawet za nieukończoną drogę z karczmą lub miasto z katedrą na koniec gry. Wiedźma dzieli punkty drogi lub miasta przez 2 z zaokrągleniem w górę (po uwzględnieniu karczmy, katedry i niemieckiej katedry), ale nie dzieli premii za niemieckie zamki, wróżki ani dyrektora cyrku. Mag i wiedźma nie mogą stać na tej samej drodze ani w tym samym mieście.",
+  "magicNone": "Brak",
+  "magicMage": "Mag",
+  "magicWitch": "Wiedźma",
+  "sharedHintFlying": " Maszyny latające pozwalają postawić kilku meepli w klasztorze, opactwie, zamku niemieckim lub katedrze niemieckiej. Punkty dostaje gracz z przewagą; przy remisie zaznacz wszystkich remisujących – każdy dostaje pełne punkty. Wróżka stoi tylko przy jednym z meepli.",
+  "monasterySharedHint": "Maszyna latająca pozwala postawić kilku opatów w jednym klasztorze. Punkty dostaje gracz z przewagą; przy remisie zaznacz remisujących – każdy dostaje te same punkty. Wróżka (+3) liczy się graczowi wskazanemu jako jej właściciel (domyślnie punktującemu). Maszyna latająca może wylądować na klasztorze, w którym stoi już opat – lądujący sam wybiera, czy staje tam jako mnich (punktuj wtedy jako „Klasztor\"), czy jako opat (ten ekran). Mnisi i opaci liczą przewagę osobno.",
+  "rulesFlyingMachines": "• Dodatek zawiera 8 płytek z maszyną latającą i kość lotu (1, 1, 2, 2, 3, 3).\n• Po wyłożeniu takiej płytki możesz zamiast zwykłego postawienia mepla (zwykłego lub dużego) postawić go na maszynie. Mepel leci prosto lub po przekątnej, zgodnie z kierunkiem maszyny, o tyle płytek, ile pokaże kość.\n• Musi wylądować na dowolnej nieukończonej drodze, w mieście lub klasztorze na tej płytce, także zajętym. Nie może wylądować na polu ani na budowli, którą ukończyła właśnie wyłożona płytka. Jeśli nie ma płytki lub budowli, mepel wraca do puli.\n• Maszyną nie lecą m.in. opat, burmistrz, pasterz i dyrektor cyrku.\n• Dzięki temu w jednej budowli (klasztor, opactwo, klasztor niemiecki lub holenderski, zamek niemiecki, katedra niemiecka) może stać kilku graczy. Punkty dostaje gracz z przewagą, a przy remisie każdy z remisujących pełne punkty (w aplikacji: punkty wspólne).\n• Wróżka może stać tylko przy jednym z tych mepli.",
+  "rulesMageWitch": "• Dodatek zawiera maga (fioletowego), wiedźmę (pomarańczową) i 8 płytek magicznych. Po wyłożeniu takiej płytki, przed postawieniem mepla, stawiasz lub przesuwasz jeden pionek na nieukończoną drogę lub miasto.\n• Mag i wiedźma nie mogą stać na tej samej drodze ani w tym samym mieście.\n• Mag: +1 pkt za każdą płytkę drogi lub miasta (sztandary się nie liczą). Karczma i katedra tego nie zmieniają, więc bonus dostaniesz także za nieukończoną drogę z karczmą lub miasto z katedrą na koniec gry.\n• Wiedźma: punkty drogi lub miasta dzielone przez 2 z zaokrągleniem w górę (po uwzględnieniu karczmy, katedry i niemieckiej katedry). Nie dzieli premii za niemieckie zamki, wróżki ani dyrektora cyrku.\n• Arcybiskup nie dostaje punktów od maga na drogach przy swojej katedrze.",
+  "fairyOwner": "Czyj to mepel?",
+  "scMagic": "Mag i Wiedźma",
+  "roadDone": "ukończona",
+  "roadOpen": "nieukończona",
+  "innShort": "karczma",
+  "magicDoubleSegments": "Płytki katedry z dwoma odcinkami tej drogi",
+  "magicDoubleSegmentsHint": "Mag liczy płytki, nie odcinki: jeśli droga wraca do tej samej płytki katedry niemieckiej, jej dwa odcinki liczą się jako jedna płytka. Wpisz, ile takich płytek odjąć od liczby odcinków (np. droga z 5 odcinków wracająca do katedry: 1, premia maga 4 pkt).",
+  "archbishopMageHint": "Mag nie daje arcybiskupowi żadnych punktów z dróg przy jego katedrze, ale możesz zaznaczyć, na której drodze stoi. Wiedźma zmniejsza o połowę (w górę) punkty tej jednej drogi. Jest tylko jeden mag i jedna wiedźma, więc każdy może stać najwyżej na jednej drodze.",
+  "endPhaseLabel": "Punktowanie końcowe",
+  "endPhaseBanner": "Kafelki się skończyły. Dopisz punkty za pola oraz inne struktury nieukończone, a potem naciśnij puchar, żeby przejść do podsumowania.",
+  "endPhaseBannerMonasteries": "Kafelki się skończyły. Dopisz punkty za pola, klasztory niemieckie i holenderskie oraz inne struktury nieukończone, a potem naciśnij puchar, żeby przejść do podsumowania.",
+  "tutorialEndTiles": "Koniec kafelków?",
+  "tutorialToSummary": "Przejść do podsumowania?",
+  "endGameCheck": "Upewnij się, że wszystkie płytki zostały położone, a na planszy nie ma żadnych ukończonych struktur.",
+  "finishGameQuestion": "Czy wprowadzono już wszystkie punkty i chcesz przejść do podsumowania?",
+  "finishGameTooltip": "Przejdź do podsumowania",
+  "goBack": "Wróć",
+  "addAnyway": "Dodaj mimo to",
+  "completedInEndTitle": "Ukończona struktura po grze",
+  "completedInEndWarn": "Dodajesz punkty za ukończoną strukturę, choć kafelki już się skończyły. Struktury ukończone punktuje się w trakcie gry, teraz zostają tylko nieukończone. Czy na pewno chcesz to zrobić?",
+  "archbishopAllDoneTitle": "Wszystkie drogi ukończone",
+  "archbishopAllDoneWarn": "Wszystkie drogi katedry są oznaczone jako ukończone, a kafelki już się skończyły. Co najmniej jedna powinna być nieukończona (ukończoną katedrę punktuje się w trakcie gry). Czy na pewno chcesz dodać te punkty?",
+  "farmAfterBarn": "Pola po położeniu stodoły",
+  "farmJoinedToBarn": "Pola połączone ze stodołą",
+  "@farmAfterBarn": {
+    "description": "Pole w trakcie gry: punktowane po położeniu stodoły"
+  },
+  "@farmJoinedToBarn": {
+    "description": "Pole w trakcie gry: połączone ze stodołą"
+  },
+  "endTilesTitle": "Koniec kafelków",
+  "detailedSummary": "Szczegółowe podsumowanie",
+  "barnHintEnd": "Wybierz sposób punktowania pola ze stodołą na koniec gry. Zwykłe: punktowanie pola na koniec gry (3 pkt za miasto). Właściciel stodoły: 4 pkt za miasto i 5 za zamek, bez świnki; każda stodoła na połączonym polu dostaje pełną punktację.",
+  "@endTilesTitle": {
+    "description": "endTilesTitle"
+  },
+  "@detailedSummary": {
+    "description": "detailedSummary"
+  },
+  "@barnHintEnd": {
+    "description": "barnHintEnd"
+  }
 }

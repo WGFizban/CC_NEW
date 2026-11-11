@@ -8,6 +8,7 @@ import '../models/expansion.dart';
 import '../models/fairy.dart';
 import '../models/gold.dart';
 import '../models/german.dart';
+import '../models/magic.dart';
 import '../models/goods.dart';
 import '../models/player.dart';
 import '../models/score_event.dart';
@@ -21,6 +22,7 @@ import '../widgets/adaptive_layout.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/token_dialogs.dart';
 import '../widgets/counter_stepper.dart';
+import '../widgets/game_dialogs.dart' show EndPhaseBadge, warnAndAsk;
 import '../widgets/game_icon.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/info_hint.dart';
@@ -45,6 +47,12 @@ class AddPointsScreen extends StatefulWidget {
   /// rabusiów").
   final Map<CrownToken, TokenHolding> tokens;
 
+  /// Punktowanie końcowe (po ostatniej płytce). Budowle są wtedy domyślnie
+  /// nieukończone, a przełączniki „ukończone” widoczne (na końcu formularza).
+  /// W trakcie gry budowle są zawsze ukończone, bez takich przełączników
+  /// (wyjątek: klasztor i opactwo, z których opat może zejść wcześniej).
+  final bool endPhase;
+
   const AddPointsScreen({
     super.key,
     required this.player,
@@ -52,6 +60,7 @@ class AddPointsScreen extends StatefulWidget {
     required this.type,
     required this.expansions,
     this.tokens = const {},
+    this.endPhase = false,
   });
 
   @override
@@ -75,7 +84,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   final List<bool> _roadInn = List.filled(kMaxCathedralRoads, false);
   final List<bool> _roadDone = List.filled(kMaxCathedralRoads, true);
   int _vineyards = 0;
-  bool _completed = true;
+
+  /// Po grze budowle są domyślnie nieukończone (ukończone punktuje się w trakcie
+  /// gry); w trakcie gry zawsze ukończone.
+  late bool _completed = !(_endPhase && _hasCompletedState);
 
   /// Katedra (miasto), karczma (droga) lub świnka (pola).
   bool _bonus = false;
@@ -84,6 +96,24 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   /// Gracz przejmuje żeton Króla (miasto) albo Barona rabusiów (droga).
   int _circusTiles = 0;
   bool _fairy = false;
+
+  /// Czyj mepel stoi przy wróżce (`null` = punktującego). Wróżka może dać +3 pkt
+  /// także graczowi bez przewagi w ukończonej budowli.
+  Player? _fairyOwner;
+
+  bool get _fairyForScorer =>
+      _fairyOwner == null || _fairyOwner == widget.player;
+
+  /// Mag albo wiedźma na drodze lub mieście (minidodatek „Mag i Wiedźma").
+  MagicPawn? _magic;
+
+  /// Pionki magiczne na poszczególnych drogach arcybiskupa. Jest jeden mag
+  /// i jedna wiedźma, więc każdy stoi najwyżej na jednej drodze.
+  final List<MagicPawn?> _roadMagic = List.filled(kMaxCathedralRoads, null);
+
+  /// Płytki katedry niemieckiej, których dwa odcinki drogi liczą się dla maga
+  /// jako jedna płytka (mag liczy płytki, nie odcinki).
+  int _doubleTiles = 0;
   _Field _active = _Field.tiles;
 
   /// Pozostali gracze, którzy dostają punkty tej budowli (wspólnie lub z zamku).
@@ -114,20 +144,55 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
 
   ScoringType get _type => widget.type;
 
+  bool get _endPhase => widget.endPhase;
+
+  /// Typy, w których ważne jest, czy budowla jest ukończona (arcybiskup ma to
+  /// osobno dla każdej drogi).
+  bool get _hasCompletedState =>
+      _type == ScoringType.city ||
+      _type == ScoringType.road ||
+      _type == ScoringType.cloister ||
+      _type == ScoringType.abbey ||
+      _type == ScoringType.germanCastle;
+
+  /// Przełącznik „ukończone”: po grze zawsze, w trakcie gry tylko przy
+  /// klasztorze i opactwie (opat zdjęty przed ukończeniem; wróżka nie daje
+  /// wtedy punktów, bo punktuje się opata, a nie budowlę).
+  bool get _showCompletedToggle => switch (_type) {
+    ScoringType.cloister || ScoringType.abbey => true,
+    ScoringType.city ||
+    ScoringType.road ||
+    ScoringType.germanCastle => _endPhase,
+    _ => false,
+  };
+
   @override
   void initState() {
     super.initState();
     if (_type == ScoringType.archbishop) _active = _Field.road0;
+    // Po grze każda droga katedry jest domyślnie nieukończona.
+    if (_endPhase) {
+      for (var i = 0; i < _roadDone.length; i++) {
+        _roadDone[i] = false;
+      }
+    }
   }
 
-  List<CathedralRoad> get _cathedralRoads => [
+  List<CathedralRoad> _cathedralRoads({bool magic = true}) => [
     for (var i = 0; i < _roadCount; i++)
       CathedralRoad(
         tiles: _roadTiles[i],
         inn: _has(Expansion.innsCathedrals) && _roadInn[i],
         completed: _roadDone[i],
+        magic: magic && _magicOk ? _roadMagic[i] : null,
       ),
   ];
+
+  /// Czy [pawn] stoi już na innej drodze niż [road] (pionek jest tylko jeden).
+  bool _magicTaken(MagicPawn pawn, int road) => [
+    for (var i = 0; i < _roadCount; i++)
+      if (i != road) _roadMagic[i],
+  ].contains(pawn);
 
   bool _has(Expansion e) => widget.expansions.contains(e);
 
@@ -170,6 +235,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool get _castleOk =>
       _type.supportsCastle &&
       _completed &&
+      // Katedra niemiecka jest „ukończona” tylko w trakcie gry (po grze
+      // punktuje się ją jako nieukończoną).
+      !(_type == ScoringType.archbishop && _endPhase) &&
       _has(Expansion.bridgesCastlesBazaars);
 
   bool get _castleMode => _castleOk && _scorerCastle;
@@ -184,12 +252,36 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   bool get _showRingmaster =>
       _isFeature && _has(Expansion.circus) && !_castleMode;
 
+  /// W trakcie gry wróżka daje +3 tylko za ukończoną budowlę (nie za opata
+  /// zdjętego z nieukończonego klasztoru); po grze także za nieukończone.
   bool get _showFairy =>
-      _type.supportsFairy && _has(Expansion.princessDragon) && !_castleMode;
+      _type.supportsFairy &&
+      _has(Expansion.princessDragon) &&
+      !_castleMode &&
+      (_endPhase || _completed);
+
+  /// Mag i wiedźma działają na drogę i miasto, a przy arcybiskupie na każdą
+  /// z jego dróg osobno.
+  bool get _magicOk =>
+      (_type == ScoringType.city ||
+          _type == ScoringType.road ||
+          _type == ScoringType.archbishop) &&
+      _has(Expansion.mageWitch);
+
+  /// Czy jakiś pionek magiczny jest wybrany.
+  bool get _magicChosen => _type == ScoringType.archbishop
+      ? [for (var i = 0; i < _roadCount; i++) _roadMagic[i]].any((m) => m != null)
+      : _magic != null;
+
+  /// Punkty wspólne: budowle z [ScoringType.isFeature], a z maszynami
+  /// latającymi także zamek niemiecki (kilku graczy może mieć w nim mepla).
+  bool get _canShare =>
+      _isFeature ||
+      ((_type == ScoringType.germanCastle || _type == ScoringType.archbishop) &&
+          (_has(Expansion.flyingMachines) || _castleOk));
 
   bool get _showSharing =>
-      _isFeature &&
-      (widget.players.length > 1 || _castleOk);
+      _canShare && (widget.players.length > 1 || _castleOk);
 
   List<Player> get _otherPlayers => [
     for (final p in widget.players)
@@ -222,22 +314,38 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         }
       : const {};
 
-  int get _points => _calc(circusTiles: _ringmasterActive ? _circusTiles : 0, fairy: _showFairy && _fairy);
-
-  /// Punkty budowli bez premii przy meplu (wróżka, dyrektor cyrku) – to dostają
-  /// współdzielący i właściciele zamków.
-  int get _basePoints => _calc(circusTiles: 0, fairy: false);
-
   /// Punkty każdego gracza po podziale (punktujący jest pierwszy).
-  Map<Player, int> get _distribution {
-    if (!_isFeature) return {widget.player: _points};
+  Map<Player, int> get _distribution => _distributionOf(magic: true);
+
+  /// Punkty graczy, które wynikają z maga lub wiedźmy (różnica z podziałem
+  /// bez pionka): w podsumowaniu idą do osobnej kolumny „Mag i Wiedźma".
+  Map<Player, int> get _magicParts {
+    if (!_magicOk || !_magicChosen) return const {};
+    final withMagic = _distributionOf(magic: true);
+    final without = _distributionOf(magic: false);
+    return {
+      for (final p in withMagic.keys)
+        if (withMagic[p]! != (without[p] ?? 0)) p: withMagic[p]! - (without[p] ?? 0),
+    };
+  }
+
+  Map<Player, int> _distributionOf({required bool magic}) {
+    final base = _calc(circusTiles: 0, fairy: false, magic: magic);
+    final points = _calc(
+      circusTiles: _ringmasterActive ? _circusTiles : 0,
+      fairy: _showFairy && _fairy && _fairyForScorer,
+      magic: magic,
+    );
+    if (!_canShare) return {widget.player: points};
     return splitPoints(
       scorer: widget.player,
-      base: _basePoints,
-      extras: _points - _basePoints,
+      base: base,
+      extras: points - base,
       scorerAsCastle: _castleMode,
       scorerCastles: _scorerCastles,
       scorerExtraCastles: _scorerExtraCastles,
+      fairyOwner: _showFairy && _fairy && !_fairyForScorer ? _fairyOwner : null,
+      fairyPoints: kFairyFeaturePoints,
       others: {
         for (final e in _shares.entries)
           e.key: _castleOk ? e.value : e.value.copyWith(castle: false),
@@ -245,7 +353,11 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     );
   }
 
-  int _calc({required int circusTiles, required bool fairy}) => calculatePoints(
+  int _calc({
+    required int circusTiles,
+    required bool fairy,
+    bool magic = true,
+  }) => calculatePoints(
     _type,
     tiles: _tiles,
     banners: _banners,
@@ -259,8 +371,14 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         : 0,
     completed: _completed,
     cathedralRoads: _type == ScoringType.archbishop
-        ? _cathedralRoads
+        ? _cathedralRoads(magic: magic)
         : const [],
+    magicTiles:
+        _type == ScoringType.road &&
+            _has(Expansion.germanCathedrals) &&
+            _cathedralRoad
+        ? (_tiles - _doubleTiles).clamp(0, _tiles)
+        : null,
     germanCastles:
         (_type == ScoringType.city || _type == ScoringType.road) &&
             _has(Expansion.germanCastles)
@@ -274,6 +392,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     farm: _farmActive,
     circusTiles: circusTiles,
     withFairy: fairy,
+    magic: _magicOk && magic ? _magic : null,
   );
 
   void _onKey(String key) {
@@ -306,12 +425,18 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final parts = <String>[];
     final mine = distribution[widget.player] ?? 0;
     if (mine != 0) parts.add('+$mine');
+    if (_magicOk && _magic != null) {
+      parts.add(_magic == MagicPawn.mage ? l.magicMage : l.magicWitch);
+    }
     if (goodsText.isNotEmpty) {
       parts.add(
         _goodsRecipient == widget.player
             ? goodsText.join(', ')
             : '${_goodsRecipient.name}: ${goodsText.join(', ')}',
       );
+    }
+    if (_showFairy && _fairy && !_fairyForScorer) {
+      parts.add('${l.scFairy}: ${_fairyOwner!.name}');
     }
     final shared = <String>[];
     final castles = <String>[];
@@ -354,6 +479,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   }
 
   Future<void> _confirm() async {
+    if (!await _confirmEndPhase() || !mounted) return;
     final distribution = _distribution;
     final goods = _goodsToAdd;
     final gold = _goldToAdd;
@@ -365,12 +491,14 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     for (final p in gold.keys) {
       totals.putIfAbsent(p, () => 0);
     }
+    final magicParts = _magicParts;
     final changes = [
       for (final e in totals.entries)
         if (e.value != 0 || e.key == recipient || gold.containsKey(e.key))
           ScoreChange(
             e.key,
             e.value,
+            magic: magicParts[e.key] ?? 0,
             goods: e.key == recipient ? goods : const {},
             gold: gold[e.key] ?? 0,
           ),
@@ -465,6 +593,12 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             final side = _usesKeypad && useSideKeypad(constraints);
             final form = Column(
               children: [
+                // Faza po grze jest zaznaczona na każdym ekranie punktowania.
+                if (_endPhase)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                    child: EndPhaseBadge(l.endPhaseLabel),
+                  ),
                 // Wynik jest przypięty u góry, żeby nie znikał przy przewijaniu.
                 if (!neutral && _type != ScoringType.goods)
                   Padding(
@@ -524,6 +658,8 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                           if (_showSharing) _buildSharing(),
                           if (_showGold) _buildGold(),
                           if (_showGoods) _buildGoods(),
+                          // „Czy ukończone" jest na samym końcu formularza.
+                          if (_showCompletedToggle) _buildCompletedToggle(),
                         ],
                       ),
                     ),
@@ -649,16 +785,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             _check(
               l.cathedral,
               _bonus,
-              (v) {
-                _bonus = v;
-                // Nieukończone miasto z katedrą nie daje punktów, więc
-                // takiego punktowania po prostu się nie dopisuje.
-                if (v) _completed = true;
-              },
+              (v) => _bonus = v,
               hint: l.cathedralHint,
             ),
-          if (!_bonus)
-            _check(l.completedCity, _completed, (v) => _completed = v),
           if (_completed && _has(Expansion.germanCastles))
             _stepperRow(
               l.germanCastlesAtFeature,
@@ -667,40 +796,29 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               max: 6,
               hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
             ),
+          if (_magicOk) _buildMagic(),
           if (_tokenKind == CrownToken.king) _tokenInfo(CrownToken.king),
         ];
 
       case ScoringType.road:
         return [
           _valueBoxes([_valueBox(l.tiles, _tiles, _Field.tiles)]),
-          // Bez karczmy ukończona i nieukończona droga liczą się tak samo,
-          // a nieukończona z karczmą nie daje punktów (nie dopisujemy jej).
+          // Nieukończona droga z karczmą nie daje punktów, a droga do katedry
+          // nieukończona liczy się jak zwykła (patrz calculatePoints).
           if (_has(Expansion.innsCathedrals))
             _check(
               l.inn,
               _bonus,
-              (v) {
-                _bonus = v;
-                // Nieukończona droga z karczmą nie daje punktów.
-                if (v) _completed = true;
-              },
+              (v) => _bonus = v,
               hint: l.innHint,
             ),
           if (_has(Expansion.germanCathedrals))
             _check(
               l.roadToCathedral,
               _cathedralRoad,
-              (v) {
-                _cathedralRoad = v;
-                if (!v) _completed = true;
-              },
+              (v) => _cathedralRoad = v,
               hint: l.roadToCathedralHint,
             ),
-          // Zwykła droga liczy się tak samo ukończona i nie (nieukończoną
-          // z karczmą po prostu się nie dopisuje). Różnicę daje dopiero droga
-          // do katedry: ukończona podwójnie, nieukończona jak zwykła.
-          if (_has(Expansion.germanCathedrals) && _cathedralRoad && !_bonus)
-            _check(l.completedRoad, _completed, (v) => _completed = v),
           if (_completed && _has(Expansion.germanCastles))
             _stepperRow(
               l.germanCastlesAtFeature,
@@ -709,20 +827,36 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               max: 6,
               hint: l.germanCastlesAtFeatureHint(kGermanCastleBonus),
             ),
+          if (_magicOk) _buildMagic(),
+          if (_magicOk &&
+              _magic == MagicPawn.mage &&
+              _has(Expansion.germanCathedrals) &&
+              _cathedralRoad)
+            _stepperRow(
+              l.magicDoubleSegments,
+              _doubleTiles,
+              (v) => _doubleTiles = v,
+              max: kMaxCathedralRoads,
+              hint: l.magicDoubleSegmentsHint,
+            ),
           if (_tokenKind == CrownToken.robber) _tokenInfo(CrownToken.robber),
         ];
 
       case ScoringType.germanCastle:
         return [
-          _check(
-            l.completedGermanCastle,
-            _completed,
-            (v) => _completed = v,
-            hint: l.germanCastleHint(
-              kGermanCastleCompleted,
-              kGermanCastleTileBase,
+          // W trakcie gry zamek jest zawsze ukończony (12 pkt), więc zamiast
+          // przełącznika jest tylko informacja.
+          if (_completed)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: LabelWithHint(
+                l.completedGermanCastle,
+                l.germanCastleHint(
+                  kGermanCastleCompleted,
+                  kGermanCastleTileBase,
+                ),
+              ),
             ),
-          ),
           if (!_completed)
             _valueBoxes([_valueBox(l.tilesAroundCastle, _tiles, _Field.tiles)]),
         ];
@@ -764,43 +898,17 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               ],
             ),
           ),
-          for (var i = 0; i < _roadCount; i++) ...[
-            if (_roadCount > 1)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: Text(
-                  l.archbishopRoadTitle(i + 1),
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-            if (_has(Expansion.innsCathedrals))
-              _check(
-                l.inn,
-                _roadInn[i],
-                (v) => _roadInn[i] = v,
-                hint: l.archbishopRoadInnHint,
-              ),
-            _check(
-              l.completedRoad,
-              _roadDone[i],
-              (v) => _roadDone[i] = v,
-              hint: l.archbishopRoadDoneHint,
-            ),
-          ],
+          // Każda droga w osobnej, domyślnie zwiniętej sekcji (czytelność); jej
+          // stan (ukończona, karczma, pionek magiczny) widać w podtytule.
+          for (var i = 0; i < _roadCount; i++) _archbishopRoad(i),
         ];
 
       case ScoringType.cloister:
       case ScoringType.abbey:
         final isAbbey = _type == ScoringType.abbey;
         return [
-          // Jak „Ukończone miasto": zaznaczone = ukończony. Punkty za ukończony
-          // (9) i niedokończony (1 za płytkę) opisuje podpowiedź.
-          _check(
-            isAbbey ? l.completedAbbey : l.completedCloister,
-            _completed,
-            (v) => _completed = v,
-            hint: isAbbey ? l.abbeyHint : l.cloisterHint,
-          ),
+          // Przełącznik „ukończony" jest na końcu formularza (patrz
+          // _buildCompletedToggle).
           if (_completed) ...[
             if (_has(Expansion.hillsSheep))
               _stepperRow(
@@ -869,18 +977,110 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       case ScoringType.crown:
       case ScoringType.king:
       case ScoringType.robber:
+      case ScoringType.magic:
         // Wróżka dopisuje 1 pkt od razu na liście graczy, a pozostałe typy
         // mają osobne ekrany lub (surowce) tylko sekcję surowców.
         return const [];
     }
   }
 
+  /// Jedna droga arcybiskupa w zwijanej sekcji. Stan drogi (ukończona, karczma,
+  /// pionek magiczny) widać w podtytule. Przełącznik „ukończona" jest tylko po
+  /// grze (w trakcie gry wszystkie drogi katedry są ukończone) i stoi na końcu
+  /// sekcji.
+  Widget _archbishopRoad(int i) {
+    final l = context.l10n;
+    final summary = [
+      if (_endPhase) _roadDone[i] ? l.roadDone : l.roadOpen,
+      if (_has(Expansion.innsCathedrals) && _roadInn[i]) l.innShort,
+      if (_magicOk && _roadMagic[i] == MagicPawn.mage) l.magicMage,
+      if (_magicOk && _roadMagic[i] == MagicPawn.witch) l.magicWitch,
+    ];
+    return ExpansionTile(
+      key: PageStorageKey('cathedral-road-$i'),
+      initiallyExpanded: false,
+      shape: const Border(),
+      collapsedShape: const Border(),
+      title: Text(
+        l.archbishopRoadTitle(i + 1),
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+      subtitle: summary.isEmpty ? null : Text(summary.join(' · ')),
+      children: [
+        if (_has(Expansion.innsCathedrals))
+          _check(
+            l.inn,
+            _roadInn[i],
+            (v) => _roadInn[i] = v,
+            hint: l.archbishopRoadInnHint,
+          ),
+        if (_magicOk)
+          _magicSelector(
+            value: _roadMagic[i],
+            onChanged: (v) => _roadMagic[i] = v,
+            hint: l.archbishopMageHint,
+            mageEnabled: !_magicTaken(MagicPawn.mage, i),
+            witchEnabled: !_magicTaken(MagicPawn.witch, i),
+          ),
+        if (_endPhase)
+          _check(
+            l.completedRoad,
+            _roadDone[i],
+            (v) => _roadDone[i] = v,
+            hint: l.archbishopRoadDoneHint,
+          ),
+      ],
+    );
+  }
+
+  /// Przełącznik „ukończone" na końcu formularza (miasto, droga, klasztor,
+  /// opactwo, zamek niemiecki).
+  Widget _buildCompletedToggle() {
+    final l = context.l10n;
+    final (String label, String? hint) = switch (_type) {
+      ScoringType.city => (l.completedCity, null),
+      ScoringType.road => (l.completedRoad, null),
+      ScoringType.cloister => (l.completedCloister, l.cloisterHint),
+      ScoringType.abbey => (l.completedAbbey, l.abbeyHint),
+      _ => (
+        l.completedGermanCastle,
+        l.germanCastleHint(kGermanCastleCompleted, kGermanCastleTileBase),
+      ),
+    };
+    return _check(label, _completed, (v) => _completed = v, hint: hint);
+  }
+
+  /// Przy ukończonej budowli w punktowaniu końcowym (albo arcybiskupie bez
+  /// żadnej nieukończonej drogi) ostrzega, że to prawdopodobnie pomyłka: takie
+  /// budowle punktuje się w trakcie gry. Zwraca `true`, gdy można zatwierdzić.
+  Future<bool> _confirmEndPhase() async {
+    if (!_endPhase) return true;
+    final l = context.l10n;
+    if (_type == ScoringType.archbishop) {
+      final allDone = _roadDone.take(_roadCount).every((d) => d);
+      if (!allDone) return true;
+      return warnAndAsk(
+        context,
+        title: l.archbishopAllDoneTitle,
+        message: l.archbishopAllDoneWarn,
+      );
+    }
+    if (_showCompletedToggle && _completed) {
+      return warnAndAsk(
+        context,
+        title: l.completedInEndTitle,
+        message: l.completedInEndWarn,
+      );
+    }
+    return true;
+  }
+
   /// Wybór sposobu punktowania pola przy stodole.
   Widget _buildBarnChoice() {
     final l = context.l10n;
     final labels = {
-      FarmScoring.normal: l.farmNormal,
-      FarmScoring.barnJoined: l.farmJoined,
+      FarmScoring.normal: _endPhase ? l.farmNormal : l.farmAfterBarn,
+      FarmScoring.barnJoined: _endPhase ? l.farmJoined : l.farmJoinedToBarn,
       FarmScoring.barnOwner: l.farmBarnOwner,
     };
     return Padding(
@@ -895,7 +1095,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               Expanded(
                 child: LabelWithHint(
                   l.barn,
-                  l.barnHint,
+                  _endPhase ? l.barnHintEnd : l.barnHint,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -907,8 +1107,13 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
           Wrap(
             spacing: 8,
             children: [
+              // Właściciel stodoły liczy swoje pola dopiero po grze, a pole
+              // „połączone ze stodołą" ma sens tylko w trakcie gry.
               for (final e in labels.entries)
-                ChoiceChip(
+                if (_endPhase
+                    ? e.key != FarmScoring.barnJoined
+                    : e.key != FarmScoring.barnOwner)
+                  ChoiceChip(
                   label: Text(e.value),
                   selected: _farm == e.key,
                   onSelected: (_) => setState(() {
@@ -1036,7 +1241,9 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
         castleOk && _type.supportsCastle
             ? l.sharedPointsCastles
             : l.sharedPoints,
-        l.sharedHint + (castleOk ? l.sharedHintCastle : ''),
+        l.sharedHint +
+            (castleOk ? l.sharedHintCastle : '') +
+            (_has(Expansion.flyingMachines) ? l.sharedHintFlying : ''),
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
       subtitle: PlayerLabels(items: chosen, empty: l.none),
@@ -1137,11 +1344,35 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
     final l = context.l10n;
     return [
       _check(
-        l.fairyOption(kFairyFeaturePoints),
+        l.fairyOption,
         _fairy,
         (v) => _fairy = v,
         hint: l.fairyHint(kFairyFeaturePoints),
       ),
+      // Przy punktach wspólnych wróżka może stać przy meplu gracza, który nie
+      // ma przewagi (więc nie dostaje punktów budowli, tylko premię wróżki).
+      if (_fairy && _canShare && _otherPlayers.isNotEmpty) ...[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(l.fairyOwner),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: PlayerPicker(
+              players: widget.players,
+              selected: _fairyOwner ?? widget.player,
+              onSelected: (p) => setState(
+                () => _fairyOwner = p == widget.player ? null : p,
+              ),
+            ),
+          ),
+        ),
+      ],
     ];
   }
 
@@ -1222,6 +1453,63 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
   }
 
   // ----------------------------------------------------------- widgety
+
+  /// Wybór pionka magicznego (brak / mag / wiedźma): wzajemnie się wykluczają,
+  /// bo nie mogą stać na tej samej drodze ani w tym samym mieście.
+  Widget _buildMagic() => _magicSelector(
+    value: _magic,
+    onChanged: (v) => _magic = v,
+    hint: context.l10n.magicHint,
+  );
+
+  /// Wybór Brak / Mag / Wiedźma. [mageEnabled] i [witchEnabled] wyłączają
+  /// pionek, który stoi już na innej drodze.
+  Widget _magicSelector({
+    required MagicPawn? value,
+    required ValueChanged<MagicPawn?> onChanged,
+    required String hint,
+    bool mageEnabled = true,
+    bool witchEnabled = true,
+  }) {
+    final l = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          LabelWithHint(l.magicPawn, hint),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<MagicPawn?>(
+              showSelectedIcon: false,
+              emptySelectionAllowed: false,
+              segments: [
+                ButtonSegment(
+                  value: null,
+                  label: Text(l.magicNone, maxLines: 1, softWrap: false),
+                ),
+                ButtonSegment(
+                  value: MagicPawn.mage,
+                  enabled: mageEnabled,
+                  icon: GameIcon(MagicPawn.mage.iconAsset, size: 24),
+                  label: Text(l.magicMage, maxLines: 1, softWrap: false),
+                ),
+                ButtonSegment(
+                  value: MagicPawn.witch,
+                  enabled: witchEnabled,
+                  icon: GameIcon(MagicPawn.witch.iconAsset, size: 24),
+                  label: Text(l.magicWitch, maxLines: 1, softWrap: false),
+                ),
+              ],
+              selected: {value},
+              onSelectionChanged: (s) => setState(() => onChanged(s.first)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _check(
     String title,

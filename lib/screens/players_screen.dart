@@ -25,6 +25,7 @@ import '../widgets/game_dialogs.dart';
 import '../widgets/goods_widgets.dart';
 import '../widgets/meeple_icon.dart';
 import '../widgets/player_dialog.dart';
+import '../widgets/player_label.dart';
 import '../widgets/token_dialogs.dart';
 import 'add_points_screen.dart';
 import 'bazaar_screen.dart';
@@ -97,6 +98,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
   GameStage _stage = GameStage.setup;
 
   bool get _inSetup => _stage == GameStage.setup;
+
+  /// Kafelki się skończyły: trwa punktowanie końcowe.
+  bool get _endScoring => isEndScoring(_stage);
 
   @override
   void initState() {
@@ -249,7 +253,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   Future<void> _onScorePlayer(Player player) async {
-    if (_stage != GameStage.playing) {
+    if (!canScore(_stage)) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text(context.l10n.startFirst)));
@@ -260,9 +264,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
       MaterialPageRoute(
         builder: (_) => SelectPointsTypeScreen(
           player: player,
-          types: ScoringType.selectableFor(_settings.expansions),
+          types: ScoringType.selectableFor(
+            _settings.expansions,
+            endPhase: _endScoring,
+          ),
           showGroupTitles: _settings.showGroupTitles,
           groupsOnNewLines: _settings.groupsOnNewLines,
+          endPhase: _endScoring,
         ),
       ),
     );
@@ -313,7 +321,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   /// Wróżka przy meplu gracza daje 1 pkt na początku jego tury, więc
-  /// dopisujemy go od razu, bez osobnego ekranu (bez komunikatu). Cofniesz go z menu.
+  /// dopisujemy go od razu, bez osobnego ekranu, z krótkim komunikatem. Cofniesz go z menu.
   void _scoreFairy(Player player) {
     final l = context.l10n;
     final event = ScoreEvent(
@@ -323,6 +331,20 @@ class _PlayersScreenState extends State<PlayersScreen> {
       type: ScoringType.fairy,
     );
     _applyEvent(event);
+    // Wróżka łatwo ucieka z pamięci, więc krótka przypominajka.
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          // Mepel w kolorze gracza odróżnia graczy o tym samym imieniu.
+          content: PlayerLabel(
+            player: player,
+            text: l.fairySnack(player.name, kFairyTurnPoints),
+            iconSize: 22,
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
   }
 
   Widget _scoringScreen(Player player, ScoringType type) {
@@ -333,9 +355,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
       ScoringType.tower => TowerScreen(player: player, players: players),
       ScoringType.monastery => MonasteryScreen(
         player: player,
+        players: players,
         expansions: _settings.expansions,
       ),
-      ScoringType.pyramid => PyramidScreen(players: players),
+      ScoringType.pyramid => PyramidScreen(
+        players: players,
+        endPhase: _endScoring,
+      ),
       ScoringType.circus => CircusScreen(
         player: player,
         players: players,
@@ -347,6 +373,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         type: type,
         expansions: _settings.expansions,
         tokens: Map<CrownToken, TokenHolding>.of(_settings.tokens),
+        endPhase: _endScoring,
       ),
     };
   }
@@ -473,13 +500,37 @@ class _PlayersScreenState extends State<PlayersScreen> {
     await showGameStartedNote(context);
   }
 
-  Future<void> _onEndGame() async {
-    final ok = await askYesNo(context, title: context.l10n.endGameQuestion);
+  /// Flaga: kafelki się skończyły. Zatrzymuje czas gry i przechodzi do
+  /// punktowania końcowego (pola, klasztory niemieckie i holenderskie,
+  /// nieukończone budowle).
+  Future<void> _onEndTiles() async {
+    final l = context.l10n;
+    final ok = await askYesNo(
+      context,
+      title: l.endTilesTitle,
+      message: '${l.endGameCheck}\n\n${l.endTilesQuestion}',
+    );
+    if (!ok || !mounted) return;
+    setState(() {
+      _settings.endedAt = DateTime.now();
+      _setStage(GameStage.endScoring);
+    });
+  }
+
+  /// Puchar: wszystkie punkty końcowe wpisane, przejście do podsumowania.
+  Future<void> _onFinishGame() async {
+    final ok = await askYesNo(
+      context,
+      title: context.l10n.summaryTitle,
+      message: context.l10n.finishGameQuestion,
+    );
     if (!ok || !mounted) return;
     if (!await _askCrownEndPoints()) return;
     if (!mounted) return;
     setState(() {
-      _settings.endedAt = DateTime.now();
+      // Czas stanął przy pierwszym kliknięciu flagi; stary zapis bez niego
+      // dostaje czas teraz.
+      _settings.endedAt ??= DateTime.now();
       _setStage(GameStage.finished);
     });
     await _showEndScreen();
@@ -738,8 +789,15 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 FloatingActionButton(
                   heroTag: 'end',
                   tooltip: l.endGameTooltip,
-                  onPressed: _onEndGame,
+                  onPressed: _onEndTiles,
                   child: const Icon(kEndGameIcon),
+                )
+              else if (_endScoring)
+                FloatingActionButton(
+                  heroTag: 'finish',
+                  tooltip: l.finishGameTooltip,
+                  onPressed: _onFinishGame,
+                  child: const Icon(kSummaryIcon),
                 )
               else
                 const SizedBox.shrink(),
@@ -768,7 +826,26 @@ class _PlayersScreenState extends State<PlayersScreen> {
               ),
             )
           : ContentWidth(
-              child: ListView.builder(
+              child: Column(
+                children: [
+                  // Faza po grze musi być widoczna na pierwszy rzut oka, żeby
+                  // nie pomylić jej z rozgrywką.
+                  if (_endScoring)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                      child: Column(
+                        children: [
+                          EndPhaseBadge(
+                            l.endPhaseLabel,
+                            hint: _has(Expansion.monasteries)
+                                ? l.endPhaseBannerMonasteries
+                                : l.endPhaseBanner,
+                          ),
+                        ],
+                      ),
+                    ),
+                  Expanded(
+                    child: ListView.builder(
               padding: const EdgeInsets.only(bottom: 88),
               itemCount: _players.length + 1,
               itemBuilder: (context, index) {
@@ -798,6 +875,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 return const SizedBox.shrink();
               },
             ),
+                  ),
+                ],
+              ),
             ),
     );
   }

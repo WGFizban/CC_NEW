@@ -35,6 +35,7 @@ class CrownEndScreen extends StatefulWidget {
 class _CrownEndScreenState extends State<CrownEndScreen> {
   int _cities = 0;
   int _roads = 0;
+  final _keypadOpen = ValueNotifier<bool>(true);
   late CrownToken _active = widget.king != null
       ? CrownToken.king
       : CrownToken.robber;
@@ -52,6 +53,12 @@ class _CrownEndScreenState extends State<CrownEndScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    _keypadOpen.dispose();
+    super.dispose();
+  }
+
   void _confirm() =>
       Navigator.pop<CrownCounts>(context, (cities: _cities, roads: _roads));
 
@@ -63,7 +70,10 @@ class _CrownEndScreenState extends State<CrownEndScreen> {
         ? l.crownCityTiles
         : l.crownRoadTiles;
     return GestureDetector(
-      onTap: () => setState(() => _active = token),
+      onTap: () {
+        setState(() => _active = token);
+        _keypadOpen.value = true;
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(12),
@@ -138,7 +148,9 @@ class _CrownEndScreenState extends State<CrownEndScreen> {
           decoration: BoxDecoration(
             border: Border(top: frameSide, left: frameSide, right: frameSide),
           ),
-          child: KeypadLayout(
+          child: CollapsibleKeypadLayout(
+            open: _keypadOpen,
+            onKey: _onKey,
             form: ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -156,7 +168,6 @@ class _CrownEndScreenState extends State<CrownEndScreen> {
                   _field(CrownToken.robber, widget.robber!),
               ],
             ),
-            keypad: (side) => keypadBlock(side: side, onKey: _onKey),
           ),
         ),
       ),

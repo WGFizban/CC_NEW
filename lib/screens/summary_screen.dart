@@ -146,15 +146,16 @@ class SummaryScreen extends StatelessWidget {
           child: top
               ? Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
+                    horizontal: 10,
+                    vertical: 3,
                   ),
                   decoration: BoxDecoration(
                     color: accent,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
                     '$v',
+                    softWrap: false,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.onPrimary,

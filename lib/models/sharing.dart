@@ -49,6 +49,9 @@ class PointsShare {
 /// - [scorerExtraCastles] – punktujący ma mepla w budowli *i dodatkowo* zamki
 ///   przy niej: dostaje swoje punkty plus punkty budowli za każdy zamek
 ///   (nie łączy się z [scorerAsCastle]),
+/// - [fairyOwner] / [fairyPoints] – wróżka stoi przy meplu *innego* gracza niż
+///   punktujący (także takiego, który nie ma przewagi w budowli i nie dostaje
+///   jej punktów): ten gracz dostaje dodatkowo [fairyPoints],
 /// - [others] – pozostali gracze i sposób, w jaki dostają punkty.
 Map<Player, int> splitPoints({
   required Player scorer,
@@ -57,6 +60,8 @@ Map<Player, int> splitPoints({
   bool scorerAsCastle = false,
   int scorerCastles = 1,
   int scorerExtraCastles = 0,
+  Player? fairyOwner,
+  int fairyPoints = 0,
   Map<Player, PointsShare> others = const {},
 }) {
   final result = <Player, int>{
@@ -67,6 +72,9 @@ Map<Player, int> splitPoints({
   for (final e in others.entries) {
     if (e.key == scorer) continue;
     result[e.key] = e.value.pointsFor(base);
+  }
+  if (fairyOwner != null && fairyOwner != scorer) {
+    result[fairyOwner] = (result[fairyOwner] ?? 0) + fairyPoints;
   }
   return result;
 }
