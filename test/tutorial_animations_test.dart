@@ -81,7 +81,7 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Ala'), findsOneWidget);
     expect(find.text('Bob'), findsOneWidget);
-    expect(find.byIcon(Icons.flag), findsOneWidget);
+    expect(find.byIcon(Icons.sports_score), findsOneWidget);
   });
 
   for (final entry in {
