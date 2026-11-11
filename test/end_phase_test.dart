@@ -306,7 +306,7 @@ void main() {
   });
 
   group('miejsca w podsumowaniu', () {
-    test('remis dzieli miejsce, a następne jest pomijane', () {
+    test('remis dzieli miejsce, a następne to kolejny numer', () {
       final a = _p('A')..points = 30;
       final b = _p('B')..points = 20;
       final c = _p('C')..points = 20;
@@ -314,7 +314,7 @@ void main() {
 
       final r = rankings([d, b, a, c]);
 
-      expect([for (final e in r) e.place], [1, 2, 2, 4]);
+      expect([for (final e in r) e.place], [1, 2, 2, 3]);
       expect(r.first.player, a);
       expect(r.first.score, 30);
     });
