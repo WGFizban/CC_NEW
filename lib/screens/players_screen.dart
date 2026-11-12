@@ -537,7 +537,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   /// Dodatek „Król i Baron rabusiów": przed końcem gry pyta o liczbę
-  /// ukończonych zamków i dróg i dopisuje punkty właścicielom żetonów.
+  /// ukończonych miast i dróg i dopisuje punkty właścicielom żetonów.
   /// Zwraca `false`, gdy użytkownik anulował (gra wtedy się nie kończy).
   Future<bool> _askCrownEndPoints() async {
     if (!_has(Expansion.kingRobber)) return true;
@@ -554,7 +554,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     if (counts == null || !mounted) return false;
 
     final l = context.l10n;
-    // Po 1 punkcie za każdy ukończony zamek (Król) i każdą ukończoną drogę
+    // Po 1 punkcie za każde ukończone miasto (Król) i każdą ukończoną drogę
     // (Rabuś); gdy ten sam gracz trzyma oba żetony, liczone są osobno.
     if (king != null && counts.cities > 0) {
       _applyEvent(

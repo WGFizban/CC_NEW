@@ -25,7 +25,7 @@ void main() {
   });
 
   group('punkty końcowe za żetony', () {
-    test('Król i Baron rabusiów dostają po 1 pkt za ukończony zamek i drogę', () {
+    test('Król i Baron rabusiów dostają po 1 pkt za ukończone miasto i drogę', () {
       final ala = _p('Ala');
       final bob = _p('Bob');
 

@@ -11,15 +11,15 @@ import '../widgets/number_keypad.dart';
 import '../widgets/scoring_app_bar.dart';
 import '../widgets/token_dialogs.dart';
 
-/// Liczba ukończonych zamków i dróg na całej planszy (na koniec gry).
+/// Liczba ukończonych miast i dróg na całej planszy (na koniec gry).
 typedef CrownCounts = ({int cities, int roads});
 
 /// Największa wpisywana liczba ukończonych budowli.
 const int kMaxCrownCount = 99;
 
 /// Ekran na koniec gry z dodatkiem „Król i Baron rabusiów": ile ukończonych
-/// zamków i dróg jest na całej planszy (także cudzych). Właściciel żetonu
-/// Króla dostaje po punkcie za zamek, właściciel żetonu Barona rabusiów za
+/// miast i dróg jest na całej planszy (także cudzych). Właściciel żetonu
+/// Króla dostaje po punkcie za miasto, właściciel żetonu Barona rabusiów za
 /// drogę. Pyta tylko o te żetony, które ktoś ma. Zwraca [CrownCounts] albo
 /// `null` po „Anuluj".
 class CrownEndScreen extends StatefulWidget {
