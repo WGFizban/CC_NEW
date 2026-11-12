@@ -47,7 +47,7 @@ class RulesScreen extends StatelessWidget {
   };
 
   /// Oficjalna wiki z zasadami, na której opieramy punktację.
-  static final Uri _wikiUrl = Uri.parse('https://wikicarpedia.com/');
+  static final Uri _wikiUrl = Uri.parse('https://wikicarpedia.com/car/Main_Page');
 
   @override
   Widget build(BuildContext context) {
