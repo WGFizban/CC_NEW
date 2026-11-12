@@ -53,6 +53,10 @@ class CarcassonneCounterApp extends StatelessWidget {
               right: false,
               // Most zgodności: flutter_colorpicker nadal korzysta ze starego
               // Material i potrzebuje motywu oraz tekstów przekazanych w dół.
+              // To rozwiązanie tymczasowe (most jest oznaczony jako
+              // przestarzały): usuń je, gdy flutter_colorpicker przejdzie na
+              // material_ui albo zastąpimy go własnym wyborem koloru.
+              // ignore: deprecated_member_use
               child: MaterialUiCompatibilityBridge(
                 child: child ?? const SizedBox.shrink(),
               ),
