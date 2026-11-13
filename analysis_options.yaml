@@ -1,6 +1,8 @@
 analyzer:
   exclude:
     - build/**
+    # Generowane przez gen-l10n (używa jeszcze flutter_localizations).
+    - lib/l10n/app_localizations*.dart
     - android/**
     - web/**
     - windows/**

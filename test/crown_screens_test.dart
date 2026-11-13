@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cc_new/l10n/app_localizations.dart';
@@ -13,7 +13,10 @@ Player _p(String name) => Player(name: name, color: const Color(0xFF1D27EA));
 Widget _app(Widget home) => MaterialApp(
   locale: const Locale('pl'),
   supportedLocales: AppLocalizations.supportedLocales,
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+    AppLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
+  ],
   home: home,
 );
 
@@ -53,10 +56,10 @@ void main() {
     await tester.tap(find.text('otwórz'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Ukończone zamki'), findsOneWidget);
+    expect(find.text('Ukończone miasta'), findsOneWidget);
     expect(find.text('Ukończone drogi'), findsOneWidget);
 
-    // Domyślnie aktywne jest pole Króla (zamki): 1, 2 -> 12.
+    // Domyślnie aktywne jest pole Króla (miasta): 1, 2 -> 12.
     await tester.tap(find.widgetWithText(ElevatedButton, '1'));
     await tester.tap(find.widgetWithText(ElevatedButton, '2'));
     await tester.pump();

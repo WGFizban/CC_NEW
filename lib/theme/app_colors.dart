@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Główny kolor aplikacji (lawenda) – używany w motywie, kartach i tle mepla.
 const Color kBrandColor = Color(0xFFBDABFB);

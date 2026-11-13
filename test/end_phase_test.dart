@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cc_new/l10n/app_localizations.dart';
@@ -18,7 +18,10 @@ Player _p(String name) => Player(name: name, color: const Color(0xFF1D27EA));
 Widget _app(Widget home) => MaterialApp(
   locale: const Locale('pl'),
   supportedLocales: AppLocalizations.supportedLocales,
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+    AppLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
+  ],
   home: home,
 );
 

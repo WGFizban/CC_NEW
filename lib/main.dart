@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'l10n/app_language.dart';
 import 'l10n/l10n.dart';
@@ -36,7 +36,12 @@ class CarcassonneCounterApp extends StatelessWidget {
           themeMode: mode,
           locale: Locale(language.code),
           supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+            AppLocalizations.delegate,
+            // Teksty widżetów Material (np. „OK”, daty) pochodzą teraz
+            // z pakietu material_ui, a nie z flutter_localizations.
+            ...GlobalMaterialLocalizations.delegates,
+          ],
           // Na Androidzie z pełnoekranowym układem (edge-to-edge) dolne przyciski
           // systemu zasłaniałyby treść. SafeArea odsuwa wszystkie ekrany od
           // dolnego paska, a tło pod nim ma kolor motywu.
@@ -46,7 +51,15 @@ class CarcassonneCounterApp extends StatelessWidget {
               top: false,
               left: false,
               right: false,
-              child: child ?? const SizedBox.shrink(),
+              // Most zgodności: flutter_colorpicker nadal korzysta ze starego
+              // Material i potrzebuje motywu oraz tekstów przekazanych w dół.
+              // To rozwiązanie tymczasowe (most jest oznaczony jako
+              // przestarzały): usuń je, gdy flutter_colorpicker przejdzie na
+              // material_ui albo zastąpimy go własnym wyborem koloru.
+              // ignore: deprecated_member_use
+              child: MaterialUiCompatibilityBridge(
+                child: child ?? const SizedBox.shrink(),
+              ),
             ),
           ),
           home: const SplashScreen(),

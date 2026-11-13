@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Tekst, który zmniejsza czcionkę (do [minFontSize]), aż zmieści się w
 /// [maxLines] liniach. Zawija się na znakach nowej linii.

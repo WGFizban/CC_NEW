@@ -81,10 +81,11 @@ Future<Uint8List> buildSummaryPdf({
 
   final iconSvgs = <String, String>{};
   for (final c in table.columns) {
-    final asset = c.type?.iconAsset ?? c.goods?.iconAsset;
-    if (asset == null || iconSvgs.containsKey(asset)) continue;
-    final svg = await tryLoad(asset);
-    if (svg != null) iconSvgs[asset] = svg;
+    for (final asset in _columnIcons(c)) {
+      if (iconSvgs.containsKey(asset)) continue;
+      final svg = await tryLoad(asset);
+      if (svg != null) iconSvgs[asset] = svg;
+    }
   }
   final meepleSvg = await tryLoad(_meepleAsset);
 
@@ -266,14 +267,33 @@ pw.Widget _table(
   }
 
   pw.Widget headerCell(SummaryColumn c) {
-    final asset = c.type?.iconAsset ?? c.goods?.iconAsset;
-    final icon = asset == null ? null : _svg(iconSvgs[asset], iconSize);
-    if (icon == null) return cell(c.title, isBold: true);
+    final assets = _columnIcons(c);
+    // Kolumna wspólna (klasztor/opactwo) ma dwie mniejsze ikony przedzielone „/".
+    final size = assets.length > 1 ? iconSize * 0.75 : iconSize;
+    final icons = [
+      for (final a in assets) _svg(iconSvgs[a], size),
+    ];
+    if (icons.isEmpty || icons.any((i) => i == null)) {
+      return cell(c.title, isBold: true);
+    }
     return pw.Container(
       alignment: pw.Alignment.center,
       padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      // Sama ikona, bez podpisu: tak jak w aplikacji (podpisy się zawijały).
-      child: icon,
+      // Same ikony, bez podpisu: tak jak w aplikacji (podpisy się zawijały).
+      child: pw.Row(
+        mainAxisSize: pw.MainAxisSize.min,
+        mainAxisAlignment: pw.MainAxisAlignment.center,
+        children: [
+          for (var i = 0; i < icons.length; i++) ...[
+            if (i > 0)
+              pw.Padding(
+                padding: const pw.EdgeInsets.symmetric(horizontal: 1),
+                child: pw.Text('/', style: pw.TextStyle(fontSize: fontSize)),
+              ),
+            icons[i]!,
+          ],
+        ],
+      ),
     );
   }
 
@@ -367,3 +387,7 @@ pw.Widget _table(
     children: [header, ...body],
   );
 }
+
+/// Ikony nagłówka kolumny: rodzaje punktacji albo surowiec.
+List<String> _columnIcons(SummaryColumn c) =>
+    c.goods != null ? [c.goods!.iconAsset] : c.typeIconAssets;
