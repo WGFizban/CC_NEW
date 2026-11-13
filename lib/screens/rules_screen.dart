@@ -112,19 +112,46 @@ class RulesScreen extends StatelessWidget {
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Zawartość i elementy są pierwsze, przed zasadami punktowania.
+          // Elementy są pierwsze, przed zasadami, i wyróżnione tłem.
           if (parts != null || table != null) ...[
-            Text(
-              l.rulesPartsTitle,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.inventory_2_outlined,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        l.rulesPartsTitle,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  if (parts != null)
+                    Text(parts, style: const TextStyle(height: 1.4)),
+                  if (table != null) ...[
+                    const SizedBox(height: 8),
+                    _PartsTableView(
+                      table: table,
+                      playersLabel: l.rulesTablePlayers,
+                    ),
+                  ],
+                ],
+              ),
             ),
-            const SizedBox(height: 4),
-            if (parts != null)
-              Text(parts, style: const TextStyle(height: 1.4)),
-            if (table != null) ...[
-              const SizedBox(height: 8),
-              _PartsTableView(table: table, playersLabel: l.rulesTablePlayers),
-            ],
             const SizedBox(height: 12),
           ],
           Text(body, style: const TextStyle(height: 1.4)),
@@ -231,7 +258,7 @@ class _PartsTableView extends StatelessWidget {
         children: [
           TableRow(
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
             ),
             children: [
               cell(playersLabel, bold: true, start: true),
