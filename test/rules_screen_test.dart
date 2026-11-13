@@ -26,8 +26,11 @@ void main() {
     await tester.pumpAndSettle();
 
     // Gra podstawowa jest rozwinięta od początku.
-    expect(find.text('Zawartość i rozdział elementów'), findsOneWidget);
+    expect(find.text('Zawartość i elementy'), findsOneWidget);
     expect(find.textContaining('72 płytki'), findsOneWidget);
+
+    // Liczba płytek jest widoczna już w zwiniętym tytule dodatku.
+    expect(find.textContaining('Karczmy i katedry (18 płytek)'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('Otwórz Wikicarpedię'),
