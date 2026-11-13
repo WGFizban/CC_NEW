@@ -233,13 +233,21 @@ class _PartsTableView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final border = BorderSide(color: theme.colorScheme.outlineVariant);
-    Widget cell(String text, {bool bold = false, bool start = false}) =>
+    Widget cell(
+      String text, {
+      bool bold = false,
+      bool start = false,
+      bool head = false,
+    }) =>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           child: Text(
             text,
             textAlign: start ? TextAlign.start : TextAlign.center,
-            style: TextStyle(fontWeight: bold ? FontWeight.bold : null),
+            style: TextStyle(
+              fontWeight: bold ? FontWeight.bold : null,
+              color: head ? theme.colorScheme.onPrimary : null,
+            ),
           ),
         );
 
@@ -258,11 +266,11 @@ class _PartsTableView extends StatelessWidget {
         children: [
           TableRow(
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
+              color: theme.colorScheme.primary,
             ),
             children: [
-              cell(playersLabel, bold: true, start: true),
-              for (final h in table.header) cell(h, bold: true),
+              cell(playersLabel, bold: true, start: true, head: true),
+              for (final h in table.header) cell(h, bold: true, head: true),
             ],
           ),
           for (final (label, values) in table.rows)
