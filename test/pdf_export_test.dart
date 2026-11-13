@@ -7,7 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cc_new/l10n/app_localizations_pl.dart';
 import 'package:cc_new/models/expansion.dart';
+import 'package:cc_new/models/history_entry.dart';
 import 'package:cc_new/models/player.dart';
+import 'package:cc_new/models/scoring.dart';
 import 'package:cc_new/models/summary_table.dart';
 import 'package:cc_new/services/pdf_export.dart';
 
@@ -68,6 +70,47 @@ void main() {
     expect(table.columns.last.title, l.colTotal);
     expect([for (final r in table.rows) r.total], [10, 5]);
     expect(table.best(table.columns.length - 1), 10);
+  });
+
+  test('opactwo dzieli kolumnę z klasztorem i sumuje punkty', () {
+    final l = AppLocalizationsPl();
+    final ala = _p('Ala', 14, 0xFFE53935);
+    final bob = _p('Bob', 0, 0xFF1D27EA);
+    HistoryEntry entry(int id, ScoringType t, int points) => HistoryEntry(
+      id: id,
+      time: DateTime(2026, 10, 31),
+      label: 'x',
+      type: t.name,
+      changes: [HistoryChange(player: 'Ala', playerId: ala.id, points: points)],
+    );
+    final log = [
+      entry(1, ScoringType.cloister, 9),
+      entry(2, ScoringType.abbey, 5),
+    ];
+
+    final merged = SummaryTable.build(
+      l: l,
+      players: [ala, bob],
+      log: log,
+      expansions: const {Expansion.abbeyMayor},
+    );
+    final i = merged.columns.indexWhere((c) => c.type == ScoringType.cloister);
+    expect(merged.columns[i].alsoType, ScoringType.abbey);
+    expect(
+      merged.columns.where((c) => c.type == ScoringType.abbey),
+      isEmpty,
+    );
+    expect(merged.rows.first.player.name, 'Ala');
+    expect(merged.rows.first.values[i], 14);
+
+    // Bez dodatku „Opactwo i burmistrz" kolumna wspólna się nie pojawia.
+    final plain = SummaryTable.build(
+      l: l,
+      players: [ala, bob],
+      log: log,
+      expansions: const {},
+    );
+    expect(plain.columns.every((c) => c.alsoType == null), isTrue);
   });
 
   test('PDF z podsumowaniem to poprawny dokument PDF', () async {

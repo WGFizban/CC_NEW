@@ -117,11 +117,25 @@ class SummaryScreen extends StatelessWidget {
     }
   }
 
-  Widget _header(String asset, String name) {
+  Widget _header(List<String> assets, String name) {
+    // Kolumna wspólna (klasztor/opactwo): dwie mniejsze ikony przedzielone „/".
+    final single = assets.length == 1;
     return Builder(
       builder: (ctx) => GestureDetector(
         onTap: () => showHintBubble(ctx, message: name),
-        child: GameIcon(asset, size: 30),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < assets.length; i++) ...[
+              if (i > 0)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 2),
+                  child: Text('/', style: TextStyle(fontSize: 18)),
+                ),
+              GameIcon(assets[i], size: single ? 30 : 24),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -171,9 +185,9 @@ class SummaryScreen extends StatelessWidget {
     }
 
     DataColumn column(SummaryColumn c) {
-      final icon = c.type?.iconAsset ?? c.goods?.iconAsset;
+      final icons = c.iconAssets;
       return DataColumn(
-        label: icon == null ? Text(c.title) : _header(icon, c.title),
+        label: icons.isEmpty ? Text(c.title) : _header(icons, c.title),
       );
     }
 

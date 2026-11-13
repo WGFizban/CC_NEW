@@ -10,13 +10,22 @@ import 'standings.dart';
 import 'summary.dart';
 
 /// Kolumna tabeli podsumowania: nazwa oraz (opcjonalnie) rodzaj punktacji
-/// albo surowiec, z którego bierze się ikona kolumny.
+/// albo surowiec, z którego bierze się ikona kolumny. [alsoType] to drugi
+/// rodzaj punktacji sumowany w tej samej kolumnie (klasztor i opactwo).
 class SummaryColumn {
   final String title;
   final ScoringType? type;
+  final ScoringType? alsoType;
   final Goods? goods;
 
-  const SummaryColumn(this.title, {this.type, this.goods});
+  const SummaryColumn(this.title, {this.type, this.alsoType, this.goods});
+
+  /// Ikony kolumny: jedna albo dwie (przy kolumnie wspólnej).
+  List<String> get iconAssets => [
+    if (type != null) type!.iconAsset,
+    if (alsoType != null) alsoType!.iconAsset,
+    if (type == null && goods != null) goods!.iconAsset,
+  ];
 }
 
 /// Wiersz tabeli podsumowania: gracz i wartości w kolejności kolumn
@@ -61,6 +70,18 @@ class SummaryTable {
             t != ScoringType.crown)
           t,
     ];
+    // Opactwo punktuje jak klasztor, więc w podsumowaniu dzielą jedną kolumnę
+    // (suma punktów obu), gdy dodatek „Opactwo i burmistrz" jest włączony.
+    final mergeAbbey = types.contains(ScoringType.abbey);
+    final shownTypes = [
+      for (final t in types)
+        if (!(mergeAbbey && t == ScoringType.abbey)) t,
+    ];
+    int typeValue(Player p, ScoringType t) =>
+        (byType[p.id]?[t] ?? 0) +
+        (mergeAbbey && t == ScoringType.cloister
+            ? byType[p.id]?[ScoringType.abbey] ?? 0
+            : 0);
     final showGoods = expansions.contains(Expansion.tradersBuilders);
     final showGold = expansions.contains(Expansion.goldMines);
     final hasOther = players.any((p) => (byType[p.id]?[null] ?? 0) != 0);
@@ -74,7 +95,7 @@ class SummaryTable {
         goodsLeaders(g, players).contains(p) ? kGoodsBonus : 0;
 
     List<int> values(Player p) => [
-      for (final t in types) byType[p.id]?[t] ?? 0,
+      for (final t in shownTypes) typeValue(p, t),
       for (final g in goodsTypes) goodsPart(p, g),
       if (showGold) goldPoints(p.gold),
       if (hasOther) byType[p.id]?[null] ?? 0,
@@ -83,7 +104,15 @@ class SummaryTable {
 
     return SummaryTable(
       [
-        for (final t in types) SummaryColumn(t.title(l), type: t),
+        for (final t in shownTypes)
+          if (mergeAbbey && t == ScoringType.cloister)
+            SummaryColumn(
+              '${t.title(l)} / ${ScoringType.abbey.title(l)}',
+              type: t,
+              alsoType: ScoringType.abbey,
+            )
+          else
+            SummaryColumn(t.title(l), type: t),
         for (final g in goodsTypes)
           SummaryColumn(g.title(l), goods: g),
         if (showGold)
