@@ -20,11 +20,11 @@ class SummaryColumn {
 
   const SummaryColumn(this.title, {this.type, this.alsoType, this.goods});
 
-  /// Ikony kolumny: jedna albo dwie (przy kolumnie wspólnej).
-  List<String> get iconAssets => [
+  /// Ikony rodzajów punktacji tej kolumny: jedna albo dwie (przy kolumnie
+  /// wspólnej). Kolumny surowców mają ikonę z [goods] (zob. widgets).
+  List<String> get typeIconAssets => [
     if (type != null) type!.iconAsset,
     if (alsoType != null) alsoType!.iconAsset,
-    if (type == null && goods != null) goods!.iconAsset,
   ];
 }
 
@@ -77,11 +77,15 @@ class SummaryTable {
       for (final t in types)
         if (!(mergeAbbey && t == ScoringType.abbey)) t,
     ];
-    int typeValue(Player p, ScoringType t) =>
-        (byType[p.id]?[t] ?? 0) +
-        (mergeAbbey && t == ScoringType.cloister
-            ? byType[p.id]?[ScoringType.abbey] ?? 0
-            : 0);
+    int typeValue(Player p, ScoringType t) {
+      final row = byType[p.id];
+      var sum = row?[t] ?? 0;
+      if (mergeAbbey && t == ScoringType.cloister) {
+        sum += row?[ScoringType.abbey] ?? 0;
+      }
+      return sum;
+    }
+
     final showGoods = expansions.contains(Expansion.tradersBuilders);
     final showGold = expansions.contains(Expansion.goldMines);
     final hasOther = players.any((p) => (byType[p.id]?[null] ?? 0) != 0);

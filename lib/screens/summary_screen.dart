@@ -185,7 +185,7 @@ class SummaryScreen extends StatelessWidget {
     }
 
     DataColumn column(SummaryColumn c) {
-      final icons = c.iconAssets;
+      final icons = _columnIcons(c);
       return DataColumn(
         label: icons.isEmpty ? Text(c.title) : _header(icons, c.title),
       );
@@ -264,3 +264,7 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 }
+
+/// Ikony nagłówka kolumny: rodzaje punktacji albo surowiec.
+List<String> _columnIcons(SummaryColumn c) =>
+    c.goods != null ? [c.goods!.iconAsset] : c.typeIconAssets;

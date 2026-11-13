@@ -81,7 +81,7 @@ Future<Uint8List> buildSummaryPdf({
 
   final iconSvgs = <String, String>{};
   for (final c in table.columns) {
-    for (final asset in c.iconAssets) {
+    for (final asset in _columnIcons(c)) {
       if (iconSvgs.containsKey(asset)) continue;
       final svg = await tryLoad(asset);
       if (svg != null) iconSvgs[asset] = svg;
@@ -267,7 +267,7 @@ pw.Widget _table(
   }
 
   pw.Widget headerCell(SummaryColumn c) {
-    final assets = c.iconAssets;
+    final assets = _columnIcons(c);
     // Kolumna wspólna (klasztor/opactwo) ma dwie mniejsze ikony przedzielone „/".
     final size = assets.length > 1 ? iconSize * 0.75 : iconSize;
     final icons = [
@@ -387,3 +387,7 @@ pw.Widget _table(
     children: [header, ...body],
   );
 }
+
+/// Ikony nagłówka kolumny: rodzaje punktacji albo surowiec.
+List<String> _columnIcons(SummaryColumn c) =>
+    c.goods != null ? [c.goods!.iconAsset] : c.typeIconAssets;
