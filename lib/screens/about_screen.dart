@@ -6,9 +6,9 @@ import '../l10n/l10n.dart';
 import '../widgets/adaptive_layout.dart';
 import '../models/app_version.dart';
 
-/// Wersja pokazywana w przeglądarce: data i skrót commita budowy, wstawiane
-/// przez workflow GitHub Pages (`--dart-define=APP_VERSION=...`). Lokalna
-/// kompilacja bez tej flagi pokazuje „web (lokalna)".
+/// Wersja pokazywana w przeglądarce: numer wydania (v1, v2, ...) jak w APK,
+/// wstawiany przez workflow GitHub Pages (`--dart-define=APP_VERSION=...`).
+/// Lokalna kompilacja bez tej flagi pokazuje „web (lokalna)".
 const String kWebVersion = String.fromEnvironment(
   'APP_VERSION',
   defaultValue: 'web (lokalna)',
