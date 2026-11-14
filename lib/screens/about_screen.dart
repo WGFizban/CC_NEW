@@ -6,13 +6,18 @@ import '../l10n/l10n.dart';
 import '../widgets/adaptive_layout.dart';
 import '../models/app_version.dart';
 
-/// Wersja pokazywana w przeglądarce: numer wydania (v1, v2, ...) jak w APK i data budowy, np. „v8 (2026-11-14)",
+/// Wersja pokazywana w przeglądarce: numer wydania (v1, v2, ...) jak w APK,
 /// wstawiany przez workflow GitHub Pages (`--dart-define=APP_VERSION=...`).
 /// Lokalna kompilacja bez tej flagi pokazuje „web (lokalna)".
 const String kWebVersion = String.fromEnvironment(
   'APP_VERSION',
   defaultValue: 'web (lokalna)',
 );
+
+/// Data budowy (RRRR-MM-DD) wstawiana przez workflowy GitHub
+/// (`--dart-define=APP_DATE=...`), w APK i w wersji webowej. Lokalna
+/// kompilacja jej nie ma.
+const String kBuildDate = String.fromEnvironment('APP_DATE');
 
 /// Autor aplikacji (pokazywany na ekranie „Info o aplikacji").
 const String kAuthorName = 'WGFizban';
@@ -23,10 +28,10 @@ class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   Future<String> _version() async {
-    if (kIsWeb) return kWebVersion;
+    if (kIsWeb) return withBuildDate(kWebVersion, kBuildDate);
     try {
       final info = await PackageInfo.fromPlatform();
-      return formatAppVersion(info.version);
+      return withBuildDate(formatAppVersion(info.version), kBuildDate);
     } catch (_) {
       return '—';
     }

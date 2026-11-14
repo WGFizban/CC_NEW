@@ -371,6 +371,11 @@ void main() {
       expect(formatAppVersion('7'), 'v7');
       expect(formatAppVersion('0.1.0'), '0.1.0');
     });
+
+    test('data budowy trafia w nawias, a bez daty zostaje sama wersja', () {
+      expect(withBuildDate('v19', '2026-11-14'), 'v19 (2026-11-14)');
+      expect(withBuildDate('v19', ''), 'v19');
+    });
   });
 
   group('zamki i katedry w Niemczech', () {
