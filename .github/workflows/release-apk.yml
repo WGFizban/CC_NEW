@@ -81,7 +81,7 @@ jobs:
         run: |
           set -o pipefail
           # Numer wersji (też jako kod wersji Androida) rośnie z każdym wydaniem.
-          if ! flutter build apk --release --build-name="$VERSION" --build-number="$VERSION" 2>&1 | tee build.log; then
+          if ! flutter build apk --release --build-name="$VERSION" --build-number="$VERSION" --dart-define=APP_DATE="$(TZ=Europe/Warsaw date +%Y-%m-%d)" 2>&1 | tee build.log; then
             # Skrót błędu jako adnotacja, widoczna na stronie przebiegu bez otwierania logów.
             MSG=$(grep -E -A6 'What went wrong|FAILURE|error:|Error:|Exception' build.log | head -n 40 | tr '\n' '|' | cut -c1-3500)
             echo "::error title=Build APK failed::$MSG"

@@ -29,8 +29,8 @@ i tabletach (w pionie i w poziomie).
 ## Obsługiwane dodatki
 
 - Karczmy i katedry
-- Kupcy i budowniczowie
-- Księżniczka i smok
+- Kupcy i Budowniczowie
+- Księżniczka i Smok
 - Mosty, zamki i bazary
 - Wieża
 - Opactwo i burmistrz
@@ -83,14 +83,14 @@ landscape.
 - Bridges, Castles & Bazaars
 - The Tower
 - Abbey & Mayor
-- Gold Mines
+- The Gold Mines
 - Under the Big Top
 - Hills & Sheep
-- German and Dutch Monasteries
-- German Castles
+- Monasteries in Germany & the Netherlands
+- Castles in Germany
 - German Cathedrals
 - The Flying Machines
-- The Mage and the Witch
+- Mage & Witch
 
 
 ## Download

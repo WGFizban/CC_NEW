@@ -118,7 +118,7 @@ void main() {
   group('język interfejsu', () {
     test('nazwy dodatków i punktacji zmieniają się z językiem', () {
       expect(Expansion.hillsSheep.title(en), 'Hills & Sheep');
-      expect(Expansion.goldMines.label(en), 'Gold Mines (Mini expansion 4)');
+      expect(Expansion.goldMines.label(en), 'The Gold Mines (Mini expansion 4)');
       expect(Expansion.tower.label(en), '4. The Tower');
       expect(ScoringType.meadow.title(en), 'Farms');
       expect(ScoringType.meadow.title(pl), 'Pola');
@@ -370,6 +370,11 @@ void main() {
     test('wydanie z GitHuba pokazujemy jako vN, a inne wersje bez zmian', () {
       expect(formatAppVersion('7'), 'v7');
       expect(formatAppVersion('0.1.0'), '0.1.0');
+    });
+
+    test('data budowy trafia w nawias, a bez daty zostaje sama wersja', () {
+      expect(withBuildDate('v19', '2026-11-14'), 'v19 (2026-11-14)');
+      expect(withBuildDate('v19', ''), 'v19');
     });
   });
 

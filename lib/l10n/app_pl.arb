@@ -121,9 +121,9 @@
   },
   "expInns": "Karczmy i katedry",
   "expInnsDesc": "Katedra w mieście (3 pkt za płytkę) i karczma przy drodze (2 pkt za płytkę). Nieukończone budowle z nimi nie dają punktów.",
-  "expTraders": "Kupcy i budowniczowie",
+  "expTraders": "Kupcy i Budowniczowie",
   "expTradersDesc": "Surowce (wino, zboże, sukno) i premia 10 pkt dla prowadzącego, liczona na bieżąco.",
-  "expPrincess": "Księżniczka i smok",
+  "expPrincess": "Księżniczka i Smok",
   "expPrincessDesc": "Wróżka: 1 pkt na początku tury i 3 pkt przy punktowaniu budowli z jej meplem.",
   "expTower": "Wieża",
   "expTowerDesc": "Wykup uwięzionego mepla: płacisz 3 pkt temu, kto go trzyma. Wymiana mepel za mepel odbywa się bez aplikacji.",
@@ -816,6 +816,14 @@
       }
     }
   },
+  "tilesTwoSets": "2 × {count} płytek",
+  "@tilesTwoSets": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "rulesPartsTitle": "Elementy",
   "rulesPartsNote": "Liczby wg klasycznych wydań (Hans im Glück, Big Box); nowy druk z 2025 r. ma inną zawartość niektórych dodatków.",
   "rulesMoreTitle": "Nie znalazłeś interesującej Cię zasady?",
@@ -834,7 +842,7 @@
   "rulesPartsFlyingMachines": "• Kość lotu (1, 1, 2, 2, 3, 3).",
   "rulesPartsMageWitch": "• Figurki maga (fioletowa) i wiedźmy (pomarańczowa), wspólne dla wszystkich graczy.",
   "rulesPartsGold": "• 16 drewnianych sztabek złota.",
-  "rulesPartsMonasteries": "• Opat to zwykły mepel położony na boku.",
+  "rulesPartsMonasteries": "• Dwa osobne rozszerzenia po 6 płytek: niemieckie i holenderskie.\n• Opat to zwykły mepel położony na boku.",
   "rulesPartsGermanCastles": "• Podwójne płytki zamków.",
   "rulesBase": "• Miasto: ukończone daje 2 pkt za każdą płytkę i każdy sztandar; nieukończone (na koniec gry) 1 pkt za każdą płytkę i sztandar.\n• Droga: 1 pkt za każdą płytkę, ukończona lub nie.\n• Klasztor: ukończony 9 pkt (klasztor i 8 otaczających płytek); nieukończony 1 pkt za każdą płytkę, wraz z płytką klasztoru.\n• Pola: na koniec gry 3 pkt za każde ukończone miasto graniczące z polem.\n• Punkty otrzymuje gracz mający najwięcej mepli w budowli lub na polu; przy remisie każdy z remisujących otrzymuje pełną liczbę punktów.",
   "rulesInns": "• Katedra: ukończone miasto z katedrą daje 3 pkt za każdą płytkę i sztandar; nieukończone 0 pkt.\n• Karczma: ukończona droga z karczmą daje 2 pkt za każdą płytkę; nieukończona 0 pkt.\n• Duży mepel liczy się jako dwa meple przy ustalaniu większości, ale nie podwaja punktów.",
@@ -914,7 +922,7 @@
   "newGameSamePlayers": "Ci sami gracze",
   "newGameNewPlayers": "Nowi gracze",
   "addMorePlayers": "Do gry potrzeba co najmniej dwóch graczy. Dodaj kolejnego przyciskiem",
-  "expGermanCastles": "Niemieckie zamki",
+  "expGermanCastles": "Zamki w Niemczech",
   "expGermanCastlesDesc": "Podwójne płytki niemieckich zamków. Lord na zamku dostaje 12 pkt za ukończony zamek, a każdy zamek na końcu ukończonej drogi lub miasta daje graczom z przewagą dodatkowe 3 pkt.",
   "expGermanCathedrals": "Niemieckie katedry",
   "expGermanCathedralsDesc": "Płytki z niemieckimi katedrami na polach. Zbój na drodze do katedry dostaje podwójne punkty za każdy odcinek ukończonej drogi, a arcybiskup 1 pkt za każdy odcinek dróg przy katedrze (2 z karczmą), przy czym każda droga jest liczona osobno.",

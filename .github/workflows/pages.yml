@@ -40,7 +40,20 @@ jobs:
       - run: flutter gen-l10n
 
       # Ścieżka bazowa musi odpowiadać nazwie repozytorium.
-      - run: flutter build web --release --base-href "/CC_NEW/"
+      # Numer wersji w „Info o aplikacji" ma być taki sam jak w wydaniu APK
+      # (v1, v2, ...). Workflow „Release APK" liczy numer z tagów vN: jeśli
+      # tag tego commita już istnieje, bierzemy go, a jeśli jeszcze nie
+      # (oba workflowy ruszają równolegle), to będzie to kolejny numer.
+      - name: Wylicz numer wersji
+        run: |
+          TAGS=$(git ls-remote --tags --refs origin 'refs/tags/v*')
+          LAST=$(echo "$TAGS" | sed 's|.*refs/tags/v||' | grep -E '^[0-9]+$' | sort -n | tail -n 1 || true)
+          AT_HEAD=$(echo "$TAGS" | awk -v sha="$GITHUB_SHA" '$1==sha {sub("refs/tags/v","",$2); print $2}' | grep -E '^[0-9]+$' | sort -n | tail -n 1 || true)
+          echo "APP_VERSION=v${AT_HEAD:-$(( ${LAST:-0} + 1 ))}" >> "$GITHUB_ENV"
+          echo "APP_DATE=$(TZ=Europe/Warsaw date +%Y-%m-%d)" >> "$GITHUB_ENV"
+
+      # Ścieżka bazowa musi odpowiadać nazwie repozytorium.
+      - run: flutter build web --release --base-href "/CC_NEW/" --dart-define=APP_VERSION="$APP_VERSION" --dart-define=APP_DATE="$APP_DATE"
 
       - uses: actions/upload-pages-artifact@v4
         with:
