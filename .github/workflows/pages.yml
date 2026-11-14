@@ -40,7 +40,11 @@ jobs:
       - run: flutter gen-l10n
 
       # Ścieżka bazowa musi odpowiadać nazwie repozytorium.
-      - run: flutter build web --release --base-href "/CC_NEW/"
+      # Wersja pokazywana w „Info o aplikacji": data budowy i skrót commita,
+      # żeby przy zgłoszeniach dało się ustalić, jaką wersję ktoś widzi.
+      - run: |
+          flutter build web --release --base-href "/CC_NEW/" \
+            --dart-define=APP_VERSION="web $(date -u +%Y-%m-%d) (${GITHUB_SHA::7})"
 
       - uses: actions/upload-pages-artifact@v4
         with:
