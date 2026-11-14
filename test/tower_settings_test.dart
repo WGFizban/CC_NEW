@@ -118,7 +118,7 @@ void main() {
   group('język interfejsu', () {
     test('nazwy dodatków i punktacji zmieniają się z językiem', () {
       expect(Expansion.hillsSheep.title(en), 'Hills & Sheep');
-      expect(Expansion.goldMines.label(en), 'Gold Mines (Mini expansion 4)');
+      expect(Expansion.goldMines.label(en), 'The Gold Mines (Mini expansion 4)');
       expect(Expansion.tower.label(en), '4. The Tower');
       expect(ScoringType.meadow.title(en), 'Farms');
       expect(ScoringType.meadow.title(pl), 'Pola');

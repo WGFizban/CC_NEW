@@ -175,7 +175,7 @@ class RulesScreen extends StatelessWidget {
           ),
           for (final e in expansions)
             section(
-              '${e.title(l)} (${l.tilesCount(_tiles(e))})',
+              '${e.title(l)} (${e == Expansion.monasteries ? l.tilesTwoSets(_tiles(e)) : l.tilesCount(_tiles(e))})',
               _rules(l, e),
               parts: _parts(l, e),
               table: _table(l, e),
